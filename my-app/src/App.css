@@ -1,0 +1,31 @@
+.App {
+  text-align: center;
+}
+
+.nav-menu {
+  background-color: #282c34;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.nav-menu a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.nav-menu a:hover {
+  background-color: #61dafb;
+  color: #282c34;
+}
+
+.page {
+  margin-top: 50px;
+  font-size: calc(10px + 2vmin);
+  color: #333;
+}
