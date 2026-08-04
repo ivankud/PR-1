@@ -19,13 +19,35 @@ export function useFormBuilder() {
     'form-builder-form',
     () => ensureRootContainer(createEmptyForm())
   );
-  const [selectedElementId, setSelectedElementId] = useState(null);
+  const [selectedElementId, setSelectedElementIdState] = useState(null);
+  const [selectedElementIds, setSelectedElementIds] = useState([]);
   const [previewMode, setPreviewMode] = useState(false);
+
+  // Обёртка над setter'ом: одиночный выбор сбрасывает множественное выделение.
+  const setSelectedElementId = useCallback((id) => {
+    setSelectedElementIdState(id);
+    setSelectedElementIds(id ? [id] : []);
+  }, []);
 
   // Выбранный элемент (рекурсивный поиск по дереву)
   const selectedElement = selectedElementId
     ? findElementById(form.elements, selectedElementId)
     : null;
+  // Все выбранные элементы (рекурсивный поиск по дереву)
+  const selectedElements = selectedElementIds
+    .map((id) => findElementById(form.elements, id))
+    .filter(Boolean);
+
+  // Установка выделенных элементов.
+  // Массив ids синхронизируется с основным selectedElementId (первый элемент или null).
+  const selectElements = useCallback(
+    (elementIds) => {
+      const uniqueIds = [...new Set(elementIds.filter(Boolean))];
+      setSelectedElementIds(uniqueIds);
+      setSelectedElementIdState(uniqueIds.length > 0 ? uniqueIds[0] : null);
+    },
+    []
+  );
 
   // Добавление элемента (в выбранный контейнер или в корневой контейнер)
   const addElement = useCallback(
@@ -59,7 +81,7 @@ export function useFormBuilder() {
       });
       setSelectedElementId(el.id);
     },
-    [setForm]
+    [setForm, setSelectedElementId]
   );
 
   // Обновление элемента (рекурсивно)
@@ -211,7 +233,32 @@ export function useFormBuilder() {
         setSelectedElementId(null);
       }
     },
-    [setForm, selectedElementId]
+    [setForm, selectedElementId, setSelectedElementId]
+  );
+
+  // Удаление нескольких элементов.
+  // Корневые контейнеры не удаляются.
+  const removeElements = useCallback(
+    (elementIds) => {
+      const ids = [...new Set(elementIds.filter(Boolean))];
+      if (ids.length === 0) return;
+
+      setForm((prev) => {
+        const isRootId = (id) => prev.elements.some((e) => e.id === id && e.isRoot);
+        const removableIds = ids.filter((id) => !isRootId(id));
+        if (removableIds.length === 0) return prev;
+
+        let elements = prev.elements;
+        removableIds.forEach((id) => {
+          elements = removeElementFromTree(elements, id);
+        });
+        return { ...prev, elements };
+      });
+      // Сброс выделения
+      setSelectedElementIds([]);
+      setSelectedElementIdState(null);
+    },
+    [setForm]
   );
 
   // Дублирование элемента (рекурсивно).
@@ -255,7 +302,58 @@ export function useFormBuilder() {
       // Выделяем копию
       setSelectedElementId(copyId);
     },
-    [setForm]
+    [setForm, setSelectedElementId]
+  );
+
+  // Дублирование нескольких элементов.
+  // Дублирует элемент с самым ранним индексом в дереве и выделяет созданные копии.
+  const duplicateElements = useCallback(
+    (elementIds) => {
+      const ids = [...new Set(elementIds.filter(Boolean))];
+      if (ids.length === 0) return;
+
+      const copyIds = [];
+      setForm((prev) => {
+        let elements = prev.elements;
+        ids.forEach((elementId) => {
+          const copyId = `${elementId}-copy-${Date.now()}-${copyIds.length}`;
+          copyIds.push(copyId);
+          const duplicateInList = (list) => {
+            const index = list.findIndex((el) => el.id === elementId);
+            if (index === -1) {
+              return list.map((el) => {
+                if (el.children && el.children.length > 0) {
+                  return { ...el, children: duplicateInList(el.children) };
+                }
+                return el;
+              });
+            }
+            const original = list[index];
+            if (original.isRoot) return list;
+
+            const copy = JSON.parse(JSON.stringify(original));
+            copy.id = copyId;
+            copy.x = (original.x || 0) + 20;
+            copy.y = (original.y || 0) + 20;
+            if (copy.children) {
+              copy.children = copy.children.map((child) => ({
+                ...child,
+                id: `${child.id}-copy-${Date.now()}`,
+              }));
+            }
+
+            const newList = [...list];
+            newList.splice(index + 1, 0, copy);
+            return newList;
+          };
+          elements = duplicateInList(elements);
+        });
+        return { ...prev, elements };
+      });
+      // Выделяем созданные копии
+      selectElements(copyIds);
+    },
+    [setForm, selectElements]
   );
 
   // Перемещение элемента вверх/вниз (в пределах его родителя)
@@ -265,7 +363,7 @@ export function useFormBuilder() {
         const moveInList = (elements) => {
           const index = elements.findIndex((el) => el.id === elementId);
           if (index === -1) {
-            // Ищем в вложенных
+            // Ищем во вложенных
             return elements.map((el) => {
               if (el.children && el.children.length > 0) {
                 return { ...el, children: moveInList(el.children) };
@@ -285,6 +383,16 @@ export function useFormBuilder() {
       });
     },
     [setForm]
+  );
+
+  // Перемещение нескольких элементов вверх/вниз.
+  const moveElements = useCallback(
+    (elementIds, direction) => {
+      const ids = [...new Set(elementIds.filter(Boolean))];
+      if (ids.length === 0) return;
+      ids.forEach((id) => moveElement(id, direction));
+    },
+    [moveElement]
   );
 
   // Обновление имени формы
@@ -315,27 +423,30 @@ export function useFormBuilder() {
       setForm(ensureRootContainer(newForm));
       setSelectedElementId(null);
     },
-    [setForm]
+    [setForm, setSelectedElementId]
   );
 
   // Создание новой формы
   const createNewForm = useCallback(() => {
     setForm(createEmptyForm());
     setSelectedElementId(null);
-  }, [setForm]);
+  }, [setForm, setSelectedElementId]);
 
   // Переключение режима предпросмотра
   const togglePreview = useCallback(() => {
     setPreviewMode((prev) => !prev);
     setSelectedElementId(null);
-  }, []);
+  }, [setSelectedElementId]);
 
   return {
     form,
     selectedElement,
     selectedElementId,
+    selectedElementIds,
+    selectedElements,
     previewMode,
     setSelectedElementId,
+    selectElements,
     addElement,
     updateElement,
     updateElementCss,
@@ -344,8 +455,11 @@ export function useFormBuilder() {
     updateElementEvent,
     updateFormEvent,
     removeElement,
+    removeElements,
     duplicateElement,
+    duplicateElements,
     moveElement,
+    moveElements,
     updateFormName,
     updateCanvasSettings,
     loadFormFromJson,

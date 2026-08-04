@@ -6,7 +6,13 @@ import { ELEMENT_TYPES } from '../../utils/formSchema';
  * Показывает структуру элементов (включая вложенные в контейнеры).
  * Клик по элементу дерева выделяет его на холсте.
  */
-function ElementTree({ form, selectedElementId, onSelectElement, onRemoveElement }) {
+function ElementTree({
+  form,
+  selectedElementId,
+  selectedElementIds,
+  onSelectElement,
+  onRemoveElement,
+}) {
   const [collapsed, setCollapsed] = useState({});
 
   const toggleCollapse = (id) => {
@@ -28,13 +34,16 @@ function ElementTree({ form, selectedElementId, onSelectElement, onRemoveElement
     const isContainer = el.type === 'container';
     const isCollapsed = collapsed[el.id];
     const isSelected = el.id === selectedElementId;
+    const isMultiSelected = selectedElementIds && selectedElementIds.includes(el.id);
     const hasChildren = el.children && el.children.length > 0;
     const isRoot = el.isRoot === true;
 
     return (
       <div key={el.id}>
         <div
-          className={`element-tree-item ${isSelected ? 'selected' : ''}`}
+          className={`element-tree-item ${isSelected ? 'selected' : ''} ${
+            isMultiSelected ? 'multi-selected' : ''
+          }`}
           style={{ paddingLeft: `${depth * 20 + 8}px` }}
           onClick={() => handleSelect(el.id)}
         >

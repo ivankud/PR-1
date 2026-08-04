@@ -8,10 +8,16 @@ import { ELEMENT_TYPES } from '../../utils/formSchema';
 function FormCanvas({
   form,
   selectedElementId,
+  selectedElementIds,
+  selectedElements,
   onSelectElement,
+  onSelectElements,
   onRemoveElement,
+  onRemoveElements,
   onDuplicateElement,
+  onDuplicateElements,
   onMoveElement,
+  onMoveElements,
   onUpdateElementPosition,
   onUpdateElementSize,
   onAddElement,
@@ -154,6 +160,34 @@ function FormCanvas({
 
   const isSelectedRoot = selectedElement?.isRoot === true;
   const hasSelection = !!selectedElement && !isSelectedRoot;
+  const isMultiSelection = selectedElementIds.length > 1;
+
+  // Обработчик клика по элементу с учётом Ctrl/Shift для мультивыделения
+  const handleElementClick = useCallback(
+    (e, element) => {
+      e.stopPropagation();
+      const isRoot = element.isRoot === true;
+      if (isRoot) {
+        onSelectElement(element.id);
+        return;
+      }
+
+      const isMulti = e.ctrlKey || e.metaKey || e.shiftKey;
+      if (isMulti) {
+        const isAlreadySelected = selectedElementIds.includes(element.id);
+        let newIds;
+        if (isAlreadySelected) {
+          newIds = selectedElementIds.filter((id) => id !== element.id);
+        } else {
+          newIds = [...selectedElementIds, element.id];
+        }
+        onSelectElements(newIds);
+      } else {
+        onSelectElement(element.id);
+      }
+    },
+    [selectedElementIds, onSelectElement, onSelectElements]
+  );
 
   // Рендер элемента на холсте.
   // isInContainer определяет, рендерится ли элемент внутри контейнера.
@@ -163,6 +197,7 @@ function FormCanvas({
   const renderElement = (element, isInContainer = false, parentSize = null) => {
     const def = ELEMENT_TYPES[element.type];
     const isSelected = element.id === selectedElementId;
+    const isMultiSelected = selectedElementIds.includes(element.id);
     const isContainer = element.type === 'container';
     const isRoot = element.isRoot === true;
 
@@ -205,13 +240,12 @@ function FormCanvas({
       <div
         key={element.id}
         className={`canvas-element ${isSelected ? 'selected' : ''} ${
-          isContainer ? 'container' : ''
-        } ${hoverContainerId === element.id ? 'hover-container' : ''}`}
+          isMultiSelected ? 'multi-selected' : ''
+        } ${isContainer ? 'container' : ''} ${
+          hoverContainerId === element.id ? 'hover-container' : ''
+        }`}
         style={style}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelectElement(element.id);
-        }}
+        onClick={(e) => handleElementClick(e, element)}
         onMouseDown={(e) => {
           if (isContainer) {
             // Для контейнера перетаскивание по заголовку
@@ -398,11 +432,17 @@ function FormCanvas({
 
       {/* Панель операций над выбранным элементом */}
       <div className="canvas-operations-bar">
-        <span className="canvas-operations-label">Операции:</span>
+        <span className="canvas-operations-label">
+          Операции{isMultiSelection ? ` (${selectedElementIds.length})` : ''}:
+        </span>
         <button
           className="canvas-operation-btn"
           disabled={!hasSelection}
-          onClick={() => onDuplicateElement(selectedElementId)}
+          onClick={() =>
+            isMultiSelection
+              ? onDuplicateElements(selectedElementIds)
+              : onDuplicateElement(selectedElementId)
+          }
           title="Дублировать элемент"
         >
           ⧉ Дублировать
@@ -410,7 +450,11 @@ function FormCanvas({
         <button
           className="canvas-operation-btn"
           disabled={!hasSelection}
-          onClick={() => onMoveElement(selectedElementId, -1)}
+          onClick={() =>
+            isMultiSelection
+              ? onMoveElements(selectedElementIds, -1)
+              : onMoveElement(selectedElementId, -1)
+          }
           title="Переместить вверх"
         >
           ↑ Вверх
@@ -418,7 +462,11 @@ function FormCanvas({
         <button
           className="canvas-operation-btn"
           disabled={!hasSelection}
-          onClick={() => onMoveElement(selectedElementId, 1)}
+          onClick={() =>
+            isMultiSelection
+              ? onMoveElements(selectedElementIds, 1)
+              : onMoveElement(selectedElementId, 1)
+          }
           title="Переместить вниз"
         >
           ↓ Вниз
@@ -426,7 +474,11 @@ function FormCanvas({
         <button
           className="canvas-operation-btn danger"
           disabled={!hasSelection}
-          onClick={() => onRemoveElement(selectedElementId)}
+          onClick={() =>
+            isMultiSelection
+              ? onRemoveElements(selectedElementIds)
+              : onRemoveElement(selectedElementId)
+          }
           title="Удалить элемент"
         >
           ✕ Удалить

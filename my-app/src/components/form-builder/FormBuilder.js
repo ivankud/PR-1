@@ -33,8 +33,14 @@ function FormBuilder() {
     updateElementEvent,
     updateFormEvent,
     removeElement,
+    removeElements,
     duplicateElement,
+    duplicateElements,
     moveElement,
+    moveElements,
+    selectElements,
+    selectedElementIds,
+    selectedElements,
     updateFormName,
     updateCanvasSettings,
     loadFormFromJson,
@@ -149,6 +155,7 @@ function FormBuilder() {
                 <ElementTree
                   form={form}
                   selectedElementId={selectedElementId}
+                  selectedElementIds={selectedElementIds}
                   onSelectElement={setSelectedElementId}
                   onRemoveElement={removeElement}
                 />
@@ -160,10 +167,16 @@ function FormBuilder() {
             <FormCanvas
               form={form}
               selectedElementId={selectedElementId}
+              selectedElementIds={selectedElementIds}
+              selectedElements={selectedElements}
               onSelectElement={setSelectedElementId}
+              onSelectElements={selectElements}
               onRemoveElement={removeElement}
+              onRemoveElements={removeElements}
               onDuplicateElement={duplicateElement}
+              onDuplicateElements={duplicateElements}
               onMoveElement={moveElement}
+              onMoveElements={moveElements}
               onUpdateElementPosition={updateElementPosition}
               onUpdateElementSize={updateElementSize}
               onAddElement={handleAddElement}

@@ -106,6 +106,15 @@
   border: 1px solid #61dafb;
 }
 
+.element-tree-item.multi-selected {
+  background: #e8f5e9;
+  border: 1px solid #81c784;
+}
+
+.element-tree-item.multi-selected:hover {
+  background: #d7efd9;
+}
+
 .element-tree-row {
   display: flex;
   align-items: center;
@@ -301,6 +310,11 @@
 .canvas-element.selected {
   border-color: #61dafb;
   box-shadow: 0 0 0 2px rgba(97, 218, 251, 0.2);
+}
+
+.canvas-element.multi-selected {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
 }
 
 .canvas-element.container {
