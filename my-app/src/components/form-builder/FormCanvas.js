@@ -10,6 +10,7 @@ function FormCanvas({
   selectedElementId,
   onSelectElement,
   onRemoveElement,
+  onDuplicateElement,
   onMoveElement,
   onUpdateElementPosition,
   onUpdateElementSize,
@@ -136,6 +137,23 @@ function FormCanvas({
     setDragState(null);
     setHoverContainerId(null);
   }, []);
+
+  // Выбранный элемент (для панели операций)
+  const selectedElement = selectedElementId
+    ? (function findInList(elements) {
+        for (const el of elements) {
+          if (el.id === selectedElementId) return el;
+          if (el.children && el.children.length > 0) {
+            const found = findInList(el.children);
+            if (found) return found;
+          }
+        }
+        return null;
+      })(form.elements)
+    : null;
+
+  const isSelectedRoot = selectedElement?.isRoot === true;
+  const hasSelection = !!selectedElement && !isSelectedRoot;
 
   // Рендер элемента на холсте.
   // isInContainer определяет, рендерится ли элемент внутри контейнера.
@@ -376,6 +394,43 @@ function FormCanvas({
           </span>
           <span className="canvas-grid-info">Сетка: {gridSize}px</span>
         </div>
+      </div>
+
+      {/* Панель операций над выбранным элементом */}
+      <div className="canvas-operations-bar">
+        <span className="canvas-operations-label">Операции:</span>
+        <button
+          className="canvas-operation-btn"
+          disabled={!hasSelection}
+          onClick={() => onDuplicateElement(selectedElementId)}
+          title="Дублировать элемент"
+        >
+          ⧉ Дублировать
+        </button>
+        <button
+          className="canvas-operation-btn"
+          disabled={!hasSelection}
+          onClick={() => onMoveElement(selectedElementId, -1)}
+          title="Переместить вверх"
+        >
+          ↑ Вверх
+        </button>
+        <button
+          className="canvas-operation-btn"
+          disabled={!hasSelection}
+          onClick={() => onMoveElement(selectedElementId, 1)}
+          title="Переместить вниз"
+        >
+          ↓ Вниз
+        </button>
+        <button
+          className="canvas-operation-btn danger"
+          disabled={!hasSelection}
+          onClick={() => onRemoveElement(selectedElementId)}
+          title="Удалить элемент"
+        >
+          ✕ Удалить
+        </button>
       </div>
 
       {/* Рабочая область вокруг страницы (невидимая часть холста) */}

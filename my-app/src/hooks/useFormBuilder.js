@@ -214,6 +214,50 @@ export function useFormBuilder() {
     [setForm, selectedElementId]
   );
 
+  // Дублирование элемента (рекурсивно).
+  // Создаёт копию элемента с новым id и размещает её сразу после оригинала.
+  const duplicateElement = useCallback(
+    (elementId) => {
+      const copyId = `${elementId}-copy-${Date.now()}`;
+      setForm((prev) => {
+        const duplicateInList = (elements) => {
+          const index = elements.findIndex((el) => el.id === elementId);
+          if (index === -1) {
+            // Ищем во вложенных
+            return elements.map((el) => {
+              if (el.children && el.children.length > 0) {
+                return { ...el, children: duplicateInList(el.children) };
+              }
+              return el;
+            });
+          }
+          const original = elements[index];
+          if (original.isRoot) return elements;
+
+          const copy = JSON.parse(JSON.stringify(original));
+          copy.id = copyId;
+          copy.x = (original.x || 0) + 20;
+          copy.y = (original.y || 0) + 20;
+          if (copy.children) {
+            copy.children = copy.children.map((child) => ({
+              ...child,
+              id: `${child.id}-copy-${Date.now()}`,
+            }));
+          }
+
+          const newElements = [...elements];
+          newElements.splice(index + 1, 0, copy);
+          return newElements;
+        };
+
+        return { ...prev, elements: duplicateInList(prev.elements) };
+      });
+      // Выделяем копию
+      setSelectedElementId(copyId);
+    },
+    [setForm]
+  );
+
   // Перемещение элемента вверх/вниз (в пределах его родителя)
   const moveElement = useCallback(
     (elementId, direction) => {
@@ -300,6 +344,7 @@ export function useFormBuilder() {
     updateElementEvent,
     updateFormEvent,
     removeElement,
+    duplicateElement,
     moveElement,
     updateFormName,
     updateCanvasSettings,

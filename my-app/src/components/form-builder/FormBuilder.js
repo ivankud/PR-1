@@ -33,6 +33,7 @@ function FormBuilder() {
     updateElementEvent,
     updateFormEvent,
     removeElement,
+    duplicateElement,
     moveElement,
     updateFormName,
     updateCanvasSettings,
@@ -161,6 +162,7 @@ function FormBuilder() {
               selectedElementId={selectedElementId}
               onSelectElement={setSelectedElementId}
               onRemoveElement={removeElement}
+              onDuplicateElement={duplicateElement}
               onMoveElement={moveElement}
               onUpdateElementPosition={updateElementPosition}
               onUpdateElementSize={updateElementSize}
