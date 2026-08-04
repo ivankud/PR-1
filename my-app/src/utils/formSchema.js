@@ -2,7 +2,7 @@
 
 // Базовые CSS-свойства по умолчанию для всех элементов
 export const DEFAULT_CSS = {
-  position: 'absolute',
+  position: 'relative',
   left: '0px',
   top: '0px',
   width: '100%',

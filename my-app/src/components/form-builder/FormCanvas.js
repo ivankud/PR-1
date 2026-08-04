@@ -28,9 +28,9 @@ function FormCanvas({
   // Размеры видимой страницы
   const pageWidth = canvas.width || 800;
   const pageHeight = canvas.height || 600;
-  // Смещение страницы внутри рабочей области (центрирование)
-  const pageOffsetX = (workspaceSize - pageWidth) / 2;
-  const pageOffsetY = (workspaceSize - pageHeight) / 2;
+  // Смещение страницы внутри рабочей области (левый верхний угол, без отступов)
+  const pageOffsetX = 0;
+  const pageOffsetY = 0;
 
   // Центрирование прокрутки рабочей области на странице при монтировании
   useEffect(() => {
