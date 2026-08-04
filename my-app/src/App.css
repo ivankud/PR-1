@@ -30,6 +30,12 @@
   color: #333;
 }
 
+.random-sentence {
+  margin-top: 20px;
+  color: #666;
+  font-size: calc(8px + 1.5vmin);
+}
+
 /* ===== Конструктор форм ===== */
 
 .builder-page {

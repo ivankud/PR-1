@@ -18,14 +18,30 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
     onBlur: handleEvent('onBlur'),
   };
 
-  // Базовый стиль из CSS-настроек элемента
+  // Базовый стиль из CSS-настроек элемента.
+  // Позиционные/габаритные свойства (position, left, top, width, height, margin)
+  // относятся к обёртке (.form-renderer-field) и не должны применяться к самому
+  // полю ввода — иначе поле "съезжает" относительно надписи в предпросмотре.
+  const {
+    position: _pos,
+    left: _left,
+    top: _top,
+    right: _right,
+    bottom: _bottom,
+    width: _width,
+    height: _height,
+    margin: _margin,
+    ...visualCss
+  } = element.css || {};
+
   const style = element.css
     ? {
         width: '100%',
         boxSizing: 'border-box',
-        ...element.css,
+        ...visualCss,
       }
     : undefined;
+
 
   switch (element.type) {
     case 'text':
