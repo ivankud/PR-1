@@ -242,12 +242,39 @@ export function createElement(type) {
   return el;
 }
 
-// Создание пустой формы
+// Создание корневого контейнера формы
+export function createRootContainer() {
+  return {
+    id: 'root-container',
+    type: 'container',
+    label: 'Корневой контейнер',
+    name: 'root_container',
+    x: 0,
+    y: 0,
+    width: 800,
+    height: 600,
+    isRoot: true,
+    children: [],
+    css: {
+      ...DEFAULT_CSS,
+      position: 'relative',
+      left: '0px',
+      top: '0px',
+      width: '800px',
+      height: '600px',
+      backgroundColor: '#ffffff',
+      border: '2px solid #4a90d9',
+    },
+    events: {},
+  };
+}
+
+// Создание пустой формы с корневым контейнером
 export function createEmptyForm() {
   return {
     id: `form-${Date.now()}`,
     name: 'Новая форма',
-    elements: [],
+    elements: [createRootContainer()],
     events: {
       onSubmit: '',
     },
@@ -257,6 +284,24 @@ export function createEmptyForm() {
       gridSize: 20,
       showGrid: true,
     },
+  };
+}
+
+// Гарантирует наличие корневого контейнера в форме.
+// Если корневого контейнера нет — добавляет его в начало списка элементов.
+export function ensureRootContainer(form) {
+  if (!form) return createEmptyForm();
+
+  const elements = Array.isArray(form.elements) ? form.elements : [];
+  const hasRoot = elements.some((el) => el.isRoot === true);
+
+  if (hasRoot) {
+    return form;
+  }
+
+  return {
+    ...form,
+    elements: [createRootContainer(), ...elements],
   };
 }
 

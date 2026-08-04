@@ -29,6 +29,7 @@ function ElementTree({ form, selectedElementId, onSelectElement, onRemoveElement
     const isCollapsed = collapsed[el.id];
     const isSelected = el.id === selectedElementId;
     const hasChildren = el.children && el.children.length > 0;
+    const isRoot = el.isRoot === true;
 
     return (
       <div key={el.id}>
@@ -58,13 +59,15 @@ function ElementTree({ form, selectedElementId, onSelectElement, onRemoveElement
             </span>
             <span className="element-tree-type">{def ? def.label : el.type}</span>
 
-            <button
-              className="element-tree-remove"
-              onClick={(e) => handleRemove(e, el.id)}
-              title="Удалить элемент"
-            >
-              ✕
-            </button>
+            {!isRoot && (
+              <button
+                className="element-tree-remove"
+                onClick={(e) => handleRemove(e, el.id)}
+                title="Удалить элемент"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 

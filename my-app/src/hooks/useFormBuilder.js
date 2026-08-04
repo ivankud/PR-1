@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import {
   createElement,
   createEmptyForm,
+  ensureRootContainer,
   findElementById,
   updateElementInTree,
   removeElementFromTree,
@@ -14,7 +15,10 @@ import { useLocalStorage } from './useLocalStorage';
  * позиционированием и сохраняет всё в localStorage.
  */
 export function useFormBuilder() {
-  const [form, setForm] = useLocalStorage('form-builder-form', createEmptyForm);
+  const [form, setForm] = useLocalStorage(
+    'form-builder-form',
+    () => ensureRootContainer(createEmptyForm())
+  );
   const [selectedElementId, setSelectedElementId] = useState(null);
   const [previewMode, setPreviewMode] = useState(false);
 
@@ -23,24 +27,31 @@ export function useFormBuilder() {
     ? findElementById(form.elements, selectedElementId)
     : null;
 
-  // Добавление элемента (в корень или в выбранный контейнер)
+  // Добавление элемента (в выбранный контейнер или в корневой контейнер)
   const addElement = useCallback(
     (type, parentId = null) => {
       const el = createElement(type);
       if (!el) return;
 
       setForm((prev) => {
+        // Определяем родителя: переданный контейнер или корневой контейнер
+        let targetParentId = parentId;
+        if (!targetParentId) {
+          const root = prev.elements.find((e) => e.isRoot);
+          targetParentId = root ? root.id : null;
+        }
+
         // Если есть родительский контейнер, добавляем в него
-        if (parentId) {
+        if (targetParentId) {
           return {
             ...prev,
-            elements: updateElementInTree(prev.elements, parentId, (parent) => ({
+            elements: updateElementInTree(prev.elements, targetParentId, (parent) => ({
               ...parent,
               children: [...(parent.children || []), el],
             })),
           };
         }
-        // Иначе добавляем в корень
+        // Иначе добавляем в корень списка
         return {
           ...prev,
           elements: [...prev.elements, el],
@@ -171,13 +182,20 @@ export function useFormBuilder() {
     [setForm]
   );
 
-  // Удаление элемента (рекурсивно)
+  // Удаление элемента (рекурсивно).
+  // Корневой контейнер удалить нельзя.
   const removeElement = useCallback(
     (elementId) => {
-      setForm((prev) => ({
-        ...prev,
-        elements: removeElementFromTree(prev.elements, elementId),
-      }));
+      setForm((prev) => {
+        // Проверяем, является ли элемент корневым контейнером
+        const isRoot = prev.elements.some((e) => e.id === elementId && e.isRoot);
+        if (isRoot) return prev;
+
+        return {
+          ...prev,
+          elements: removeElementFromTree(prev.elements, elementId),
+        };
+      });
       if (selectedElementId === elementId) {
         setSelectedElementId(null);
       }
@@ -236,10 +254,10 @@ export function useFormBuilder() {
     [setForm]
   );
 
-  // Загрузка формы из JSON
+  // Загрузка формы из JSON (с гарантией наличия корневого контейнера)
   const loadFormFromJson = useCallback(
     (newForm) => {
-      setForm(newForm);
+      setForm(ensureRootContainer(newForm));
       setSelectedElementId(null);
     },
     [setForm]

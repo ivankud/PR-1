@@ -43,6 +43,10 @@ function FormBuilder() {
 
   const isContainerSelected = selectedElement?.type === 'container';
 
+  // Корневой контейнер — его стили применяются к области просмотра
+  const rootContainer = form.elements.find((e) => e.isRoot);
+  const rootCss = rootContainer?.css || {};
+
   // Обработчик ошибок выполнения действий в предпросмотре
   const handleActionError = (error) => {
     console.error('Ошибка действия:', error);
@@ -100,12 +104,14 @@ function FormBuilder() {
               Взаимодействуйте с формой — код действий выполняется
             </p>
           </div>
-          {/* Видимая страница в предпросмотре (без невидимой рабочей области) */}
+          {/* Видимая страница в предпросмотре.
+              Стили области просмотра = стили корневого контейнера. */}
           <div
             className="preview-page"
             style={{
-              width: form.canvas?.width || 800,
-              minHeight: form.canvas?.height || 600,
+              width: rootContainer?.width || form.canvas?.width || 800,
+              minHeight: rootContainer?.height || form.canvas?.height || 600,
+              ...rootCss,
             }}
           >
             <FormRenderer form={form} navigate={navigate} onError={handleActionError} />

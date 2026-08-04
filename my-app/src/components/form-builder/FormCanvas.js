@@ -16,7 +16,6 @@ function FormCanvas({
   onAddElement,
   onUpdateCanvasSettings,
 }) {
-  const canvasRef = useRef(null);
   const workspaceRef = useRef(null);
   const [dragState, setDragState] = useState(null); // { id, startX, startY, origX, origY, type: 'move' | 'resize' }
   const [hoverContainerId, setHoverContainerId] = useState(null);
@@ -25,10 +24,7 @@ function FormCanvas({
   const gridSize = canvas.gridSize || 20;
   // Размеры невидимой рабочей области вокруг страницы
   const workspaceSize = 2000;
-  // Размеры видимой страницы
-  const pageWidth = canvas.width || 800;
-  const pageHeight = canvas.height || 600;
-  // Смещение страницы внутри рабочей области (левый верхний угол, без отступов)
+  // Корневой контейнер — белая область холста (расположен в (0, 0))
   const pageOffsetX = 0;
   const pageOffsetY = 0;
 
@@ -54,7 +50,6 @@ function FormCanvas({
   const handleDragStart = useCallback(
     (e, element) => {
       e.stopPropagation();
-      const rect = canvasRef.current.getBoundingClientRect();
       setDragState({
         id: element.id,
         startX: e.clientX,
@@ -62,7 +57,6 @@ function FormCanvas({
         origX: element.x || 0,
         origY: element.y || 0,
         type: 'move',
-        canvasRect: rect,
       });
     },
     []
@@ -72,7 +66,6 @@ function FormCanvas({
   const handleResizeStart = useCallback(
     (e, element) => {
       e.stopPropagation();
-      const rect = canvasRef.current.getBoundingClientRect();
       setDragState({
         id: element.id,
         startX: e.clientX,
@@ -82,7 +75,6 @@ function FormCanvas({
         origWidth: element.width || 200,
         origHeight: element.height || 40,
         type: 'resize',
-        canvasRect: rect,
       });
     },
     []
@@ -123,6 +115,7 @@ function FormCanvas({
     const def = ELEMENT_TYPES[element.type];
     const isSelected = element.id === selectedElementId;
     const isContainer = element.type === 'container';
+    const isRoot = element.isRoot === true;
 
     // Смещение: корневые элементы — относительно страницы,
     // элементы внутри контейнера — относительно контейнера (0, 0)
@@ -181,7 +174,7 @@ function FormCanvas({
           <span className="canvas-element-type">{def ? def.label : element.type}</span>
           <span className="canvas-element-name">{element.name}</span>
           <div className="canvas-element-actions">
-            {!isInContainer && (
+            {!isRoot && !isInContainer && (
               <>
                 <button
                   className="canvas-action-btn"
@@ -205,16 +198,18 @@ function FormCanvas({
                 </button>
               </>
             )}
-            <button
-              className="canvas-action-btn danger"
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveElement(element.id);
-              }}
-              title="Удалить элемент"
-            >
-              ✕
-            </button>
+            {!isRoot && (
+              <button
+                className="canvas-action-btn danger"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveElement(element.id);
+                }}
+                title="Удалить элемент"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
 
@@ -261,8 +256,8 @@ function FormCanvas({
           </div>
         )}
 
-        {/* Ручка изменения размера */}
-        {isSelected && (
+        {/* Ручка изменения размера (не для корневого контейнера) */}
+        {isSelected && !isRoot && (
           <div
             className="canvas-resize-handle"
             onMouseDown={(e) => handleResizeStart(e, element)}
@@ -300,33 +295,18 @@ function FormCanvas({
         onMouseLeave={handleMouseUp}
         onClick={() => onSelectElement(null)}
       >
-        {/* Видимая страница — декоративная подложка */}
-        <div
-          ref={canvasRef}
-          className={`canvas-page ${canvas.showGrid ? 'show-grid' : ''}`}
-          style={{
-            position: 'absolute',
-            left: `${pageOffsetX}px`,
-            top: `${pageOffsetY}px`,
-            width: `${pageWidth}px`,
-            height: `${pageHeight}px`,
-            backgroundSize: `${gridSize}px ${gridSize}px`,
-          }}
-        >
-          {form.elements.length === 0 && (
-            <div className="canvas-empty">
-              <div className="canvas-empty-icon">📋</div>
-              <p>Форма пуста</p>
-              <p className="canvas-empty-hint">
-                Добавьте элементы из палитры слева
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Элементы формы на всей рабочей области (видимой и невидимой части) */}
-        {form.elements.length > 0 &&
-          form.elements.map((el) => renderElement(el, false))}
+        {/* Элементы формы (корневой контейнер и вложенные) */}
+        {form.elements.length > 0 ? (
+          form.elements.map((el) => renderElement(el, false))
+        ) : (
+          <div className="canvas-empty">
+            <div className="canvas-empty-icon">📋</div>
+            <p>Форма пуста</p>
+            <p className="canvas-empty-hint">
+              Добавьте элементы из палитры слева
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="canvas-footer">
