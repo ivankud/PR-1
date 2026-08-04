@@ -138,28 +138,78 @@ function PropertiesPanel({
         </div>
         <div className="property-row">
           <div className="property-group">
-            <label className="property-label">Ширина (px)</label>
-            <input
-              type="number"
-              className="property-input"
-              value={element.width || 200}
-              min="20"
-              onChange={(e) =>
-                onUpdateElementSize(element.id, parseInt(e.target.value) || 200, element.height || 40)
-              }
-            />
+            <label className="property-label">Ширина</label>
+            <div className="property-size-input">
+              <input
+                type="number"
+                className="property-input"
+                value={element.width || 200}
+                min="20"
+                onChange={(e) =>
+                  onUpdateElementSize(
+                    element.id,
+                    parseInt(e.target.value) || 200,
+                    element.height || 40,
+                    element.widthUnit || 'px',
+                    element.heightUnit || 'px'
+                  )
+                }
+              />
+              <select
+                className="property-unit-select"
+                value={element.widthUnit || 'px'}
+                onChange={(e) =>
+                  onUpdateElementSize(
+                    element.id,
+                    element.width || 200,
+                    element.height || 40,
+                    e.target.value,
+                    element.heightUnit || 'px'
+                  )
+                }
+                title="Единицы измерения ширины"
+              >
+                <option value="px">px</option>
+                <option value="%">%</option>
+              </select>
+            </div>
           </div>
           <div className="property-group">
-            <label className="property-label">Высота (px)</label>
-            <input
-              type="number"
-              className="property-input"
-              value={element.height || 40}
-              min="20"
-              onChange={(e) =>
-                onUpdateElementSize(element.id, element.width || 200, parseInt(e.target.value) || 40)
-              }
-            />
+            <label className="property-label">Высота</label>
+            <div className="property-size-input">
+              <input
+                type="number"
+                className="property-input"
+                value={element.height || 40}
+                min="20"
+                onChange={(e) =>
+                  onUpdateElementSize(
+                    element.id,
+                    element.width || 200,
+                    parseInt(e.target.value) || 40,
+                    element.widthUnit || 'px',
+                    element.heightUnit || 'px'
+                  )
+                }
+              />
+              <select
+                className="property-unit-select"
+                value={element.heightUnit || 'px'}
+                onChange={(e) =>
+                  onUpdateElementSize(
+                    element.id,
+                    element.width || 200,
+                    element.height || 40,
+                    element.widthUnit || 'px',
+                    e.target.value
+                  )
+                }
+                title="Единицы измерения высоты"
+              >
+                <option value="px">px</option>
+                <option value="%">%</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>

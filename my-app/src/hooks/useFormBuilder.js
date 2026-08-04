@@ -88,12 +88,20 @@ export function useFormBuilder() {
             ...cssUpdates,
           };
           const updates = { css: newCss };
-          // Синхронизация числовых width/height из CSS (если значение в px)
+          // Синхронизация числовых width/height из CSS (если значение в px или %)
           if (cssUpdates.width && /^\d+px$/.test(cssUpdates.width)) {
             updates.width = parseInt(cssUpdates.width, 10);
+            updates.widthUnit = 'px';
+          } else if (cssUpdates.width && /^\d+%$/.test(cssUpdates.width)) {
+            updates.width = parseInt(cssUpdates.width, 10);
+            updates.widthUnit = '%';
           }
           if (cssUpdates.height && /^\d+px$/.test(cssUpdates.height)) {
             updates.height = parseInt(cssUpdates.height, 10);
+            updates.heightUnit = 'px';
+          } else if (cssUpdates.height && /^\d+%$/.test(cssUpdates.height)) {
+            updates.height = parseInt(cssUpdates.height, 10);
+            updates.heightUnit = '%';
           }
           // Синхронизация числовых x/y из CSS left/top (если значение в px)
           if (cssUpdates.left && /^-?\d+px$/.test(cssUpdates.left)) {
@@ -132,18 +140,21 @@ export function useFormBuilder() {
 
   // Обновление размера элемента.
   // Изменение размера также прописывается в CSS-стили элемента.
+  // Поддерживаются единицы измерения: px и %.
   const updateElementSize = useCallback(
-    (elementId, width, height) => {
+    (elementId, width, height, widthUnit = 'px', heightUnit = 'px') => {
       setForm((prev) => ({
         ...prev,
         elements: updateElementInTree(prev.elements, elementId, (el) => ({
           ...el,
           width,
           height,
+          widthUnit,
+          heightUnit,
           css: {
             ...(el.css || {}),
-            width: `${width}px`,
-            height: `${height}px`,
+            width: `${width}${widthUnit}`,
+            height: `${height}${heightUnit}`,
           },
         })),
       }));

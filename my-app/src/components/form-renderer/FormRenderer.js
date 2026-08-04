@@ -70,11 +70,14 @@ function FormRenderer({ form, navigate, onError }) {
 
   // Рекурсивный рендер элемента (поддерживает контейнеры)
   const renderElement = (element, isInContainer = false) => {
+    const widthUnit = element.widthUnit || 'px';
+    const heightUnit = element.heightUnit || 'px';
+
     if (element.type === 'container') {
       const containerStyle = {
         position: 'relative',
-        width: `${element.width || 300}px`,
-        height: `${element.height || 200}px`,
+        width: `${element.width || 300}${widthUnit}`,
+        height: `${element.height || 200}${heightUnit}`,
         ...(element.css || {}),
         boxSizing: 'border-box',
       };
@@ -100,7 +103,7 @@ function FormRenderer({ form, navigate, onError }) {
       position,
       left: `${cssLeft}px`,
       top: `${cssTop}px`,
-      width: `${element.width || 200}px`,
+      width: `${element.width || 200}${widthUnit}`,
       boxSizing: 'border-box',
       ...css,
     };

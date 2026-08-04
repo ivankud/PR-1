@@ -64,7 +64,7 @@ function FormCanvas({
 
   // Начало изменения размера
   const handleResizeStart = useCallback(
-    (e, element) => {
+    (e, element, parentSize) => {
       e.stopPropagation();
       setDragState({
         id: element.id,
@@ -74,6 +74,9 @@ function FormCanvas({
         origY: element.y || 0,
         origWidth: element.width || 200,
         origHeight: element.height || 40,
+        widthUnit: element.widthUnit || 'px',
+        heightUnit: element.heightUnit || 'px',
+        parentSize: parentSize || { width: 800, height: 600 },
         type: 'resize',
       });
     },
@@ -93,9 +96,36 @@ function FormCanvas({
         const newY = snapToGrid(dragState.origY + dy);
         onUpdateElementPosition(dragState.id, newX, newY);
       } else if (dragState.type === 'resize') {
-        const newWidth = Math.max(20, snapToGrid(dragState.origWidth + dx));
-        const newHeight = Math.max(20, snapToGrid(dragState.origHeight + dy));
-        onUpdateElementSize(dragState.id, newWidth, newHeight);
+        const parentW = dragState.parentSize.width || 800;
+        const parentH = dragState.parentSize.height || 600;
+
+        // Если единица измерения — %, конвертируем исходное значение в px,
+        // добавляем смещение и конвертируем обратно в %
+        let newWidth;
+        let newHeight;
+        if (dragState.widthUnit === '%') {
+          const origWidthPx = (dragState.origWidth / 100) * parentW;
+          const newWidthPx = Math.max(20, snapToGrid(origWidthPx + dx));
+          newWidth = Math.round((newWidthPx / parentW) * 100);
+        } else {
+          newWidth = Math.max(20, snapToGrid(dragState.origWidth + dx));
+        }
+
+        if (dragState.heightUnit === '%') {
+          const origHeightPx = (dragState.origHeight / 100) * parentH;
+          const newHeightPx = Math.max(20, snapToGrid(origHeightPx + dy));
+          newHeight = Math.round((newHeightPx / parentH) * 100);
+        } else {
+          newHeight = Math.max(20, snapToGrid(dragState.origHeight + dy));
+        }
+
+        onUpdateElementSize(
+          dragState.id,
+          newWidth,
+          newHeight,
+          dragState.widthUnit,
+          dragState.heightUnit
+        );
       }
     },
     [dragState, snapToGrid, onUpdateElementPosition, onUpdateElementSize]
@@ -109,13 +139,18 @@ function FormCanvas({
 
   // Рендер элемента на холсте.
   // isInContainer определяет, рендерится ли элемент внутри контейнера.
+  // parentSize — размер родителя (страница или контейнер), нужен для resize в %.
   // Для корневых элементов позиции рассчитываются относительно страницы
   // (с учётом смещения страницы внутри рабочей области).
-  const renderElement = (element, isInContainer = false) => {
+  const renderElement = (element, isInContainer = false, parentSize = null) => {
     const def = ELEMENT_TYPES[element.type];
     const isSelected = element.id === selectedElementId;
     const isContainer = element.type === 'container';
     const isRoot = element.isRoot === true;
+
+    // Размер родителя: для корневых элементов — страница, для вложенных — контейнер
+    const effectiveParentSize =
+      parentSize || { width: canvas.width || 800, height: canvas.height || 600 };
 
     // Смещение: корневые элементы — относительно страницы,
     // элементы внутри контейнера — относительно контейнера (0, 0)
@@ -128,12 +163,15 @@ function FormCanvas({
     const cssLeft = css.left ? parseInt(css.left, 10) || 0 : (element.x || 0);
     const cssTop = css.top ? parseInt(css.top, 10) || 0 : (element.y || 0);
 
+    const widthUnit = element.widthUnit || 'px';
+    const heightUnit = element.heightUnit || 'px';
+
     const style = {
       position,
       left: `${offsetX + cssLeft}px`,
       top: `${offsetY + cssTop}px`,
-      width: `${element.width || 200}px`,
-      height: isContainer ? `${element.height || 200}px` : 'auto',
+      width: `${element.width || 200}${widthUnit}`,
+      height: isContainer ? `${element.height || 200}${heightUnit}` : 'auto',
       minHeight: isContainer ? '60px' : 'auto',
       ...css,
     };
@@ -141,8 +179,8 @@ function FormCanvas({
     // Для контейнера используем числовые значения width/height из data,
     // а CSS width/height не переопределяют их
     if (isContainer) {
-      style.width = `${element.width || 300}px`;
-      style.height = `${element.height || 200}px`;
+      style.width = `${element.width || 300}${widthUnit}`;
+      style.height = `${element.height || 200}${heightUnit}`;
     }
 
     return (
@@ -224,7 +262,12 @@ function FormCanvas({
               </div>
               {element.children && element.children.length > 0 ? (
                 <div className="canvas-container-children">
-                  {element.children.map((child) => renderElement(child, true))}
+                  {element.children.map((child) =>
+                    renderElement(child, true, {
+                      width: element.width || 300,
+                      height: element.height || 200,
+                    })
+                  )}
                 </div>
               ) : (
                 <div className="canvas-container-empty">
@@ -314,7 +357,7 @@ function FormCanvas({
         {isSelected && !isRoot && (
           <div
             className="canvas-resize-handle"
-            onMouseDown={(e) => handleResizeStart(e, element)}
+            onMouseDown={(e) => handleResizeStart(e, element, effectiveParentSize)}
             title="Изменить размер"
           />
         )}

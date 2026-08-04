@@ -995,6 +995,36 @@
   border-color: #61dafb;
 }
 
+/* Поле ввода размера с выбором единиц измерения (px / %) */
+.property-size-input {
+  display: flex;
+  gap: 4px;
+}
+
+.property-size-input .property-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.property-unit-select {
+  width: 52px;
+  flex-shrink: 0;
+  padding: 8px 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #fafafa;
+  color: #555;
+  outline: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.property-unit-select:focus {
+  border-color: #61dafb;
+}
+
 .property-textarea {
   resize: vertical;
   font-family: monospace;
