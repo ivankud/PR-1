@@ -817,6 +817,67 @@
   font-size: 13px;
 }
 
+/* Превью полей ввода на холсте: подпись над полем */
+.canvas-preview-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.canvas-preview-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #666;
+  background: #fafafa;
+  box-sizing: border-box;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.canvas-preview-input:disabled {
+  color: #999;
+}
+
+.canvas-preview-textarea {
+  resize: none;
+  font-family: inherit;
+}
+
+.canvas-preview-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+  cursor: not-allowed;
+}
+
+.canvas-preview-checkbox input {
+  cursor: not-allowed;
+}
+
+.canvas-preview-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.canvas-preview-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+  cursor: not-allowed;
+}
+
+.canvas-preview-radio input {
+  cursor: not-allowed;
+}
+
 .canvas-element-events {
   display: flex;
   flex-wrap: wrap;

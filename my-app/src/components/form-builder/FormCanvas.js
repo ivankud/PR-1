@@ -236,11 +236,65 @@ function FormCanvas({
             <span className="canvas-preview-button">
               {element.buttonText || element.label}
             </span>
-          ) : (
-            <span className="canvas-preview-label">
-              {element.label}
+          ) : element.type === 'checkbox' ? (
+            <label className="canvas-preview-checkbox">
+              <input type="checkbox" disabled />
+              <span>{element.label}</span>
               {element.required && <span className="required-mark">*</span>}
-            </span>
+            </label>
+          ) : element.type === 'radio' ? (
+            <div className="canvas-preview-radio-group">
+              <div className="canvas-preview-label">
+                {element.label}
+                {element.required && <span className="required-mark">*</span>}
+              </div>
+              {(element.options || []).map((opt, i) => (
+                <label key={i} className="canvas-preview-radio">
+                  <input type="radio" disabled />
+                  <span>{opt}</span>
+                </label>
+              ))}
+            </div>
+          ) : element.type === 'select' ? (
+            <div className="canvas-preview-field">
+              <div className="canvas-preview-label">
+                {element.label}
+                {element.required && <span className="required-mark">*</span>}
+              </div>
+              <select className="canvas-preview-input" disabled>
+                <option>— Выберите —</option>
+                {(element.options || []).map((opt, i) => (
+                  <option key={i}>{opt}</option>
+                ))}
+              </select>
+            </div>
+          ) : element.type === 'textarea' ? (
+            <div className="canvas-preview-field">
+              <div className="canvas-preview-label">
+                {element.label}
+                {element.required && <span className="required-mark">*</span>}
+              </div>
+              <textarea
+                className="canvas-preview-input canvas-preview-textarea"
+                placeholder={element.placeholder || ''}
+                rows={element.rows || 4}
+                disabled
+              />
+            </div>
+          ) : (
+            // Поля ввода: text, number, date — подпись над полем, а не как значение
+            <div className="canvas-preview-field">
+              <div className="canvas-preview-label">
+                {element.label}
+                {element.required && <span className="required-mark">*</span>}
+              </div>
+              <input
+                type={element.type === 'number' ? 'number' : element.type === 'date' ? 'date' : 'text'}
+                className="canvas-preview-input"
+                placeholder={element.placeholder || ''}
+                disabled
+              />
+            </div>
           )}
         </div>
 
