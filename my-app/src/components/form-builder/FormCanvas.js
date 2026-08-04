@@ -171,7 +171,7 @@ function FormCanvas({
       left: `${offsetX + cssLeft}px`,
       top: `${offsetY + cssTop}px`,
       width: `${element.width || 200}${widthUnit}`,
-      height: isContainer ? `${element.height || 200}${heightUnit}` : 'auto',
+      height: isContainer ? `${element.height || 200}${heightUnit}` : `${element.height || 40}${heightUnit}`,
       minHeight: isContainer ? '60px' : 'auto',
       ...css,
     };

@@ -222,16 +222,6 @@ function PropertiesPanel({
         {renderPositionSection()}
 
         <div className="property-group">
-          <label className="property-label">Подпись (label)</label>
-          <input
-            type="text"
-            className="property-input"
-            value={element.label || ''}
-            onChange={(e) => update('label', e.target.value)}
-          />
-        </div>
-
-        <div className="property-group">
           <label className="property-label">Имя поля (name)</label>
           <input
             type="text"

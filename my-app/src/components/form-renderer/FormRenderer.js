@@ -104,21 +104,13 @@ function FormRenderer({ form, navigate, onError }) {
       left: `${cssLeft}px`,
       top: `${cssTop}px`,
       width: `${element.width || 200}${widthUnit}`,
+      height: `${element.height || 40}${heightUnit}`,
       boxSizing: 'border-box',
       ...css,
     };
 
     return (
       <div key={element.id} className="form-renderer-field" style={elementStyle}>
-        {element.type !== 'button' &&
-          element.type !== 'checkbox' &&
-          element.type !== 'radio' && (
-            <label className="form-renderer-label">
-              {element.label}
-              {element.required && <span className="required-mark">*</span>}
-            </label>
-          )}
-
         <ElementRenderer
           element={element}
           value={formData[element.name]}

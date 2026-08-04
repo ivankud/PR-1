@@ -34,13 +34,13 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
     ...visualCss
   } = element.css || {};
 
-  const style = element.css
-    ? {
-        width: '100%',
-        boxSizing: 'border-box',
-        ...visualCss,
-      }
-    : undefined;
+  // Внутреннее содержимое растягивается на 100% по ширине и высоте родителя
+  const style = {
+    width: '100%',
+    height: '100%',
+    boxSizing: 'border-box',
+    ...visualCss,
+  };
 
 
   switch (element.type) {
