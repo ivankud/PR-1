@@ -18,12 +18,22 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
     onBlur: handleEvent('onBlur'),
   };
 
+  // Базовый стиль из CSS-настроек элемента
+  const style = element.css
+    ? {
+        width: '100%',
+        boxSizing: 'border-box',
+        ...element.css,
+      }
+    : undefined;
+
   switch (element.type) {
     case 'text':
       return (
         <input
           type="text"
           className="form-element-input"
+          style={style}
           placeholder={element.placeholder}
           value={value || ''}
           onChange={(e) => {
@@ -39,6 +49,7 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
       return (
         <textarea
           className="form-element-input"
+          style={style}
           placeholder={element.placeholder}
           rows={element.rows || 4}
           value={value || ''}
@@ -56,6 +67,7 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
         <input
           type="number"
           className="form-element-input"
+          style={style}
           placeholder={element.placeholder}
           min={element.min}
           max={element.max}
@@ -74,6 +86,7 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
         <input
           type="date"
           className="form-element-input"
+          style={style}
           value={value || ''}
           onChange={(e) => {
             if (onChange) onChange(e.target.value);
@@ -87,6 +100,7 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
       return (
         <select
           className="form-element-input"
+          style={style}
           value={value || ''}
           onChange={(e) => {
             if (onChange) onChange(e.target.value);
@@ -105,7 +119,7 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
 
     case 'checkbox':
       return (
-        <label className="form-element-checkbox">
+        <label className="form-element-checkbox" style={style}>
           <input
             type="checkbox"
             checked={!!value}
@@ -121,7 +135,7 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
 
     case 'radio':
       return (
-        <div className="form-element-radio-group">
+        <div className="form-element-radio-group" style={style}>
           {(element.options || []).map((opt, i) => (
             <label key={i} className="form-element-radio">
               <input
@@ -146,6 +160,7 @@ function ElementRenderer({ element, value, onChange, onEvent, disabled }) {
         <button
           type="button"
           className={`form-element-button btn-${element.variant || 'primary'}`}
+          style={style}
           onClick={handleEvent('onClick')}
           {...commonProps}
         >

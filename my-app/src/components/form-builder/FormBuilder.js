@@ -4,18 +4,20 @@ import ElementPalette from './ElementPalette';
 import FormCanvas from './FormCanvas';
 import PropertiesPanel from './PropertiesPanel';
 import JsonEditor from './JsonEditor';
+import ElementTree from './ElementTree';
 import FormRenderer from '../form-renderer/FormRenderer';
 import { useFormBuilder } from '../../hooks/useFormBuilder';
 
 /**
  * Главный компонент конструктора форм.
- * Трёхколоночный макет: палитра | холст | свойства.
+ * Трёхколоночный макет: палитра/дерево | холст | свойства.
  * Поддерживает режим предпросмотра и редактирование JSON.
  */
 function FormBuilder() {
   const navigate = useNavigate();
   const [showJsonEditor, setShowJsonEditor] = useState(false);
   const [showFormEvents, setShowFormEvents] = useState(false);
+  const [leftTab, setLeftTab] = useState('elements');
 
   const {
     form,
@@ -25,19 +27,31 @@ function FormBuilder() {
     setSelectedElementId,
     addElement,
     updateElement,
+    updateElementCss,
+    updateElementPosition,
+    updateElementSize,
     updateElementEvent,
     updateFormEvent,
     removeElement,
     moveElement,
     updateFormName,
+    updateCanvasSettings,
     loadFormFromJson,
     createNewForm,
     togglePreview,
   } = useFormBuilder();
 
+  const isContainerSelected = selectedElement?.type === 'container';
+
   // Обработчик ошибок выполнения действий в предпросмотре
   const handleActionError = (error) => {
     console.error('Ошибка действия:', error);
+  };
+
+  // Обработчик добавления элемента: в контейнер или на холст
+  const handleAddElement = (type) => {
+    const parentId = isContainerSelected ? selectedElementId : null;
+    addElement(type, parentId);
   };
 
   return (
@@ -86,13 +100,53 @@ function FormBuilder() {
               Взаимодействуйте с формой — код действий выполняется
             </p>
           </div>
-          <FormRenderer form={form} navigate={navigate} onError={handleActionError} />
+          {/* Видимая страница в предпросмотре (без невидимой рабочей области) */}
+          <div
+            className="preview-page"
+            style={{
+              width: form.canvas?.width || 800,
+              minHeight: form.canvas?.height || 600,
+            }}
+          >
+            <FormRenderer form={form} navigate={navigate} onError={handleActionError} />
+          </div>
         </div>
       ) : (
         /* Режим редактирования: три колонки */
         <div className="builder-layout">
           <div className="builder-column palette-column">
-            <ElementPalette onAddElement={addElement} />
+            <div className="left-panel-tabs">
+              <button
+                className={`left-panel-tab ${leftTab === 'elements' ? 'active' : ''}`}
+                onClick={() => setLeftTab('elements')}
+              >
+                Элементы
+              </button>
+              <button
+                className={`left-panel-tab ${leftTab === 'tree' ? 'active' : ''}`}
+                onClick={() => setLeftTab('tree')}
+              >
+                Дерево
+              </button>
+            </div>
+
+            {leftTab === 'elements' ? (
+              <ElementPalette
+                onAddElement={handleAddElement}
+                selectedElement={selectedElement}
+                isContainerSelected={isContainerSelected}
+              />
+            ) : (
+              <div className="palette">
+                <h3 className="palette-title">Дерево элементов</h3>
+                <ElementTree
+                  form={form}
+                  selectedElementId={selectedElementId}
+                  onSelectElement={setSelectedElementId}
+                  onRemoveElement={removeElement}
+                />
+              </div>
+            )}
           </div>
 
           <div className="builder-column canvas-column">
@@ -102,6 +156,10 @@ function FormBuilder() {
               onSelectElement={setSelectedElementId}
               onRemoveElement={removeElement}
               onMoveElement={moveElement}
+              onUpdateElementPosition={updateElementPosition}
+              onUpdateElementSize={updateElementSize}
+              onAddElement={handleAddElement}
+              onUpdateCanvasSettings={updateCanvasSettings}
             />
 
             {/* События формы */}
@@ -137,7 +195,10 @@ function FormBuilder() {
             <PropertiesPanel
               element={selectedElement}
               onUpdateElement={updateElement}
+              onUpdateElementCss={updateElementCss}
               onUpdateElementEvent={updateElementEvent}
+              onUpdateElementPosition={updateElementPosition}
+              onUpdateElementSize={updateElementSize}
             />
           </div>
         </div>
