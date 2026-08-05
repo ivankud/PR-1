@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { loadJson, createEmptyForm } from '../utils/jsonUtils';
 
-function FormMenu({ onOpenForm, onCreateForm }) {
+function FormMenu({ onOpenForm, onCreateForm, onPreviewForm }) {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,12 +71,23 @@ function FormMenu({ onOpenForm, onCreateForm }) {
                   {form.data.children ? ` · ${form.data.children.length} элементов` : ''}
                 </div>
               </div>
-              <button
-                className="btn btn-secondary"
-                onClick={() => onOpenForm(form.data)}
-              >
-                Открыть
-              </button>
+              <div className="form-card-actions">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => onOpenForm(form.data)}
+                >
+                  Открыть
+                </button>
+                {onPreviewForm && (
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => onPreviewForm(form.data)}
+                    title="Открыть форму как отдельную страницу"
+                  >
+                    👁 Просмотр
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>

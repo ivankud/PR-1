@@ -150,6 +150,12 @@ body {
   font-size: 13px;
 }
 
+.form-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .form-menu-footer {
   margin-top: 40px;
   padding: 20px;
@@ -727,6 +733,85 @@ body {
   background: #f8f9fa;
   border-radius: 6px;
   line-height: 1.5;
+}
+
+/* ===== Предпросмотр формы ===== */
+.form-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f0f2f5;
+}
+
+.preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+.preview-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+}
+
+.preview-badge {
+  background: #28a745;
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.preview-container {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+}
+
+.preview-form {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+.preview-error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 10px 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.preview-loading {
+  color: #666;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.preview-footer {
+  margin-top: 16px;
+  font-size: 12px;
+  color: #888;
+}
+
+.preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #888;
+  font-size: 18px;
 }
 
 /* Скроллбары */

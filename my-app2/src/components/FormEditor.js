@@ -5,10 +5,10 @@ import Canvas from './Canvas/Canvas';
 import LeftPanel from './LeftPanel/LeftPanel';
 import RightPanel from './RightPanel/RightPanel';
 
-function FormEditor({ onBack }) {
+function FormEditor({ onBack, onPreview }) {
   return (
     <div className="form-editor">
-      <ActionBar onBack={onBack} />
+      <ActionBar onBack={onBack} onPreview={onPreview} />
       <div className="editor-main">
         <LeftPanel />
         <Canvas />

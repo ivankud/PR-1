@@ -3,7 +3,7 @@ import React from 'react';
 import { useEditor } from '../state/EditorContext';
 import { downloadJson } from '../utils/jsonUtils';
 
-function ActionBar({ onBack }) {
+function ActionBar({ onBack, onPreview }) {
   const { state, dispatch } = useEditor();
   const { form, selectedIds, historyIndex, history, isDirty } = state;
 
@@ -127,6 +127,14 @@ function ActionBar({ onBack }) {
       </div>
 
       <div className="action-bar-right">
+        <button
+          className="btn btn-secondary"
+          onClick={onPreview}
+          disabled={!form}
+          title="Открыть форму как отдельную страницу"
+        >
+          👁 Предпросмотр
+        </button>
         <button
           className="btn btn-danger"
           onClick={handleDelete}
