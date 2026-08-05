@@ -13,6 +13,7 @@ function Canvas() {
   const [pan] = useState({ x: 0, y: 0 });
   const [dragState, setDragState] = useState(null); // { type: 'move'|'resize', startX, startY, origLeft, origTop, origWidth, origHeight, handle, id }
   const [dragOver, setDragOver] = useState(false);
+  const dragRef = useRef({ lastX: 0, lastY: 0 }); // последние координаты мыши при drag
 
   const context = getFormContext(form);
 
@@ -30,31 +31,40 @@ function Canvas() {
     const handleMouseMove = (e) => {
       if (!dragState) return;
 
-      const dx = (e.clientX - dragState.startX) / zoom;
-      const dy = (e.clientY - dragState.startY) / zoom;
+      // Инкрементальное смещение от последней позиции мыши (в координатах холста)
+      const dx = (e.clientX - dragRef.current.lastX) / zoom;
+      const dy = (e.clientY - dragRef.current.lastY) / zoom;
+
+      // Обновляем последнюю позицию мыши
+      dragRef.current.lastX = e.clientX;
+      dragRef.current.lastY = e.clientY;
 
       if (dragState.type === 'move') {
         dispatch({
           type: 'MOVE_PRIMITIVES_LIVE',
-          dx: Math.round(dx / 10) * 10,
-          dy: Math.round(dy / 10) * 10
+          dx: Math.round(dx),
+          dy: Math.round(dy)
         });
       } else if (dragState.type === 'resize') {
+        // Полное смещение от начала ресайза (для пересчёта от исходных значений)
+        const totalDx = (e.clientX - dragState.startX) / zoom;
+        const totalDy = (e.clientY - dragState.startY) / zoom;
+
         const { handle, origLeft, origTop, origWidth, origHeight } = dragState;
         let newLeft = origLeft;
         let newTop = origTop;
         let newWidth = origWidth;
         let newHeight = origHeight;
 
-        if (handle.includes('e')) newWidth = origWidth + dx;
-        if (handle.includes('s')) newHeight = origHeight + dy;
+        if (handle.includes('e')) newWidth = origWidth + totalDx;
+        if (handle.includes('s')) newHeight = origHeight + totalDy;
         if (handle.includes('w')) {
-          newWidth = origWidth - dx;
-          newLeft = origLeft + dx;
+          newWidth = origWidth - totalDx;
+          newLeft = origLeft + totalDx;
         }
         if (handle.includes('n')) {
-          newHeight = origHeight - dy;
-          newTop = origTop + dy;
+          newHeight = origHeight - totalDy;
+          newTop = origTop + totalDy;
         }
 
         dispatch({
@@ -100,6 +110,7 @@ function Canvas() {
     if (!selectedIds.includes(id)) {
       dispatch({ type: 'SELECT', id, additive: e.shiftKey });
     }
+    dragRef.current = { lastX: e.clientX, lastY: e.clientY };
     setDragState({
       type: 'move',
       startX: e.clientX,
@@ -113,6 +124,7 @@ function Canvas() {
     e.stopPropagation();
     const prim = findPrimitive(form, id);
     if (!prim) return;
+    dragRef.current = { lastX: e.clientX, lastY: e.clientY };
     setDragState({
       type: 'resize',
       startX: e.clientX,
