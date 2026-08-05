@@ -90,6 +90,11 @@ body {
   color: #1a1a2e;
 }
 
+.form-menu-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .form-menu-loading,
 .form-menu-error {
   text-align: center;

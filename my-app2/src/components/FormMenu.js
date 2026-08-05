@@ -1,6 +1,20 @@
 // Меню со списком форм и ссылкой на конструктор
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { loadJson, createEmptyForm } from '../utils/jsonUtils';
+
+// Получение списка JSON-файлов из манифеста /forms/index.json
+async function getFormFiles() {
+  try {
+    const manifest = await loadJson(`/forms/index.json?t=${Date.now()}`);
+    if (manifest && Array.isArray(manifest.forms)) {
+      return manifest.forms;
+    }
+    return [];
+  } catch (e) {
+    console.warn('Не удалось загрузить манифест форм:', e.message);
+    return [];
+  }
+}
 
 function FormMenu({ onOpenForm, onCreateForm, onPreviewForm }) {
   const [forms, setForms] = useState([]);
@@ -8,34 +22,42 @@ function FormMenu({ onOpenForm, onCreateForm, onPreviewForm }) {
   const [error, setError] = useState(null);
 
   // Загрузка списка форм из public/forms/
-  useEffect(() => {
-    const formFiles = [
-      'example-form'
-    ];
+  const loadForms = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-    Promise.all(
-      formFiles.map(async (file) => {
-        try {
-          const data = await loadJson(`/forms/${file}.json`);
-          return {
-            id: data.id || file,
-            name: data.name || file,
-            file: `${file}.json`,
-            data,
-            canvas: data.canvas || {}
-          };
-        } catch (e) {
-          return null;
-        }
-      })
-    ).then(results => {
+    try {
+      const formFiles = await getFormFiles();
+
+      const results = await Promise.all(
+        formFiles.map(async (file) => {
+          try {
+            // Добавляем timestamp для обхода кэша браузера
+            const data = await loadJson(`/forms/${file}.json?t=${Date.now()}`);
+            return {
+              id: data.id || file,
+              name: data.name || file,
+              file: `${file}.json`,
+              data,
+              canvas: data.canvas || {}
+            };
+          } catch (e) {
+            return null;
+          }
+        })
+      );
       setForms(results.filter(Boolean));
-      setLoading(false);
-    }).catch(err => {
+    } catch (err) {
       setError('Ошибка загрузки форм: ' + err.message);
+    } finally {
       setLoading(false);
-    });
+    }
   }, []);
+
+  // Первичная загрузка
+  useEffect(() => {
+    loadForms();
+  }, [loadForms]);
 
   const handleCreateNew = () => {
     const newForm = createEmptyForm();
@@ -46,9 +68,19 @@ function FormMenu({ onOpenForm, onCreateForm, onPreviewForm }) {
     <div className="form-menu">
       <header className="form-menu-header">
         <h1>Редактор веб-форм</h1>
-        <button className="btn btn-primary" onClick={handleCreateNew}>
-          ➕ Создать форму
-        </button>
+        <div className="form-menu-actions">
+          <button
+            className="btn btn-secondary"
+            onClick={loadForms}
+            disabled={loading}
+            title="Обновить список форм из директории public/forms/"
+          >
+            🔄 Обновить
+          </button>
+          <button className="btn btn-primary" onClick={handleCreateNew}>
+            ➕ Создать форму
+          </button>
+        </div>
       </header>
 
       {loading && <div className="form-menu-loading">Загрузка форм...</div>}
@@ -96,6 +128,7 @@ function FormMenu({ onOpenForm, onCreateForm, onPreviewForm }) {
       <footer className="form-menu-footer">
         <p>
           Формы хранятся в <code>public/forms/*.json</code>.
+          Список форм — в <code>public/forms/index.json</code>.
           Шаблоны примитивов — в <code>public/primitives/*.json</code>.
         </p>
       </footer>
