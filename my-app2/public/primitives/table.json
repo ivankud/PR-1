@@ -1,0 +1,35 @@
+{
+  "type": "table",
+  "name": "Таблица",
+  "icon": "📊",
+  "defaults": {
+    "width": 400,
+    "height": 150,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "borderCollapse": "collapse",
+      "fontSize": "14px"
+    }
+  },
+  "properties": [
+    { "name": "rows", "label": "Строки", "type": "number", "default": 3 },
+    { "name": "cols", "label": "Колонки", "type": "number", "default": 3 },
+    { "name": "width", "label": "Ширина", "type": "number" },
+    { "name": "height", "label": "Высота", "type": "number" },
+    { "name": "left", "label": "X (left)", "type": "number" },
+    { "name": "top", "label": "Y (top)", "type": "number" }
+  ],
+  "anchors": [
+    { "name": "data", "path": "table.data", "description": "Данные таблицы из контекста (массив массивов)" }
+  ],
+  "render": {
+    "tag": "table",
+    "attributes": {},
+    "table": {
+      "rows": "{{rows}}",
+      "cols": "{{cols}}",
+      "data": "{{data}}"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "type": "radio",
+  "name": "Радиокнопка",
+  "icon": "🔘",
+  "defaults": {
+    "width": 150,
+    "height": 25,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "fontSize": "14px",
+      "color": "#333333"
+    }
+  },
+  "properties": [
+    { "name": "label", "label": "Подпись", "type": "string", "default": "Вариант" },
+    { "name": "name", "label": "Имя группы", "type": "string", "default": "radio-group" },
+    { "name": "value", "label": "Значение", "type": "string", "default": "option" },
+    { "name": "checked", "label": "Выбран", "type": "boolean", "default": false },
+    { "name": "width", "label": "Ширина", "type": "number" },
+    { "name": "height", "label": "Высота", "type": "number" },
+    { "name": "left", "label": "X (left)", "type": "number" },
+    { "name": "top", "label": "Y (top)", "type": "number" }
+  ],
+  "anchors": [
+    { "name": "label", "path": "radio.label", "description": "Подпись из контекста" },
+    { "name": "checked", "path": "radio.checked", "description": "Состояние из контекста" }
+  ],
+  "render": {
+    "tag": "label",
+    "text": "{{label}}",
+    "attributes": {},
+    "children": [
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "radio",
+          "name": "{{name}}",
+          "value": "{{value}}",
+          "checked": "{{checked}}"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "type": "checkbox",
+  "name": "Чекбокс",
+  "icon": "☑️",
+  "defaults": {
+    "width": 150,
+    "height": 25,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "fontSize": "14px",
+      "color": "#333333"
+    }
+  },
+  "properties": [
+    { "name": "label", "label": "Подпись", "type": "string", "default": "Чекбокс" },
+    { "name": "checked", "label": "Отмечен", "type": "boolean", "default": false },
+    { "name": "name", "label": "Имя поля", "type": "string", "default": "checkbox" },
+    { "name": "width", "label": "Ширина", "type": "number" },
+    { "name": "height", "label": "Высота", "type": "number" },
+    { "name": "left", "label": "X (left)", "type": "number" },
+    { "name": "top", "label": "Y (top)", "type": "number" }
+  ],
+  "anchors": [
+    { "name": "label", "path": "checkbox.label", "description": "Подпись из контекста" },
+    { "name": "checked", "path": "checkbox.checked", "description": "Состояние из контекста" }
+  ],
+  "render": {
+    "tag": "label",
+    "text": "{{label}}",
+    "attributes": {},
+    "children": [
+      {
+        "tag": "input",
+        "attributes": {
+          "type": "checkbox",
+          "checked": "{{checked}}",
+          "name": "{{name}}"
+        }
+      }
+    ]
+  }
+}

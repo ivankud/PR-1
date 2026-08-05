@@ -1,0 +1,36 @@
+{
+  "type": "button",
+  "name": "Кнопка",
+  "icon": "🔘",
+  "defaults": {
+    "width": 120,
+    "height": 40,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "backgroundColor": "#007bff",
+      "color": "#ffffff",
+      "border": "none",
+      "borderRadius": "4px",
+      "fontSize": "14px",
+      "cursor": "pointer"
+    }
+  },
+  "properties": [
+    { "name": "text", "label": "Текст", "type": "string", "default": "Кнопка" },
+    { "name": "width", "label": "Ширина", "type": "number" },
+    { "name": "height", "label": "Высота", "type": "number" },
+    { "name": "left", "label": "X (left)", "type": "number" },
+    { "name": "top", "label": "Y (top)", "type": "number" }
+  ],
+  "anchors": [
+    { "name": "text", "path": "button.text", "description": "Текст кнопки из контекста" }
+  ],
+  "render": {
+    "tag": "button",
+    "text": "{{text}}",
+    "attributes": {
+      "type": "button"
+    }
+  }
+}

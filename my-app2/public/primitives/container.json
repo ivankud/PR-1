@@ -1,0 +1,28 @@
+{
+  "type": "container",
+  "name": "Контейнер",
+  "icon": "📦",
+  "defaults": {
+    "width": 300,
+    "height": 200,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "border": "1px dashed #999999",
+      "backgroundColor": "#f9f9f9",
+      "borderRadius": "4px"
+    }
+  },
+  "properties": [
+    { "name": "width", "label": "Ширина", "type": "number" },
+    { "name": "height", "label": "Высота", "type": "number" },
+    { "name": "left", "label": "X (left)", "type": "number" },
+    { "name": "top", "label": "Y (top)", "type": "number" }
+  ],
+  "anchors": [],
+  "render": {
+    "tag": "div",
+    "attributes": {}
+  },
+  "isContainer": true
+}

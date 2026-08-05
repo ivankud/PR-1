@@ -1,0 +1,749 @@
+/* Стили редактора веб-форм */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #f0f2f5;
+  color: #333;
+}
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Кнопки ===== */
+.btn {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #333;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.btn-icon {
+  min-width: 32px;
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+/* ===== Меню форм ===== */
+.form-menu {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  width: 100%;
+}
+
+.form-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.form-menu-header h1 {
+  font-size: 28px;
+  color: #1a1a2e;
+}
+
+.form-menu-loading,
+.form-menu-error {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.form-menu-error {
+  color: #dc3545;
+}
+
+.form-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.form-list-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  background: #fff;
+  border-radius: 8px;
+  border: 2px dashed #ccc;
+}
+
+.form-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s;
+}
+
+.form-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.form-card-icon {
+  font-size: 32px;
+}
+
+.form-card-info {
+  flex: 1;
+}
+
+.form-card-name {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.form-card-meta {
+  color: #666;
+  font-size: 13px;
+}
+
+.form-menu-footer {
+  margin-top: 40px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.form-menu-footer code {
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+/* ===== Редактор ===== */
+.form-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Панель действий */
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
+  z-index: 10;
+}
+
+.action-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-bar-form-name {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.dirty-indicator {
+  color: #ff9800;
+}
+
+.action-bar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-left: 1px solid #eee;
+}
+
+.action-bar-label {
+  font-size: 12px;
+  color: #666;
+  margin-right: 4px;
+}
+
+.zoom-value {
+  font-size: 13px;
+  min-width: 40px;
+  text-align: center;
+  color: #666;
+}
+
+.action-bar-right {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+/* Основная область */
+.editor-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ===== Левая панель ===== */
+.left-panel {
+  width: 240px;
+  min-width: 240px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+}
+
+.panel-tab {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  background: #f8f9fa;
+  cursor: pointer;
+  font-size: 13px;
+  color: #666;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.panel-tab:hover {
+  background: #e9ecef;
+}
+
+.panel-tab.active {
+  background: #fff;
+  color: #007bff;
+  border-bottom-color: #007bff;
+  font-weight: 600;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.panel-hint {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+/* Список примитивов */
+.primitives-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.primitive-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: grab;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.primitive-item:hover {
+  background: #e9ecef;
+  border-color: #007bff;
+}
+
+.primitive-item:active {
+  cursor: grabbing;
+}
+
+.primitive-icon {
+  font-size: 20px;
+}
+
+.primitive-name {
+  font-size: 13px;
+}
+
+/* Слои */
+.layers-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.layer-item:hover {
+  background: #f0f0f0;
+}
+
+.layer-item.selected {
+  background: #e3f2fd;
+  color: #007bff;
+}
+
+.layer-root {
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 4px;
+}
+
+.layer-icon {
+  font-size: 16px;
+}
+
+.layer-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layer-type {
+  font-size: 11px;
+  color: #999;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.layers-empty {
+  color: #888;
+  text-align: center;
+  padding: 20px;
+}
+
+/* ===== Холст ===== */
+.canvas-container {
+  flex: 1;
+  overflow: auto;
+  background: #e8eaed;
+  position: relative;
+  padding: 20px;
+}
+
+.canvas-container.drag-over {
+  background: #dbeafe;
+}
+
+.canvas-viewport {
+  position: relative;
+  transform-origin: 0 0;
+}
+
+.canvas-form {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ccc;
+  overflow: hidden;
+}
+
+.canvas-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.grid-line {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.grid-v {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+}
+
+.grid-h {
+  height: 1px;
+  left: 0;
+  right: 0;
+}
+
+/* Служебная часть формы */
+.canvas-form-service {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 123, 255, 0.08);
+  border-bottom: 1px solid rgba(0, 123, 255, 0.2);
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #007bff;
+  display: flex;
+  gap: 16px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Примитивы на холсте */
+.canvas-primitive {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+}
+
+.canvas-primitive.selected {
+  outline: 2px solid #007bff;
+  outline-offset: -1px;
+}
+
+.canvas-primitive.multi-selected {
+  outline: 1px dashed #007bff;
+}
+
+.canvas-primitive-children {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.canvas-primitive-children .canvas-primitive {
+  pointer-events: auto;
+}
+
+/* Рамка выделения */
+.selection-box {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  pointer-events: none;
+}
+
+.resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border: 1px solid #007bff;
+  border-radius: 2px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.resize-nw { top: -4px; left: -4px; cursor: nwse-resize; }
+.resize-n { top: -4px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.resize-ne { top: -4px; right: -4px; cursor: nesw-resize; }
+.resize-e { top: 50%; right: -4px; transform: translateY(-50%); cursor: ew-resize; }
+.resize-se { bottom: -4px; right: -4px; cursor: nwse-resize; }
+.resize-s { bottom: -4px; left: 50%; transform: translateX(-50%); cursor: ns-resize; }
+.resize-sw { bottom: -4px; left: -4px; cursor: nesw-resize; }
+.resize-w { top: 50%; left: -4px; transform: translateY(-50%); cursor: ew-resize; }
+
+/* Индикатор зума */
+.canvas-zoom-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  z-index: 100;
+}
+
+.canvas-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 18px;
+}
+
+/* ===== Правая панель ===== */
+.right-panel {
+  width: 300px;
+  min-width: 300px;
+  background: #fff;
+  border-left: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+}
+
+.selection-info {
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.selection-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.selection-subtitle {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Форма свойств */
+.properties-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.properties-section {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.properties-section-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.property-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.property-row:last-child {
+  margin-bottom: 0;
+}
+
+.property-row-column {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.property-label {
+  flex: 0 0 110px;
+  font-size: 12px;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.property-row input[type="text"],
+.property-row input[type="number"],
+.property-row select {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.property-row input[type="color"] {
+  width: 40px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.property-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.property-empty {
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+}
+
+.anchor-path {
+  flex: 1;
+  font-size: 12px;
+  color: #007bff;
+  background: #e3f2fd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Свои свойства */
+.custom-properties {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.custom-property-add {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+.custom-property-add input {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.btn-remove {
+  min-width: 24px;
+  padding: 2px 6px;
+  font-size: 12px;
+  color: #dc3545;
+  border-color: #dc3545;
+  background: #fff;
+}
+
+.btn-remove:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* JSON и CSS редакторы */
+.json-editor,
+.css-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.json-textarea,
+.css-textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  background: #f8f9fa;
+}
+
+.json-textarea:focus,
+.css-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.json-error {
+  color: #dc3545;
+  font-size: 12px;
+  background: #f8d7da;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.json-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.multi-select-hint {
+  color: #666;
+  font-size: 13px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+/* Скроллбары */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}

@@ -1,0 +1,35 @@
+{
+  "type": "select",
+  "name": "Выпадающий список",
+  "icon": "📋",
+  "defaults": {
+    "width": 200,
+    "height": 35,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "border": "1px solid #cccccc",
+      "borderRadius": "4px",
+      "padding": "4px 8px",
+      "fontSize": "14px"
+    }
+  },
+  "properties": [
+    { "name": "name", "label": "Имя поля", "type": "string", "default": "select" },
+    { "name": "options", "label": "Варианты (через запятую)", "type": "string", "default": "Вариант 1, Вариант 2, Вариант 3" },
+    { "name": "width", "label": "Ширина", "type": "number" },
+    { "name": "height", "label": "Высота", "type": "number" },
+    { "name": "left", "label": "X (left)", "type": "number" },
+    { "name": "top", "label": "Y (top)", "type": "number" }
+  ],
+  "anchors": [
+    { "name": "options", "path": "select.options", "description": "Варианты из контекста (массив)" }
+  ],
+  "render": {
+    "tag": "select",
+    "attributes": {
+      "name": "{{name}}"
+    },
+    "options": "{{options}}"
+  }
+}

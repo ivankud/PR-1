@@ -1,0 +1,31 @@
+{
+  "type": "text",
+  "name": "Текст (label)",
+  "icon": "🔤",
+  "defaults": {
+    "width": 200,
+    "height": 30,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "fontSize": "14px",
+      "color": "#333333",
+      "fontFamily": "Arial, sans-serif"
+    }
+  },
+  "properties": [
+    { "name": "text", "label": "Текст", "type": "string", "default": "Текст" },
+    { "name": "width", "label": "Ширина", "type": "number" },
+    { "name": "height", "label": "Высота", "type": "number" },
+    { "name": "left", "label": "X (left)", "type": "number" },
+    { "name": "top", "label": "Y (top)", "type": "number" }
+  ],
+  "anchors": [
+    { "name": "text", "path": "label.text", "description": "Текст из контекста" }
+  ],
+  "render": {
+    "tag": "label",
+    "text": "{{text}}",
+    "attributes": {}
+  }
+}
