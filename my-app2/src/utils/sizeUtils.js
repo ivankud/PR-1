@@ -49,3 +49,29 @@ export function updateSize(primitive, dimension, value) {
   }
   return { ...primitive, [dimension]: Math.max(10, value) };
 }
+
+// ===== Функции для корневого элемента (формы/холста) =====
+
+// Получение CSS-значения ширины холста с учётом единицы измерения
+export function getCanvasWidthValue(canvas) {
+  const unit = canvas.widthUnit || 'px';
+  if (unit === 'auto') return 'auto';
+  const value = canvas.width !== undefined ? canvas.width : 800;
+  return `${value}${unit}`;
+}
+
+// Получение CSS-значения высоты холста с учётом единицы измерения
+export function getCanvasHeightValue(canvas) {
+  const unit = canvas.heightUnit || 'px';
+  if (unit === 'auto') return 'auto';
+  const value = canvas.height !== undefined ? canvas.height : 600;
+  return `${value}${unit}`;
+}
+
+// Получение объекта style с шириной и высотой холста
+export function getCanvasSizeStyle(canvas) {
+  return {
+    width: getCanvasWidthValue(canvas),
+    height: getCanvasHeightValue(canvas)
+  };
+}

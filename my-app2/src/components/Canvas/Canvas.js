@@ -3,7 +3,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useEditor } from '../../state/EditorContext';
 import { getFormContext } from '../../utils/anchors';
 import { findPrimitive } from '../../utils/jsonUtils';
-import { isPxSize, getNumericSize } from '../../utils/sizeUtils';
+import { isPxSize, getNumericSize, getCanvasSizeStyle } from '../../utils/sizeUtils';
 import CanvasPrimitive from './CanvasPrimitive';
 
 function Canvas() {
@@ -183,16 +183,20 @@ function Canvas() {
 
   const canvas = form.canvas || { width: 800, height: 600, backgroundColor: '#ffffff', gridSize: 10, showGrid: true };
 
-  // Создание сетки
+  // Создание сетки (только для px-размера — иначе ширина/высота в %/vw/vh/auto)
+  const canvasSizeStyle = getCanvasSizeStyle(canvas);
+  const canvasWidthPx = canvas.widthUnit === 'auto' ? 800 : (canvas.width || 800);
+  const canvasHeightPx = canvas.heightUnit === 'auto' ? 600 : (canvas.height || 600);
+
   const gridLines = [];
   if (canvas.showGrid) {
     const gridSize = canvas.gridSize || 10;
-    for (let x = 0; x <= canvas.width; x += gridSize) {
+    for (let x = 0; x <= canvasWidthPx; x += gridSize) {
       gridLines.push(
         <div key={`v-${x}`} className="grid-line grid-v" style={{ left: x }} />
       );
     }
-    for (let y = 0; y <= canvas.height; y += gridSize) {
+    for (let y = 0; y <= canvasHeightPx; y += gridSize) {
       gridLines.push(
         <div key={`h-${y}`} className="grid-line grid-h" style={{ top: y }} />
       );
@@ -220,8 +224,7 @@ function Canvas() {
         <div
           className="canvas-form"
           style={{
-            width: canvas.width,
-            height: canvas.height,
+            ...canvasSizeStyle,
             backgroundColor: canvas.backgroundColor,
             position: 'relative'
           }}
@@ -236,7 +239,12 @@ function Canvas() {
           {/* Служебная часть формы (не отображается на готовой веб-форме) */}
           <div className="canvas-form-service">
             <div className="service-label">Форма: {form.name}</div>
-            <div className="service-size">{canvas.width}×{canvas.height}px</div>
+            <div className="service-size">
+              {canvasWidthPx}×{canvasHeightPx}
+              {(canvas.widthUnit || 'px') !== 'px' || (canvas.heightUnit || 'px') !== 'px'
+                ? ` (${canvasSizeStyle.width} × ${canvasSizeStyle.height})`
+                : 'px'}
+            </div>
             <div className="service-context">
               Контекст: {form.context?.source === 'url' ? form.context.url : 'inline'}
             </div>

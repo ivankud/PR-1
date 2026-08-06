@@ -3,21 +3,22 @@
   "type": "form",
   "name": "Новая форма3",
   "canvas": {
-    "width": 800,
+    "width": 100,
     "height": 600,
-    "backgroundColor": "#ffffff",
-    "gridSize": 10,
-    "showGrid": true
+    "backgroundColor": "#311b1b",
+    "gridSize": 20,
+    "showGrid": true,
+    "widthUnit": "%"
   },
   "context": {
     "source": "inline",
     "url": "",
-    "inline": {		
+    "inline": {
       "user": {
         "name": "Иван Петров",
         "email": "ivan@example.com"
       }
-	}
+    }
   },
   "onOpen": {
     "type": "loadContext",
@@ -154,10 +155,10 @@
       "id": "prim-1786011195085-2l8d3u235",
       "type": "button",
       "name": "Кнопка3",
-      "width": 120,
+      "width": 100,
       "height": 40,
-      "left": 571,
-      "top": 375,
+      "left": 50,
+      "top": 400,
       "style": {
         "backgroundColor": "#007bff",
         "color": "#ffffff",
@@ -167,7 +168,8 @@
         "cursor": "pointer"
       },
       "customProperties": {},
-      "text": "Кнопка3"
+      "text": "Кнопка3",
+      "widthUnit": "px"
     },
     {
       "id": "prim-1786011197117-2h0f7q7j5",
@@ -187,6 +189,22 @@
       },
       "customProperties": {},
       "text": "Кнопка2"
+    },
+    {
+      "id": "prim-1786017712145-7e68db7at",
+      "type": "table",
+      "name": "Таблица",
+      "width": 400,
+      "height": 150,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 912,
+      "top": 162,
+      "style": {
+        "borderCollapse": "collapse",
+        "fontSize": "14px"
+      },
+      "customProperties": {}
     }
   ]
 }

@@ -1,6 +1,7 @@
 // Меню со списком форм и ссылкой на конструктор
 import React, { useState, useEffect, useCallback } from 'react';
 import { loadJson, createEmptyForm } from '../utils/jsonUtils';
+import { getCanvasWidthValue, getCanvasHeightValue } from '../utils/sizeUtils';
 
 // Получение списка JSON-файлов из манифеста /forms/index.json
 async function getFormFiles() {
@@ -93,13 +94,17 @@ function FormMenu({ onOpenForm, onCreateForm, onPreviewForm }) {
               Нет созданных форм. Нажмите «Создать форму».
             </div>
           )}
-          {forms.map(form => (
+          {forms.map(form => {
+            const canvas = form.canvas || {};
+            const widthValue = getCanvasWidthValue(canvas);
+            const heightValue = getCanvasHeightValue(canvas);
+            return (
             <div key={form.id} className="form-card">
               <div className="form-card-icon">📋</div>
               <div className="form-card-info">
                 <div className="form-card-name">{form.name}</div>
                 <div className="form-card-meta">
-                  {form.canvas.width}×{form.canvas.height}px
+                  {widthValue}×{heightValue}
                   {form.data.children ? ` · ${form.data.children.length} элементов` : ''}
                 </div>
               </div>
@@ -121,7 +126,8 @@ function FormMenu({ onOpenForm, onCreateForm, onPreviewForm }) {
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

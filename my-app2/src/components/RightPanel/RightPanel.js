@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useEditor } from '../../state/EditorContext';
 import { findPrimitive } from '../../utils/jsonUtils';
+import { SIZE_UNITS } from '../../utils/sizeUtils';
 import PropertiesForm from './PropertiesForm';
 import CustomProperties from './CustomProperties';
 import JsonEditor from './JsonEditor';
@@ -22,6 +23,35 @@ function FormSettings({ form }) {
         }
       }
     });
+  };
+
+  // Рендер поля размера холста с выбором единицы измерения
+  const renderCanvasSizeInput = (dimension, label) => {
+    const canvas = form.canvas || {};
+    const unit = canvas[`${dimension}Unit`] || 'px';
+    const value = canvas[dimension] !== undefined ? canvas[dimension] : (dimension === 'width' ? 800 : 600);
+
+    return (
+      <div className="property-row">
+        <label className="property-label">{label}</label>
+        <input
+          type="number"
+          value={value}
+          disabled={unit === 'auto'}
+          onChange={(e) => handleCanvasChange(dimension, parseFloat(e.target.value) || 0)}
+        />
+        <select
+          className="size-unit-select"
+          value={unit}
+          onChange={(e) => handleCanvasChange(`${dimension}Unit`, e.target.value)}
+          title="Единица измерения"
+        >
+          {SIZE_UNITS.map(u => (
+            <option key={u} value={u}>{u}</option>
+          ))}
+        </select>
+      </div>
+    );
   };
 
   const handleContextChange = (prop, value) => {
@@ -70,22 +100,8 @@ function FormSettings({ form }) {
             onChange={(e) => dispatch({ type: 'UPDATE_FORM', updates: { name: e.target.value } })}
           />
         </div>
-        <div className="property-row">
-          <label className="property-label">Ширина</label>
-          <input
-            type="number"
-            value={canvas.width || 800}
-            onChange={(e) => handleCanvasChange('width', parseFloat(e.target.value) || 800)}
-          />
-        </div>
-        <div className="property-row">
-          <label className="property-label">Высота</label>
-          <input
-            type="number"
-            value={canvas.height || 600}
-            onChange={(e) => handleCanvasChange('height', parseFloat(e.target.value) || 600)}
-          />
-        </div>
+        {renderCanvasSizeInput('width', 'Ширина')}
+        {renderCanvasSizeInput('height', 'Высота')}
         <div className="property-row">
           <label className="property-label">Фон</label>
           <input

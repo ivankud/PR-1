@@ -4,7 +4,7 @@ import { useEditor } from '../state/EditorContext';
 import { renderPrimitive, getPrimitiveTemplate } from '../utils/primitiveRenderer';
 import { loadJson } from '../utils/jsonUtils';
 import { buildFunctions, buildEventHandlers, callFunction } from '../utils/functionRunner';
-import { getSizeStyle } from '../utils/sizeUtils';
+import { getSizeStyle, getCanvasSizeStyle } from '../utils/sizeUtils';
 
 // Рендер примитива в режиме предпросмотра (без выделения и drag&drop)
 function PreviewPrimitive({ primitive, primitives, context, fns }) {
@@ -135,6 +135,8 @@ function FormPreview({ onBack }) {
     showGrid: true
   };
 
+  const canvasSizeStyle = getCanvasSizeStyle(canvas);
+
   return (
     <div className="form-preview">
       <div className="preview-bar">
@@ -158,8 +160,7 @@ function FormPreview({ onBack }) {
         <form
           className="preview-form"
           style={{
-            width: canvas.width,
-            height: canvas.height,
+            ...canvasSizeStyle,
             backgroundColor: canvas.backgroundColor,
             position: 'relative'
           }}
