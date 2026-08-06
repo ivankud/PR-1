@@ -1,11 +1,12 @@
 // Предпросмотр формы как отдельной страницы (без редактора)
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useEditor } from '../state/EditorContext';
 import { renderPrimitive, getPrimitiveTemplate } from '../utils/primitiveRenderer';
 import { loadJson } from '../utils/jsonUtils';
+import { buildFunctions, buildEventHandlers, callFunction } from '../utils/functionRunner';
 
 // Рендер примитива в режиме предпросмотра (без выделения и drag&drop)
-function PreviewPrimitive({ primitive, primitives, context }) {
+function PreviewPrimitive({ primitive, primitives, context, fns }) {
   const template = getPrimitiveTemplate(primitives, primitive.type);
 
   const style = {
@@ -22,8 +23,15 @@ function PreviewPrimitive({ primitive, primitives, context }) {
     style.overflow = 'visible';
   }
 
+  // Обработчики событий для этого примитива
+  const handlers = buildEventHandlers(primitive, fns, context);
+
   return (
-    <div style={style}>
+    <div
+      style={style}
+      {...handlers}
+      data-primitive-id={primitive.id}
+    >
       {renderPrimitive(primitive, template, context)}
       {primitive.children && primitive.children.length > 0 && (
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
@@ -33,6 +41,7 @@ function PreviewPrimitive({ primitive, primitives, context }) {
               primitive={child}
               primitives={primitives}
               context={context}
+              fns={fns}
             />
           ))}
         </div>
@@ -49,6 +58,9 @@ function FormPreview({ onBack }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Компиляция функций формы
+  const fns = useMemo(() => buildFunctions(form?.functions), [form?.functions]);
+
   // Обработка действия при открытии и загрузка контекста
   useEffect(() => {
     if (!form) return;
@@ -58,30 +70,49 @@ function FormPreview({ onBack }) {
       setError(null);
 
       const source = form.context?.source;
+      let data = {};
+
       if (source === 'inline') {
-        setContextData(form.context.inline || {});
+        data = form.context.inline || {};
+        setContextData(data);
       } else if (source === 'url') {
         if (form.context?.loadedData) {
-          // Уже загруженные данные
-          setContextData(form.context.loadedData);
-          return;
-        }
-        setLoading(true);
-        try {
-          const data = await loadJson(form.context.url);
+          data = form.context.loadedData;
           setContextData(data);
-        } catch (e) {
-          setError('Ошибка загрузки контекста: ' + e.message);
-        } finally {
-          setLoading(false);
+        } else {
+          setLoading(true);
+          try {
+            data = await loadJson(form.context.url);
+            setContextData(data);
+          } catch (e) {
+            setError('Ошибка загрузки контекста: ' + e.message);
+          } finally {
+            setLoading(false);
+          }
         }
       } else {
         setContextData({});
       }
+
+      // Вызов функции onOpen после загрузки контекста
+      const openFn = form.events?.onOpen;
+      if (openFn && data) {
+        callFunction(fns, openFn, data);
+      }
     };
 
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
+
+  // Обработка отправки формы
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const submitFn = form?.events?.onSubmit;
+    if (submitFn) {
+      callFunction(fns, submitFn, contextData);
+    }
+  };
 
   if (!form) {
     return (
@@ -107,6 +138,11 @@ function FormPreview({ onBack }) {
         </button>
         <span className="preview-title">📋 {form.name}</span>
         <span className="preview-badge">Предпросмотр</span>
+        {form.functions?.length > 0 && (
+          <span className="preview-functions-count" title="Пользовательские функции">
+            ⚙️ {form.functions.length}
+          </span>
+        )}
       </div>
 
       <div className="preview-container">
@@ -114,7 +150,7 @@ function FormPreview({ onBack }) {
         {loading && <div className="preview-loading">Загрузка контекста...</div>}
 
         {/* Форма как отдельная веб-страница */}
-        <div
+        <form
           className="preview-form"
           style={{
             width: canvas.width,
@@ -122,6 +158,7 @@ function FormPreview({ onBack }) {
             backgroundColor: canvas.backgroundColor,
             position: 'relative'
           }}
+          onSubmit={handleSubmit}
         >
           {form.children && form.children.map(primitive => (
             <PreviewPrimitive
@@ -129,9 +166,10 @@ function FormPreview({ onBack }) {
               primitive={primitive}
               primitives={primitives}
               context={contextData}
+              fns={fns}
             />
           ))}
-        </div>
+        </form>
 
         <div className="preview-footer">
           Статус: {loading ? 'загрузка контекста...' : error ? 'ошибка загрузки' : 'форма отображается'}

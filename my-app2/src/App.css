@@ -1027,6 +1027,112 @@ body {
   font-size: 18px;
 }
 
+/* ===== Функции (левая панель) ===== */
+.functions-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-block {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.function-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.function-editor .property-row {
+  margin-bottom: 0;
+}
+
+.function-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.function-code {
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.function-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.function-item-view {
+  padding: 10px 12px;
+}
+
+.function-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.function-item-name {
+  font-weight: 600;
+  font-size: 13px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.function-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.function-item-desc {
+  font-size: 12px;
+  color: #666;
+  margin-top: 6px;
+}
+
+.function-item-code {
+  margin-top: 8px;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #333;
+}
+
+/* ===== События (правая панель) ===== */
+.events-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.preview-functions-count {
+  background: #17a2b8;
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
 /* Скроллбары */
 ::-webkit-scrollbar {
   width: 8px;

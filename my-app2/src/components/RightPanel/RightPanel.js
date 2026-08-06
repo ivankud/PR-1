@@ -6,6 +6,7 @@ import PropertiesForm from './PropertiesForm';
 import CustomProperties from './CustomProperties';
 import JsonEditor from './JsonEditor';
 import CssEditor from './CssEditor';
+import EventsTab from './EventsTab';
 
 // Настройки холста (корневой элемент формы)
 function FormSettings({ form }) {
@@ -187,7 +188,8 @@ function RightPanel() {
     { id: 'properties', label: 'Свойства' },
     { id: 'custom', label: 'Свои' },
     { id: 'css', label: 'CSS' },
-    { id: 'json', label: 'JSON' }
+    { id: 'json', label: 'JSON' },
+    { id: 'events', label: 'События' }
   ];
 
   return (
@@ -231,6 +233,16 @@ function RightPanel() {
         )}
 
         {isFormSelected && activeTab === 'properties' && form && <FormSettings form={form} />}
+        {isFormSelected && activeTab === 'custom' && form && (
+          <div className="property-empty">Настройки формы редактируются во вкладке «Свойства»</div>
+        )}
+        {isFormSelected && activeTab === 'css' && form && (
+          <div className="property-empty">Стили формы редактируются во вкладке «Свойства»</div>
+        )}
+        {isFormSelected && activeTab === 'json' && form && (
+          <div className="property-empty">JSON формы доступен при сохранении</div>
+        )}
+        {isFormSelected && activeTab === 'events' && form && <EventsTab isFormSelected />}
 
         {!isFormSelected && selectedIds.length === 1 && selectedPrimitive && (
           <>
@@ -238,6 +250,7 @@ function RightPanel() {
             {activeTab === 'custom' && <CustomProperties primitive={selectedPrimitive} />}
             {activeTab === 'css' && <CssEditor primitive={selectedPrimitive} />}
             {activeTab === 'json' && <JsonEditor primitive={selectedPrimitive} />}
+            {activeTab === 'events' && <EventsTab primitive={selectedPrimitive} />}
           </>
         )}
 

@@ -150,6 +150,8 @@ export function createEmptyForm() {
       type: 'loadContext',
       params: {}
     },
+    functions: [],  // пользовательские функции
+    events: {},     // события формы { onOpen: 'fnName', onSubmit: 'fnName' }
     children: []
   };
 }

@@ -1,0 +1,54 @@
+{
+  "id": "form-1786003759431-n2r1j0a7b",
+  "type": "form",
+  "name": "eeee",
+  "canvas": {
+    "width": 800,
+    "height": 600,
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "context": {
+    "source": "inline",
+    "url": "",
+    "inline": {}
+  },
+  "onOpen": {
+    "type": "loadContext",
+    "params": {}
+  },
+  "functions": [
+    {
+      "id": "fn-1786003853914-osyokwh4v",
+      "name": "exfunc01",
+      "description": "просто функция",
+      "code": "console.log(1)"
+    }
+  ],
+  "events": {},
+  "children": [
+    {
+      "id": "prim-1786003760782-c4zsi8i7b",
+      "type": "button",
+      "name": "Кнопка",
+      "width": 120,
+      "height": 40,
+      "left": 127,
+      "top": 230,
+      "style": {
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "Кнопка123123",
+      "events": {
+        "click": "exfunc01"
+      }
+    }
+  ]
+}

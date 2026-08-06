@@ -525,6 +525,73 @@ export function editorReducer(state, action) {
       return { ...state, isDirty: action.isDirty };
     }
 
+    // ===== Пользовательские функции =====
+    case 'ADD_FUNCTION': {
+      if (!state.form) return state;
+      const functions = state.form.functions || [];
+      const newForm = {
+        ...state.form,
+        functions: [...functions, action.func]
+      };
+      return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
+    }
+
+    case 'UPDATE_FUNCTION': {
+      if (!state.form) return state;
+      const functions = (state.form.functions || []).map(fn =>
+        fn.id === action.func.id ? { ...fn, ...action.func } : fn
+      );
+      const newForm = { ...state.form, functions };
+      return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
+    }
+
+    case 'DELETE_FUNCTION': {
+      if (!state.form) return state;
+      const functions = (state.form.functions || []).filter(fn => fn.id !== action.id);
+
+      // Убираем ссылки на удалённую функцию из событий формы
+      const deletedFn = (state.form.functions || []).find(fn => fn.id === action.id);
+      const events = { ...(state.form.events || {}) };
+      if (deletedFn) {
+        for (const [eventName, fnName] of Object.entries(events)) {
+          if (fnName === deletedFn.name) delete events[eventName];
+        }
+      }
+
+      const newForm = { ...state.form, functions, events };
+      return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
+    }
+
+    // ===== События формы =====
+    case 'UPDATE_FORM_EVENT': {
+      if (!state.form) return state;
+      const events = { ...(state.form.events || {}) };
+      if (action.fnName) {
+        events[action.eventName] = action.fnName;
+      } else {
+        delete events[action.eventName];
+      }
+      const newForm = { ...state.form, events };
+      return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
+    }
+
+    // ===== События примитива =====
+    case 'UPDATE_PRIMITIVE_EVENT': {
+      if (!state.form) return state;
+      const { id, eventName, fnName } = action;
+      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => {
+        const events = { ...(node.events || {}) };
+        if (fnName) {
+          events[eventName] = fnName;
+        } else {
+          delete events[eventName];
+        }
+        return { ...node, events };
+      });
+
+      return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
+    }
+
     default:
       return state;
   }
