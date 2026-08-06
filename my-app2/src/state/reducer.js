@@ -138,10 +138,25 @@ export function editorReducer(state, action) {
       }, newForm);
     }
 
-    // Живое перемещение (без записи в историю)
+    // Живое перемещение с абсолютным позиционированием (без записи в историю)
     case 'MOVE_PRIMITIVES_LIVE': {
       if (!state.form) return state;
       const { dx, dy } = action;
+
+      // Если переданы absolute positions, используем их
+      if (action.positions) {
+        let newForm = deepClone(state.form);
+        for (const [id, pos] of Object.entries(action.positions)) {
+          newForm = updatePrimitiveInTree(newForm, id, (node) => ({
+            ...node,
+            left: pos.left,
+            top: pos.top
+          }));
+        }
+        return { ...state, form: newForm, isDirty: true };
+      }
+
+      // backward compatibility: инкрементальное смещение
       let newForm = deepClone(state.form);
 
       for (const id of state.selectedIds) {

@@ -69,23 +69,32 @@ function Canvas() {
     const handleMouseMove = (e) => {
       if (!dragState) return;
 
-      // Обновляем последнюю позицию мыши
-      dragRef.current.lastX = e.clientX;
-      dragRef.current.lastY = e.clientY;
-
       if (dragState.type === 'move') {
-        // Полное смещение от начала drag (в координатах холста) с примагничиванием
-        const totalDx = (e.clientX - dragState.startX) / zoom;
-        const totalDy = (e.clientY - dragState.startY) / zoom;
+        // Полное смещение мыши от начала drag (в координатах холста)
+        const mouseDx = (e.clientX - dragState.startX) / zoom;
+        const mouseDy = (e.clientY - dragState.startY) / zoom;
 
-        // Примагничивание перемещения к узлам сетки
-        const snappedDx = snapToGrid(Math.round(totalDx), gridSize);
-        const snappedDy = snapToGrid(Math.round(totalDy), gridSize);
+        // Привязываем полное перемещение мыши к сетке
+        const snappedMouseDx = snapToGrid(mouseDx, gridSize);
+        const snappedMouseDy = snapToGrid(mouseDy, gridSize);
 
+        // Формируем абсолютные позиции для всех выделенных примитивов
+        const initialPositions = dragRef.current.initialPositions || {};
+        const positions = {};
+        for (const id of state.selectedIds) {
+          const orig = initialPositions[id];
+          if (orig) {
+            positions[id] = {
+              left: orig.left + snappedMouseDx,
+              top: orig.top + snappedMouseDy
+            };
+          }
+        }
+
+        // Передаём абсолютные позиции
         dispatch({
           type: 'MOVE_PRIMITIVES_LIVE',
-          dx: snappedDx,
-          dy: snappedDy
+          positions
         });
       } else if (dragState.type === 'resize') {
         // Полное смещение от начала ресайза (для пересчёта от исходных значений)
@@ -158,7 +167,16 @@ function Canvas() {
     if (!selectedIds.includes(id)) {
       dispatch({ type: 'SELECT', id, additive: e.shiftKey });
     }
-    dragRef.current = { lastX: e.clientX, lastY: e.clientY };
+    // Сохраняем начальные позиции всех выделенных примитивов до начала перетаскивания
+    const initialPositions = {};
+    for (const selId of selectedIds) {
+      const prim = findPrimitive(form, selId);
+      if (prim) {
+        initialPositions[selId] = { left: prim.left || 0, top: prim.top || 0 };
+      }
+    }
+
+    dragRef.current = { lastX: e.clientX, lastY: e.clientY, initialPositions };
     setDragState({
       type: 'move',
       startX: e.clientX,
