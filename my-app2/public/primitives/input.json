@@ -17,6 +17,8 @@
   "properties": [
     { "name": "placeholder", "label": "Подсказка", "type": "string", "default": "Введите текст..." },
     { "name": "value", "label": "Значение", "type": "string", "default": "" },
+    { "name": "defaultValue", "label": "Начальное значение", "type": "string", "default": "" },
+    { "name": "readOnly", "label": "Только чтение (отключить редактирование)", "type": "boolean", "default": false },
     { "name": "name", "label": "Имя поля", "type": "string", "default": "input" },
     { "name": "width", "label": "Ширина", "type": "number" },
     { "name": "height", "label": "Высота", "type": "number" },
@@ -25,14 +27,17 @@
   ],
   "anchors": [
     { "name": "value", "path": "input.value", "description": "Значение из контекста" },
-    { "name": "placeholder", "path": "input.placeholder", "description": "Подсказка из контекста" }
+    { "name": "placeholder", "path": "input.placeholder", "description": "Подсказка из контекста" },
+    { "name": "defaultValue", "path": "input.defaultValue", "description": "Начальное значение (редактируемое поле)" }
   ],
   "render": {
     "tag": "input",
     "attributes": {
       "type": "text",
       "placeholder": "{{placeholder}}",
+      "defaultValue": "{{defaultValue}}",
       "value": "{{value}}",
+      "readOnly": "{{readOnly}}",
       "name": "{{name}}"
     }
   }

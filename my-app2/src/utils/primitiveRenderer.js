@@ -22,9 +22,21 @@ export function renderPrimitive(primitive, template, context) {
     attributes.style = primitive.style;
   }
 
-  // Обработка специальных случаев
-  if (tag === 'input' || tag === 'textarea' || tag === 'select') {
-    // Для input/textarea/select не рендерим children как текст
+  // Обработка специальных случаев для input/textarea
+  if (tag === 'input' || tag === 'textarea') {
+    // Если есть defaultValue и оно не пустое, удаляем value чтобы избежать конфликта
+    // defaultValue используется для неконтролируемых полей (редактируемых)
+    if (attributes.defaultValue !== undefined && attributes.defaultValue !== null && 
+        String(attributes.defaultValue).trim() !== '' && String(attributes.defaultValue).startsWith('{{')) {
+      delete attributes.value;
+    }
+    // Преобразуем readOnly строковое значение в булево для React
+    if (typeof attributes.readOnly === 'string') {
+      attributes.readOnly = attributes.readOnly.toLowerCase() === 'true';
+    } else if (typeof attributes.readOnly !== 'boolean') {
+      attributes.readOnly = false;
+    }
+    // Для input/textarea не рендерим children как текст
     return React.createElement(tag, attributes);
   }
 

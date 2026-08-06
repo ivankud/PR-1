@@ -41,7 +41,7 @@ function toReactEventName(eventName) {
 
 // Применение событий формы (onOpen, onSubmit и др.)
 // Возвращает обработчики для примитива (React-пропсы: onClick, onChange и т.д.)
-export function buildEventHandlers(primitive, fns, context, getPrimitiveValue) {
+export function buildEventHandlers(primitive, fns, context, onUpdateContext) {
   const handlers = {};
   const events = primitive?.events || {};
   if (!events) return handlers;
@@ -52,7 +52,7 @@ export function buildEventHandlers(primitive, fns, context, getPrimitiveValue) {
     handlers[reactEventName] = (event) => {
       // Объединяем контекст + данные события + ссылку на сам примитив
       const eventContext = {
-        ...context,
+        ...JSON.parse(JSON.stringify(context)),
         event: {
           type: event?.type,
           target: event?.target,
@@ -61,7 +61,11 @@ export function buildEventHandlers(primitive, fns, context, getPrimitiveValue) {
         primitiveId: primitive?.id,
         primitiveName: primitive?.name
       };
-      callFunction(fns, fnName, eventContext);
+      const result = callFunction(fns, fnName, eventContext);
+      // Если функция вернула обновленный контекст, применяем его
+      if (onUpdateContext && result && typeof result === 'object') {
+        onUpdateContext(result);
+      }
     };
   }
   return handlers;
@@ -84,4 +88,75 @@ export function getFunctionContext(form, baseContext = {}) {
     ...getFormContext(form),
     ...baseContext
   };
+}
+
+// Создание обработчиков событий с использованием ref для доступа к актуальному контексту
+export function buildEventHandlersWithRef(primitive, fns, contextRef, onUpdateContext) {
+  const handlers = {};
+  const events = primitive?.events || {};
+  if (!events) return handlers;
+
+  for (const [eventName, fnName] of Object.entries(events)) {
+    if (!fnName) continue;
+    const reactEventName = toReactEventName(eventName);
+    handlers[reactEventName] = (event) => {
+      // Получаем актуальный контекст из ref
+      const currentContext = contextRef.current || {};
+      
+      // Клонируем контекст чтобы не мутировать
+      const eventContext = JSON.parse(JSON.stringify(currentContext));
+      
+      // Добавляем данные события
+      eventContext.event = {
+        type: event?.type,
+        target: event?.target,
+        value: event?.target?.value
+      };
+      eventContext.primitiveId = primitive?.id;
+      eventContext.primitiveName = primitive?.name;
+      
+      // Вызываем функцию
+      const result = callFunction(fns, fnName, eventContext);
+      
+      // Если функция вернула обновленный объект контекста (не содержащий event), применяем его
+      if (onUpdateContext && result && typeof result === 'object' && !result.event) {
+        onUpdateContext(result);
+      }
+    };
+  }
+  return handlers;
+}
+
+// Создание обработчиков событий с возможностью обновления контекста
+export function buildEventHandlersWithUpdate(primitive, fns, context, onUpdateContext) {
+  const handlers = {};
+  const events = primitive?.events || {};
+  if (!events) return handlers;
+
+  for (const [eventName, fnName] of Object.entries(events)) {
+    if (!fnName) continue;
+    const reactEventName = toReactEventName(eventName);
+    handlers[reactEventName] = (event) => {
+      // Клонируем контекст чтобы не мутировать
+      const eventContext = JSON.parse(JSON.stringify(context));
+      
+      // Добавляем данные события
+      eventContext.event = {
+        type: event?.type,
+        target: event?.target,
+        value: event?.target?.value
+      };
+      eventContext.primitiveId = primitive?.id;
+      eventContext.primitiveName = primitive?.name;
+      
+      // Вызываем функцию
+      const result = callFunction(fns, fnName, eventContext);
+      
+      // Если функция вернула обновленный объект контекста, применяем его
+      if (onUpdateContext && result && typeof result === 'object' && !result.event) {
+        onUpdateContext(result);
+      }
+    };
+  }
+  return handlers;
 }

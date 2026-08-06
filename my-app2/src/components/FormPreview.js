@@ -3,11 +3,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useEditor } from '../state/EditorContext';
 import { renderPrimitive, getPrimitiveTemplate } from '../utils/primitiveRenderer';
 import { loadJson } from '../utils/jsonUtils';
-import { buildFunctions, buildEventHandlers, callFunction } from '../utils/functionRunner';
+import { buildFunctions, callFunction, buildEventHandlers } from '../utils/functionRunner';
 import { getSizeStyle, getCanvasSizeStyle } from '../utils/sizeUtils';
 
 // Рендер примитива в режиме предпросмотра (без выделения и drag&drop)
-function PreviewPrimitive({ primitive, primitives, context, fns }) {
+function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext }) {
   const template = getPrimitiveTemplate(primitives, primitive.type);
 
   const style = {
@@ -23,8 +23,14 @@ function PreviewPrimitive({ primitive, primitives, context, fns }) {
     style.overflow = 'visible';
   }
 
-  // Обработчики событий для этого примитива (React-пропсы: onClick, onBlur и т.д.)
-  const handlers = buildEventHandlers(primitive, fns, context);
+  // Создаем обработчики событий с callback для обновления контекста
+  const handlers = useMemo(() => {
+    if (!fns || !primitive?.events) return {};
+    
+    // Клонируем контекст для каждого обработчика
+    const ctxClone = JSON.parse(JSON.stringify(context));
+    return buildEventHandlers(primitive, fns, ctxClone, onUpdateContext);
+  }, [primitive?.id, primitive?.events, context, fns, onUpdateContext]);
 
   // Рендерим примитив и прикрепляем обработчики событий напрямую к элементу
   const rendered = renderPrimitive(primitive, template, context);
@@ -110,13 +116,9 @@ function FormPreview({ onBack }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
-  // Обработка отправки формы
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const submitFn = form?.events?.onSubmit;
-    if (submitFn) {
-      callFunction(fns, submitFn, contextData);
-    }
+  // Обработка отправки формы и обновления контекста из событий
+  const handleContextUpdate = (newContext) => {
+    setContextData(prev => ({ ...prev, ...newContext }));
   };
 
   if (!form) {
@@ -164,7 +166,13 @@ function FormPreview({ onBack }) {
             backgroundColor: canvas.backgroundColor,
             position: 'relative'
           }}
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const submitFn = form?.events?.onSubmit;
+            if (submitFn) {
+              callFunction(fns, submitFn, contextData);
+            }
+          }}
         >
           {form.children && form.children.map(primitive => (
             <PreviewPrimitive
@@ -173,6 +181,7 @@ function FormPreview({ onBack }) {
               primitives={primitives}
               context={contextData}
               fns={fns}
+              onUpdateContext={handleContextUpdate}
             />
           ))}
         </form>
