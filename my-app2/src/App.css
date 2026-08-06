@@ -1133,6 +1133,28 @@ body {
   font-weight: 600;
 }
 
+/* ===== Селектор единиц измерения размера ===== */
+.size-unit-select {
+  flex: 0 0 60px;
+  width: 60px;
+  padding: 6px 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: center;
+}
+
+.size-unit-select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.property-row .size-unit-select {
+  min-width: 60px;
+}
+
 /* Скроллбары */
 ::-webkit-scrollbar {
   width: 8px;

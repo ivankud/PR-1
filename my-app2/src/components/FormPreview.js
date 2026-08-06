@@ -4,6 +4,7 @@ import { useEditor } from '../state/EditorContext';
 import { renderPrimitive, getPrimitiveTemplate } from '../utils/primitiveRenderer';
 import { loadJson } from '../utils/jsonUtils';
 import { buildFunctions, buildEventHandlers, callFunction } from '../utils/functionRunner';
+import { getSizeStyle } from '../utils/sizeUtils';
 
 // Рендер примитива в режиме предпросмотра (без выделения и drag&drop)
 function PreviewPrimitive({ primitive, primitives, context, fns }) {
@@ -13,8 +14,7 @@ function PreviewPrimitive({ primitive, primitives, context, fns }) {
     position: 'absolute',
     left: primitive.left || 0,
     top: primitive.top || 0,
-    width: primitive.width || 100,
-    height: primitive.height || 40,
+    ...getSizeStyle(primitive),
     ...(primitive.style || {})
   };
 

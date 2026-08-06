@@ -1,6 +1,7 @@
 // Отрисовка примитива на холсте
 import React from 'react';
 import { renderPrimitive, getPrimitiveTemplate } from '../../utils/primitiveRenderer';
+import { getSizeStyle } from '../../utils/sizeUtils';
 
 function CanvasPrimitive({
   primitive,
@@ -29,8 +30,7 @@ function CanvasPrimitive({
     position: 'absolute',
     left: primitive.left || 0,
     top: primitive.top || 0,
-    width: primitive.width || 100,
-    height: primitive.height || 40,
+    ...getSizeStyle(primitive),
     ...(primitive.style || {})
   };
 

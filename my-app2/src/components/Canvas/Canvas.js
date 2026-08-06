@@ -3,6 +3,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useEditor } from '../../state/EditorContext';
 import { getFormContext } from '../../utils/anchors';
 import { findPrimitive } from '../../utils/jsonUtils';
+import { isPxSize, getNumericSize } from '../../utils/sizeUtils';
 import CanvasPrimitive from './CanvasPrimitive';
 
 function Canvas() {
@@ -124,6 +125,12 @@ function Canvas() {
     e.stopPropagation();
     const prim = findPrimitive(form, id);
     if (!prim) return;
+    // Ресайз доступен только для px-размеров
+    const canResizeWidth = handle.includes('e') || handle.includes('w');
+    const canResizeHeight = handle.includes('n') || handle.includes('s');
+    if ((canResizeWidth && !isPxSize(prim, 'width')) || (canResizeHeight && !isPxSize(prim, 'height'))) {
+      return;
+    }
     dragRef.current = { lastX: e.clientX, lastY: e.clientY };
     setDragState({
       type: 'resize',
@@ -133,8 +140,8 @@ function Canvas() {
       handle,
       origLeft: prim.left || 0,
       origTop: prim.top || 0,
-      origWidth: prim.width || 100,
-      origHeight: prim.height || 40
+      origWidth: getNumericSize(prim, 'width'),
+      origHeight: getNumericSize(prim, 'height')
     });
   };
 

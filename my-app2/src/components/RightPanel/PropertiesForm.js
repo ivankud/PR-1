@@ -2,6 +2,7 @@
 import React from 'react';
 import { useEditor } from '../../state/EditorContext';
 import { getPrimitiveTemplate } from '../../utils/primitiveRenderer';
+import { SIZE_UNITS } from '../../utils/sizeUtils';
 
 function PropertiesForm({ primitive }) {
   const { state, dispatch } = useEditor();
@@ -25,6 +26,34 @@ function PropertiesForm({ primitive }) {
     { name: 'left', label: 'X (left)', type: 'number' },
     { name: 'top', label: 'Y (top)', type: 'number' }
   ];
+
+  // Рендер поля размера с выбором единицы измерения
+  const renderSizeInput = (dimension, label) => {
+    const unit = primitive[`${dimension}Unit`] || 'px';
+    const value = primitive[dimension] !== undefined ? primitive[dimension] : (dimension === 'width' ? 100 : 40);
+
+    return (
+      <div className="property-row">
+        <label className="property-label">{label}</label>
+        <input
+          type="number"
+          value={value}
+          disabled={unit === 'auto'}
+          onChange={(e) => handleChange(dimension, parseFloat(e.target.value) || 0)}
+        />
+        <select
+          className="size-unit-select"
+          value={unit}
+          onChange={(e) => handleChange(`${dimension}Unit`, e.target.value)}
+          title="Единица измерения"
+        >
+          {SIZE_UNITS.map(u => (
+            <option key={u} value={u}>{u}</option>
+          ))}
+        </select>
+      </div>
+    );
+  };
 
   // Свойства из шаблона
   const templateProperties = template?.properties || [];
@@ -80,12 +109,17 @@ function PropertiesForm({ primitive }) {
     <div className="properties-form">
       <div className="properties-section">
         <div className="properties-section-title">Основные свойства</div>
-        {allProperties.map(prop => (
-          <div key={prop.name} className="property-row">
-            <label className="property-label">{prop.label || prop.name}</label>
-            {renderInput(prop)}
-          </div>
-        ))}
+        {allProperties.map(prop => {
+          // Для width и height используем специальный рендер с единицами измерения
+          if (prop.name === 'width') return renderSizeInput('width', 'Ширина');
+          if (prop.name === 'height') return renderSizeInput('height', 'Высота');
+          return (
+            <div key={prop.name} className="property-row">
+              <label className="property-label">{prop.label || prop.name}</label>
+              {renderInput(prop)}
+            </div>
+          );
+        })}
       </div>
 
       <div className="properties-section">

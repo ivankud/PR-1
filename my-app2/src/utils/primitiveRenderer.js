@@ -119,6 +119,8 @@ export function createPrimitiveFromTemplate(template, id) {
     name: template.name,
     width: defaults.width || 100,
     height: defaults.height || 40,
+    widthUnit: 'px',
+    heightUnit: 'px',
     left: defaults.left || 0,
     top: defaults.top || 0,
     style: { ...(defaults.style || {}) },

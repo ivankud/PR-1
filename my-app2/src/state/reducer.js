@@ -1,6 +1,7 @@
 // Reducer для редактора форм
 import { deepClone, generateId, findPrimitive, findParent } from '../utils/jsonUtils';
 import { createPrimitiveFromTemplate } from '../utils/primitiveRenderer';
+import { updateSize } from '../utils/sizeUtils';
 
 const MAX_HISTORY = 100;
 
@@ -157,11 +158,12 @@ export function editorReducer(state, action) {
     case 'RESIZE_PRIMITIVE': {
       if (!state.form) return state;
       const { id, width, height } = action;
-      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => ({
-        ...node,
-        width: Math.max(10, width),
-        height: Math.max(10, height)
-      }));
+      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => {
+        let updated = node;
+        if (width !== undefined) updated = updateSize(updated, 'width', width);
+        if (height !== undefined) updated = updateSize(updated, 'height', height);
+        return updated;
+      });
 
       return pushHistory({
         ...state,
@@ -174,13 +176,14 @@ export function editorReducer(state, action) {
     case 'RESIZE_PRIMITIVE_LIVE': {
       if (!state.form) return state;
       const { id, width, height, left, top } = action;
-      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => ({
-        ...node,
-        width: Math.max(10, width),
-        height: Math.max(10, height),
-        ...(left !== undefined ? { left } : {}),
-        ...(top !== undefined ? { top } : {})
-      }));
+      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => {
+        let updated = node;
+        if (width !== undefined) updated = updateSize(updated, 'width', width);
+        if (height !== undefined) updated = updateSize(updated, 'height', height);
+        if (left !== undefined) updated = { ...updated, left };
+        if (top !== undefined) updated = { ...updated, top };
+        return updated;
+      });
 
       return { ...state, form: newForm, isDirty: true };
     }
