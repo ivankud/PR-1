@@ -6,6 +6,11 @@ import { findPrimitive } from '../../utils/jsonUtils';
 import { isPxSize, getNumericSize, getCanvasSizeStyle } from '../../utils/sizeUtils';
 import CanvasPrimitive from './CanvasPrimitive';
 
+// Функция примагничивания к узлам сетки
+const snapToGrid = (value, gridSize) => {
+  return Math.round(value / gridSize) * gridSize;
+};
+
 function Canvas() {
   const { state, dispatch } = useEditor();
   const { form, primitives, selectedIds, zoom } = state;
@@ -16,6 +21,9 @@ function Canvas() {
   const [dragOver, setDragOver] = useState(false);
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 });
   const dragRef = useRef({ lastX: 0, lastY: 0 }); // последние координаты мыши при drag
+
+  // Получаем размер сетки из состояния формы (по умолчанию 10px)
+  const gridSize = (form?.canvas?.gridSize || 10);
 
   // Отслеживаем размер контейнера холста для корректного расчёта %-единиц
   useEffect(() => {
@@ -61,19 +69,23 @@ function Canvas() {
     const handleMouseMove = (e) => {
       if (!dragState) return;
 
-      // Инкрементальное смещение от последней позиции мыши (в координатах холста)
-      const dx = (e.clientX - dragRef.current.lastX) / zoom;
-      const dy = (e.clientY - dragRef.current.lastY) / zoom;
-
       // Обновляем последнюю позицию мыши
       dragRef.current.lastX = e.clientX;
       dragRef.current.lastY = e.clientY;
 
       if (dragState.type === 'move') {
+        // Полное смещение от начала drag (в координатах холста) с примагничиванием
+        const totalDx = (e.clientX - dragState.startX) / zoom;
+        const totalDy = (e.clientY - dragState.startY) / zoom;
+
+        // Примагничивание перемещения к узлам сетки
+        const snappedDx = snapToGrid(Math.round(totalDx), gridSize);
+        const snappedDy = snapToGrid(Math.round(totalDy), gridSize);
+
         dispatch({
           type: 'MOVE_PRIMITIVES_LIVE',
-          dx: Math.round(dx),
-          dy: Math.round(dy)
+          dx: snappedDx,
+          dy: snappedDy
         });
       } else if (dragState.type === 'resize') {
         // Полное смещение от начала ресайза (для пересчёта от исходных значений)
@@ -97,13 +109,19 @@ function Canvas() {
           newTop = origTop + totalDy;
         }
 
+        // Примагничивание при ресайзе
+        const snappedLeft = snapToGrid(Math.round(newLeft), gridSize);
+        const snappedTop = snapToGrid(Math.round(newTop), gridSize);
+        const snappedWidth = snapToGrid(Math.round(newWidth), gridSize);
+        const snappedHeight = snapToGrid(Math.round(newHeight), gridSize);
+
         dispatch({
           type: 'RESIZE_PRIMITIVE_LIVE',
           id: dragState.id,
-          width: Math.round(newWidth),
-          height: Math.round(newHeight),
-          left: Math.round(newLeft),
-          top: Math.round(newTop)
+          width: Math.max(gridSize, snappedWidth),
+          height: Math.max(gridSize, snappedHeight),
+          left: snappedLeft,
+          top: snappedTop
         });
       }
     };
@@ -198,11 +216,15 @@ function Canvas() {
     const width = template?.defaults?.width || 100;
     const height = template?.defaults?.height || 40;
 
+    // Примагничивание позиции нового элемента к узлам сетки
+    const snappedX = snapToGrid(Math.round(x - width / 2), gridSize);
+    const snappedY = snapToGrid(Math.round(y - height / 2), gridSize);
+
     dispatch({
       type: 'ADD_PRIMITIVE',
       primitiveType,
-      left: Math.round(x - width / 2),
-      top: Math.round(y - height / 2)
+      left: snappedX,
+      top: snappedY
     });
   };
 
