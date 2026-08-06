@@ -613,6 +613,9 @@ body {
 .canvas-viewport {
   position: relative;
   transform-origin: 0 0;
+  /* Задаём явную высоту для корректного вычисления %-единиц */
+  height: 100%;
+  min-height: 400px;
 }
 
 .canvas-form {

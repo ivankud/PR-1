@@ -14,7 +14,36 @@ function Canvas() {
   const [pan] = useState({ x: 0, y: 0 });
   const [dragState, setDragState] = useState(null); // { type: 'move'|'resize', startX, startY, origLeft, origTop, origWidth, origHeight, handle, id }
   const [dragOver, setDragOver] = useState(false);
+  const [containerSize, setContainerSize] = useState({ width: 800, height: 600 });
   const dragRef = useRef({ lastX: 0, lastY: 0 }); // последние координаты мыши при drag
+
+  // Отслеживаем размер контейнера холста для корректного расчёта %-единиц
+  useEffect(() => {
+    const container = canvasRef.current;
+    if (!container) return;
+
+    const updateSize = () => {
+      const rect = container.getBoundingClientRect();
+      // Вычитаем padding контейнера (20px со всех сторон)
+      const padding = 20;
+      setContainerSize({
+        width: Math.max(0, rect.width - padding * 2),
+        height: Math.max(0, rect.height - padding * 2)
+      });
+    };
+
+    updateSize();
+
+    // Используем ResizeObserver для отслеживания изменения размера
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(updateSize);
+      observer.observe(container);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
   const context = getFormContext(form);
 
@@ -187,6 +216,15 @@ function Canvas() {
   const canvasSizeStyle = getCanvasSizeStyle(canvas);
   const canvasWidthPx = canvas.widthUnit === 'auto' ? 800 : (canvas.width || 800);
   const canvasHeightPx = canvas.heightUnit === 'auto' ? 600 : (canvas.height || 600);
+
+  // Для %-единиц пересчитываем в px на основе реального размера контейнера,
+  // чтобы проценты корректно отображались от доступной высоты/ширины
+  if (canvas.widthUnit === '%') {
+    canvasSizeStyle.width = `${(canvas.width / 100) * containerSize.width}px`;
+  }
+  if (canvas.heightUnit === '%') {
+    canvasSizeStyle.height = `${(canvas.height / 100) * containerSize.height}px`;
+  }
 
   const gridLines = [];
   if (canvas.showGrid) {
