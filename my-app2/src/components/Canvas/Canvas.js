@@ -254,8 +254,6 @@ function Canvas() {
 
   // Создание сетки (только для px-размера — иначе ширина/высота в %/vw/vh/auto)
   const canvasSizeStyle = getCanvasSizeStyle(canvas);
-  const canvasWidthPx = canvas.widthUnit === 'auto' ? 800 : (canvas.width || 800);
-  const canvasHeightPx = canvas.heightUnit === 'auto' ? 600 : (canvas.height || 600);
 
   // Для %-единиц пересчитываем в px на основе реального размера контейнера,
   // чтобы проценты корректно отображались от доступной высоты/ширины
@@ -266,15 +264,19 @@ function Canvas() {
     canvasSizeStyle.height = `${(canvas.height / 100) * containerSize.height}px`;
   }
 
+  // Используем реальный пиксельный размер для рисования сетки
+  const actualWidthPx = parseInt(canvasSizeStyle.width, 10) || (canvas.width || 800);
+  const actualHeightPx = parseInt(canvasSizeStyle.height, 10) || (canvas.height || 600);
+
   const gridLines = [];
   if (canvas.showGrid) {
     const gridSize = canvas.gridSize || 10;
-    for (let x = 0; x <= canvasWidthPx; x += gridSize) {
+    for (let x = 0; x <= actualWidthPx; x += gridSize) {
       gridLines.push(
         <div key={`v-${x}`} className="grid-line grid-v" style={{ left: x }} />
       );
     }
-    for (let y = 0; y <= canvasHeightPx; y += gridSize) {
+    for (let y = 0; y <= actualHeightPx; y += gridSize) {
       gridLines.push(
         <div key={`h-${y}`} className="grid-line grid-h" style={{ top: y }} />
       );
@@ -318,10 +320,10 @@ function Canvas() {
           <div className="canvas-form-service">
             <div className="service-label">Форма: {form.name}</div>
             <div className="service-size">
-              {canvasWidthPx}×{canvasHeightPx}
+              {actualWidthPx}×{actualHeightPx}px
               {(canvas.widthUnit || 'px') !== 'px' || (canvas.heightUnit || 'px') !== 'px'
                 ? ` (${canvasSizeStyle.width} × ${canvasSizeStyle.height})`
-                : 'px'}
+                : ''}
             </div>
             <div className="service-context">
               Контекст: {form.context?.source === 'url' ? form.context.url : 'inline'}
