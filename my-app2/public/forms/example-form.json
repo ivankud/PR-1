@@ -1,7 +1,7 @@
 {
   "id": "example-form",
   "type": "form",
-  "name": "Пример формы",
+  "name": "Пример формы11111",
   "canvas": {
     "width": 800,
     "height": 600,
@@ -60,7 +60,7 @@
     {
       "id": "prim-3",
       "type": "input",
-      "name": "Поле имени",
+      "name": "user_name",
       "width": 300,
       "height": 35,
       "left": 100,
@@ -73,7 +73,6 @@
       },
       "placeholder": "Введите имя",
       "value": "",
-      "name": "user_name",
       "customProperties": {}
     },
     {
@@ -95,7 +94,7 @@
     {
       "id": "prim-5",
       "type": "input",
-      "name": "Поле email",
+      "name": "user_email",
       "width": 300,
       "height": 35,
       "left": 100,
@@ -108,7 +107,6 @@
       },
       "placeholder": "Введите email",
       "value": "",
-      "name": "user_email",
       "customProperties": {}
     },
     {
