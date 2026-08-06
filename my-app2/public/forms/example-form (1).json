@@ -1,6 +1,6 @@
 {
   "id": "example-form",
-  "name": "Моя форма1",
+  "name": "Моя форма",
   "context": {
     "source": "inline",
     "inline": {
@@ -24,7 +24,10 @@
       "code": "alert('Привет, ' + (context.user?.name || 'гость') + '!');"
     }
   ],
-  "events": {},
+  "events": {
+    "onOpen": "greetUser",
+    "onSubmit": "validateEmail"
+  },
   "children": [
     {
       "id": "prim-3",
@@ -35,7 +38,7 @@
       }
     },
     {
-      "id": "prim-1786008624562-cfcuq80fl",
+      "id": "prim-1786009516399-azuvu95n1",
       "type": "button",
       "name": "Кнопка",
       "width": 120,
@@ -51,9 +54,7 @@
         "cursor": "pointer"
       },
       "customProperties": {},
-      "events": {
-        "click": "greetUser"
-      }
+      "events": {}
     }
   ]
 }

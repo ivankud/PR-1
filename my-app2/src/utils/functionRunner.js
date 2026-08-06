@@ -33,8 +33,14 @@ export function callFunction(fns, fnName, context) {
   }
 }
 
+// Преобразование имени события в React-проп (click → onClick, mouseenter → onMouseEnter)
+function toReactEventName(eventName) {
+  if (eventName.startsWith('on')) return eventName;
+  return 'on' + eventName.charAt(0).toUpperCase() + eventName.slice(1);
+}
+
 // Применение событий формы (onOpen, onSubmit и др.)
-// Возвращает обработчики для примитива
+// Возвращает обработчики для примитива (React-пропсы: onClick, onChange и т.д.)
 export function buildEventHandlers(primitive, fns, context, getPrimitiveValue) {
   const handlers = {};
   const events = primitive?.events || {};
@@ -42,7 +48,8 @@ export function buildEventHandlers(primitive, fns, context, getPrimitiveValue) {
 
   for (const [eventName, fnName] of Object.entries(events)) {
     if (!fnName) continue;
-    handlers[eventName] = (event) => {
+    const reactEventName = toReactEventName(eventName);
+    handlers[reactEventName] = (event) => {
       // Объединяем контекст + данные события + ссылку на сам примитив
       const eventContext = {
         ...context,

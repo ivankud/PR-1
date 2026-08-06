@@ -23,16 +23,21 @@ function PreviewPrimitive({ primitive, primitives, context, fns }) {
     style.overflow = 'visible';
   }
 
-  // Обработчики событий для этого примитива
+  // Обработчики событий для этого примитива (React-пропсы: onClick, onBlur и т.д.)
   const handlers = buildEventHandlers(primitive, fns, context);
+
+  // Рендерим примитив и прикрепляем обработчики событий напрямую к элементу
+  const rendered = renderPrimitive(primitive, template, context);
+  const renderedWithHandlers = rendered && Object.keys(handlers).length > 0
+    ? React.cloneElement(rendered, handlers)
+    : rendered;
 
   return (
     <div
       style={style}
-      {...handlers}
       data-primitive-id={primitive.id}
     >
-      {renderPrimitive(primitive, template, context)}
+      {renderedWithHandlers}
       {primitive.children && primitive.children.length > 0 && (
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
           {primitive.children.map(child => (
