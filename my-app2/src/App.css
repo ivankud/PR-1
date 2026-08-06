@@ -18,6 +18,208 @@ body {
   flex-direction: column;
 }
 
+/* ===== Навигационное меню ===== */
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 20px;
+  height: 52px;
+  background: #1a1a2e;
+  color: #fff;
+  flex-shrink: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.app-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.app-nav-logo {
+  font-size: 20px;
+}
+
+.app-nav-title {
+  color: #fff;
+}
+
+.app-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.nav-link.active {
+  background: #007bff;
+  color: #fff;
+}
+
+/* Выпадающее меню */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-toggle {
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.nav-dropdown-caret {
+  font-size: 10px;
+  margin-left: 4px;
+  opacity: 0.7;
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 320px;
+  background: #fff;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 200;
+}
+
+.nav-dropdown-header {
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+}
+
+.nav-dropdown-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.nav-dropdown-empty {
+  padding: 20px;
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+}
+
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s;
+}
+
+.nav-dropdown-item:hover {
+  background: #f8f9fa;
+}
+
+.nav-dropdown-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-dropdown-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Контент приложения */
+.app-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Страницы-маршруты */
+.route-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.route-loading {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.route-loading.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.route-error {
+  padding: 20px;
+  text-align: center;
+  color: #dc3545;
+}
+
+.route-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #666;
+  padding: 40px;
+}
+
+.route-empty h2 {
+  color: #333;
+  font-size: 22px;
+}
+
 /* ===== Кнопки ===== */
 .btn {
   padding: 6px 12px;
@@ -76,6 +278,8 @@ body {
   margin: 0 auto;
   padding: 40px 20px;
   width: 100%;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .form-menu-header {
@@ -182,7 +386,9 @@ body {
 .form-editor {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 /* Панель действий */
@@ -744,7 +950,9 @@ body {
 .form-preview {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
   background: #f0f2f5;
 }
 

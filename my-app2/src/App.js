@@ -1,57 +1,21 @@
-// Главный компонент приложения
-import React, { useState } from 'react';
+// Главный компонент приложения с роутингом и постоянным меню
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import './App.css';
-import { EditorProvider, useEditor } from './state/EditorContext';
-import FormMenu from './components/FormMenu';
-import FormEditor from './components/FormEditor';
-import FormPreview from './components/FormPreview';
+import { EditorProvider } from './state/EditorContext';
+import AppNav from './components/AppNav';
+import HomePage from './components/HomePage';
+import FormEditorRoute from './components/FormEditorRoute';
+import FormPreviewRoute from './components/FormPreviewRoute';
 
-function AppContent() {
-  const [view, setView] = useState('menu'); // 'menu' | 'editor' | 'preview'
-  const { loadForm } = useEditor();
-
-  const handleOpenForm = (form) => {
-    loadForm(form);
-    setView('editor');
-  };
-
-  const handleCreateForm = (form) => {
-    loadForm(form);
-    setView('editor');
-  };
-
-  const handleBack = () => {
-    setView('menu');
-  };
-
-  const handlePreview = () => {
-    setView('preview');
-  };
-
-  const handlePreviewBack = () => {
-    setView('editor');
-  };
-
-  const handlePreviewFromMenu = (form) => {
-    loadForm(form);
-    setView('preview');
-  };
-
+// Общий макет с постоянным навигационным меню
+function AppLayout() {
   return (
     <div className="app">
-      {view === 'menu' && (
-        <FormMenu
-          onOpenForm={handleOpenForm}
-          onCreateForm={handleCreateForm}
-          onPreviewForm={handlePreviewFromMenu}
-        />
-      )}
-      {view === 'editor' && (
-        <FormEditor onBack={handleBack} onPreview={handlePreview} />
-      )}
-      {view === 'preview' && (
-        <FormPreview onBack={handlePreviewBack} />
-      )}
+      <AppNav />
+      <main className="app-content">
+        <Outlet />
+      </main>
     </div>
   );
 }
@@ -59,7 +23,24 @@ function AppContent() {
 function App() {
   return (
     <EditorProvider>
-      <AppContent />
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AppLayout />}>
+            {/* Главная страница — список форм */}
+            <Route path="/" element={<HomePage />} />
+
+            {/* Редактор веб-форм */}
+            <Route path="/editor" element={<FormEditorRoute />} />
+            <Route path="/editor/:formId" element={<FormEditorRoute />} />
+
+            {/* Готовые спроектированные веб-формы */}
+            <Route path="/forms/:formId" element={<FormPreviewRoute />} />
+
+            {/* Все остальные маршруты → главная */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </EditorProvider>
   );
 }
