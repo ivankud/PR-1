@@ -452,10 +452,50 @@ body {
   overflow: hidden;
 }
 
+/* Обёртки панелей редактора */
+.editor-panel-left {
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+.editor-panel-right {
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  overflow: hidden;
+}
+
+.editor-canvas-area {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ===== Сплиттеры ===== */
+.splitter {
+  flex-shrink: 0;
+  background: #ddd;
+  transition: background 0.2s;
+  z-index: 5;
+}
+
+.splitter-vertical {
+  width: 5px;
+  cursor: col-resize;
+}
+
+.splitter-vertical:hover,
+.splitter-vertical.active {
+  background: #007bff;
+}
+
 /* ===== Левая панель ===== */
 .left-panel {
-  width: 240px;
-  min-width: 240px;
+  width: 100%;
+  min-width: 0;
   background: #fff;
   border-right: 1px solid #ddd;
   display: flex;
@@ -750,8 +790,8 @@ body {
 
 /* ===== Правая панель ===== */
 .right-panel {
-  width: 300px;
-  min-width: 300px;
+  width: 100%;
+  min-width: 0;
   background: #fff;
   border-left: 1px solid #ddd;
   display: flex;
