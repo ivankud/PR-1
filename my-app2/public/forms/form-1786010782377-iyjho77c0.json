@@ -206,6 +206,24 @@
         "fontSize": "14px"
       },
       "customProperties": {}
+    },
+    {
+      "id": "prim-1786082935570-zbwik2c6g",
+      "type": "text",
+      "name": "Текст (label)",
+      "width": 200,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 110,
+      "top": 95,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "customProperties": {},
+      "text": "context.user?.name"
     }
   ]
 }

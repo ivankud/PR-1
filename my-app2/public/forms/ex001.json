@@ -1,0 +1,115 @@
+{
+  "id": "ex001",
+  "name": "ex001",
+  "context": {
+    "source": "inline",
+    "inline": {
+      "var1": "aaaa",
+      "var2": "bbbb",
+      "var3": "cccc"
+    }
+  },
+  "functions": [],
+  "events": {},
+  "canvas": {
+    "width": 100,
+    "height": 100,
+    "widthUnit": "%",
+    "heightUnit": "%",
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "children": [
+    {
+      "id": "prim-label-1",
+      "type": "text",
+      "name": "Надпись 1",
+      "left": 50,
+      "top": 50,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "text": "{{var1}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{var1}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "var1",
+          "description": "Значение первой переменной"
+        }
+      ]
+    },
+    {
+      "id": "prim-label-2",
+      "type": "text",
+      "name": "Надпись 2",
+      "left": 50,
+      "top": 100,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "text": "{{var2}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{var2}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "var2",
+          "description": "Значение второй переменной"
+        }
+      ]
+    },
+    {
+      "id": "prim-label-3",
+      "type": "text",
+      "name": "Надпись 3",
+      "left": 50,
+      "top": 150,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "text": "{{var3}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{var3}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "var3",
+          "description": "Значение третьей переменной"
+        }
+      ]
+    }
+  ]
+}
