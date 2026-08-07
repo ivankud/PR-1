@@ -9,7 +9,14 @@
       "var3": "cccc"
     }
   },
-  "functions": [],
+  "functions": [
+    {
+      "id": "fn-1786087142974-5by1873ql",
+      "name": "showUserName",
+      "description": "Если контекст формы содержит",
+      "code": "console.log('var1:', context.var1);\nconsole.log('var2:', context.var2); \nconsole.log('var3:', context.var3);\ncontext.var3 = 'asdfasdfasdf';\nconsole.log('var3:', context.var3);"
+    }
+  ],
   "events": {},
   "canvas": {
     "width": 100,
@@ -110,6 +117,30 @@
           "description": "Значение третьей переменной"
         }
       ]
+    },
+    {
+      "id": "prim-1786087094918-guhcpvfbn",
+      "type": "button",
+      "name": "Кнопка",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 370,
+      "top": 330,
+      "style": {
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "Кнопка1",
+      "events": {
+        "click": "showUserName"
+      }
     }
   ]
 }
