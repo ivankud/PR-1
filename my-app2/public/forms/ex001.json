@@ -20,7 +20,7 @@
       "id": "fn-1786089562373-5ia7ikwf3",
       "name": "changeVar3",
       "description": "",
-      "code": "context.var3 = '123123';\nreturn context;"
+      "code": "context.var3 = '123123';\ncontext.var3 = context.event?.value;\nreturn context;"
     }
   ],
   "events": {},
