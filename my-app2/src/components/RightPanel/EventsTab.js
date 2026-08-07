@@ -10,7 +10,8 @@ export const PRIMITIVE_EVENTS = [
   'focus',
   'blur',
   'mouseenter',
-  'mouseleave'
+  'mouseleave',
+  'rowClicked'
 ];
 
 // Стандартные события формы

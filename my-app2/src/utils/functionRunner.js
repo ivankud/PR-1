@@ -144,7 +144,11 @@ export function buildEventHandlersWithUpdate(primitive, fns, context, onUpdateCo
       eventContext.event = {
         type: event?.type,
         target: event?.target,
-        value: event?.target?.value
+        value: event?.target?.value,
+        // Для AG Grid: данные строки, по которой произошёл клик
+        data: event?.data,
+        rowIndex: event?.rowIndex,
+        node: event?.node
       };
       eventContext.primitiveId = primitive?.id;
       eventContext.primitiveName = primitive?.name;

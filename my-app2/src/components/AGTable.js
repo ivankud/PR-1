@@ -28,7 +28,7 @@ function getValueByPath(obj, path) {
   return current;
 }
 
-function AGTable({ primitive, context }) {
+function AGTable({ primitive, context, onRowClicked, ...restProps }) {
   const gridRef = useRef(null);
 
   // Свойства примитива (с подстановкой из контекста)
@@ -166,6 +166,7 @@ function AGTable({ primitive, context }) {
           columnDefs={columnDefs}
           rowData={rowData}
           onGridReady={onGridReady}
+          onRowClicked={onRowClicked}
           {...gridOptions}
         />
       </div>
