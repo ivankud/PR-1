@@ -125,30 +125,6 @@
       ]
     },
     {
-      "id": "prim-1786087094918-guhcpvfbn",
-      "type": "button",
-      "name": "Кнопка",
-      "width": 120,
-      "height": 40,
-      "widthUnit": "px",
-      "heightUnit": "px",
-      "left": 220,
-      "top": 440,
-      "style": {
-        "backgroundColor": "#007bff",
-        "color": "#ffffff",
-        "border": "none",
-        "borderRadius": "4px",
-        "fontSize": "14px",
-        "cursor": "pointer"
-      },
-      "customProperties": {},
-      "text": "Кнопка1",
-      "events": {
-        "click": "exampleFunction"
-      }
-    },
-    {
       "id": "prim-1786089478361-e5it2hq58",
       "type": "input",
       "name": "Поле ввода",
@@ -188,6 +164,67 @@
         "fontSize": "14px"
       },
       "customProperties": {}
+    },
+    {
+      "id": "group-1786102553396-f17hfyg16",
+      "type": "container",
+      "name": "Группа",
+      "width": 530,
+      "height": 420,
+      "left": 1010,
+      "top": 420,
+      "style": {
+        "border": "1px dashed #999999",
+        "backgroundColor": "rgba(0, 123, 255, 0.05)",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "children": [
+        {
+          "id": "prim-1786087094918-guhcpvfbn",
+          "type": "button",
+          "name": "Кнопка",
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 0,
+          "top": 0,
+          "style": {
+            "backgroundColor": "#007bff",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer"
+          },
+          "customProperties": {},
+          "text": "Кнопка1",
+          "events": {
+            "click": "exampleFunction"
+          }
+        },
+        {
+          "id": "prim-1786102392265-6qnf376ng",
+          "type": "agtable",
+          "name": "AGTable",
+          "width": 410,
+          "height": 300,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 120,
+          "top": 120,
+          "style": {
+            "border": "1px solid #ccc",
+            "borderRadius": "4px"
+          },
+          "customProperties": {},
+          "selectable": true,
+          "autoHeight": true,
+          "title": "Таблица111",
+          "paginationPageSize": 20
+        }
+      ]
     }
   ]
 }

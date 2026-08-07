@@ -12,7 +12,8 @@ export function EditorProvider({ children }) {
   useEffect(() => {
     const primitiveFiles = [
       'button', 'text', 'input', 'textarea', 'container',
-      'image', 'checkbox', 'radio', 'select', 'table'
+      'image', 'checkbox', 'radio', 'select', 'table',
+      'agtable'
     ];
 
     Promise.all(

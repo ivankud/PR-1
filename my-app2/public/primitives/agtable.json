@@ -1,0 +1,45 @@
+{
+  "type": "agtable",
+  "name": "AGTable",
+  "icon": "📊",
+  "defaults": {
+    "width": 600,
+    "height": 300,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "border": "1px solid #ccc",
+      "borderRadius": "4px"
+    }
+  },
+  "properties": [
+    { "name": "title", "label": "Заголовок", "type": "string", "default": "Таблица" },
+    { "name": "dataSource", "label": "Источник данных", "type": "string", "default": "manual" },
+    { "name": "apiUrl", "label": "URL API", "type": "string", "default": "" },
+    { "name": "apiMethod", "label": "Метод API", "type": "string", "default": "GET" },
+    { "name": "apiHeaders", "label": "Заголовки (JSON)", "type": "string", "default": "{}" },
+    { "name": "apiDataPath", "label": "Путь к данным в ответе", "type": "string", "default": "" },
+    { "name": "columnDefs", "label": "Модель колонок (JSON)", "type": "textarea", "default": "[{\"field\":\"id\",\"headerName\":\"ID\"},{\"field\":\"name\",\"headerName\":\"Имя\"}]" },
+    { "name": "rowData", "label": "Данные (JSON)", "type": "textarea", "default": "[{\"id\":1,\"name\":\"Иван\"},{\"id\":2,\"name\":\"Пётр\"}]" },
+    { "name": "pagination", "label": "Пагинация", "type": "boolean", "default": true },
+    { "name": "paginationPageSize", "label": "Строк на странице", "type": "number", "default": 10 },
+    { "name": "sortable", "label": "Сортировка", "type": "boolean", "default": true },
+    { "name": "filterable", "label": "Фильтрация", "type": "boolean", "default": true },
+    { "name": "resizable", "label": "Изменение ширины колонок", "type": "boolean", "default": true },
+    { "name": "selectable", "label": "Выбор строк", "type": "boolean", "default": false },
+    { "name": "autoHeight", "label": "Автовысота", "type": "boolean", "default": false }
+  ],
+  "anchors": [
+    { "name": "columnDefs", "path": "agtable.columnDefs", "description": "Модель колонок из контекста" },
+    { "name": "rowData", "path": "agtable.rowData", "description": "Данные из контекста" },
+    { "name": "apiUrl", "path": "agtable.apiUrl", "description": "URL API из контекста" },
+    { "name": "apiDataPath", "path": "agtable.apiDataPath", "description": "Путь к данным в ответе API" }
+  ],
+  "render": {
+    "tag": "div",
+    "attributes": {
+      "data-agtable": "true"
+    }
+  },
+  "isContainer": false
+}

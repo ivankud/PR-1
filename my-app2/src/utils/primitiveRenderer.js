@@ -1,6 +1,7 @@
 // Утилита для рендера примитивов по шаблону
 import React from 'react';
 import { resolveTemplate } from './anchors';
+import AGTable from '../components/AGTable';
 
 // Рендер примитива по шаблону
 export function renderPrimitive(primitive, template, context) {
@@ -9,6 +10,12 @@ export function renderPrimitive(primitive, template, context) {
   const render = template.render;
   const tag = render.tag || 'div';
   const attributes = {};
+
+  // Специальный рендер для AGTable
+  if (template.type === 'agtable') {
+    // Стили передаём через primitive.style (уже применяются обёрткой)
+    return React.createElement(AGTable, { primitive, context, key: primitive.id });
+  }
 
   // Резолвим атрибуты
   if (render.attributes) {
