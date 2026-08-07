@@ -153,7 +153,8 @@ export function buildEventHandlersWithUpdate(primitive, fns, context, onUpdateCo
       const result = callFunction(fns, fnName, eventContext);
       
       // Если функция вернула обновленный объект контекста, применяем его
-      if (onUpdateContext && result && typeof result === 'object' && !result.event) {
+      // (служебные поля event/primitiveId/primitiveName отфильтруются в handleContextUpdate)
+      if (onUpdateContext && result && typeof result === 'object') {
         onUpdateContext(result);
       }
     };

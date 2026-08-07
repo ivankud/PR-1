@@ -12,9 +12,15 @@
   "functions": [
     {
       "id": "fn-1786087142974-5by1873ql",
-      "name": "showUserName",
-      "description": "Если контекст формы содержит",
-      "code": "console.log('var1:', context.var1);\nconsole.log('var2:', context.var2); \nconsole.log('var3:', context.var3);\ncontext.var3 = 'asdfasdfasdf';\nconsole.log('var3:', context.var3);"
+      "name": "exampleFunction",
+      "description": "Меняет переменную контекста и возвращает обновлённый контекст",
+      "code": "console.log('var1:', context.var1);\nconsole.log('var2:', context.var2);\nconsole.log('var3:', context.var3);\n\n// Меняем значение переменной контекста\ncontext.var1 = 'новое значение var1';\ncontext.var2 = 'новое значение var2';\n\n// Возвращаем обновлённый контекст, чтобы он применился ко всей форме\nreturn context;"
+    },
+    {
+      "id": "fn-1786089562373-5ia7ikwf3",
+      "name": "changeVar3",
+      "description": "",
+      "code": "context.var3 = '123123';\nreturn context;"
     }
   ],
   "events": {},
@@ -139,7 +145,30 @@
       "customProperties": {},
       "text": "Кнопка1",
       "events": {
-        "click": "showUserName"
+        "click": "exampleFunction"
+      }
+    },
+    {
+      "id": "prim-1786089478361-e5it2hq58",
+      "type": "input",
+      "name": "Поле ввода",
+      "width": 200,
+      "height": 35,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 600,
+      "top": 233,
+      "style": {
+        "border": "1px solid #cccccc",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "14px"
+      },
+      "customProperties": {},
+      "value": "{{var3}}",
+      "defaultValue": "{{var3}}",
+      "events": {
+        "change": "changeVar3"
       }
     }
   ]

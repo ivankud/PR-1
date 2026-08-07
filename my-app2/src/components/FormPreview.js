@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useEditor } from '../state/EditorContext';
 import { renderPrimitive, getPrimitiveTemplate } from '../utils/primitiveRenderer';
 import { loadJson } from '../utils/jsonUtils';
-import { buildFunctions, callFunction, buildEventHandlers } from '../utils/functionRunner';
+import { buildFunctions, callFunction, buildEventHandlersWithUpdate } from '../utils/functionRunner';
 import { getSizeStyle, getCanvasSizeStyle } from '../utils/sizeUtils';
 
 // Рендер примитива в режиме предпросмотра (без выделения и drag&drop)
@@ -29,7 +29,7 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
     
     // Клонируем контекст для каждого обработчика
     const ctxClone = JSON.parse(JSON.stringify(context));
-    return buildEventHandlers(primitive, fns, ctxClone, onUpdateContext);
+    return buildEventHandlersWithUpdate(primitive, fns, ctxClone, onUpdateContext);
   }, [primitive?.id, primitive?.events, context, fns, onUpdateContext]);
 
   // Рендерим примитив и прикрепляем обработчики событий напрямую к элементу
@@ -118,7 +118,10 @@ function FormPreview({ onBack }) {
 
   // Обработка отправки формы и обновления контекста из событий
   const handleContextUpdate = (newContext) => {
-    setContextData(prev => ({ ...prev, ...newContext }));
+    if (!newContext || typeof newContext !== 'object') return;
+    // Убираем служебные поля (event, primitiveId, primitiveName), чтобы они не попали в контекст
+    const { event, primitiveId, primitiveName, ...cleanContext } = newContext;
+    setContextData(prev => ({ ...prev, ...cleanContext }));
   };
 
   if (!form) {
