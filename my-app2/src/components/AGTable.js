@@ -97,6 +97,49 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Состояние видимости колонок и всплывающего окна
+  const [hiddenColumns, setHiddenColumns] = useState(() => {
+    // Инициализируем скрытыми все колонки, у которых есть поле hide в модели
+    const hidden = {};
+    for (const col of columnDefs) {
+      if (col.hide) hidden[col.field || col.colId] = true;
+    }
+    return hidden;
+  });
+  const [columnsMenuOpen, setColumnsMenuOpen] = useState(false);
+  const columnsMenuRef = useRef(null);
+
+  // Закрытие всплывающего окна при клике вне его
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (columnsMenuRef.current && !columnsMenuRef.current.contains(e.target)) {
+        setColumnsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Применяем скрытие колонок к columnDefs
+  const visibleColumnDefs = useMemo(() => {
+    return columnDefs.map(col => {
+      const key = col.field || col.colId;
+      return {
+        ...col,
+        hide: hiddenColumns[key] === true
+      };
+    });
+  }, [columnDefs, hiddenColumns]);
+
+  // Переключение видимости колонки
+  const toggleColumn = (col) => {
+    const key = col.field || col.colId;
+    setHiddenColumns(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   // Состояние серверной пагинации
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(paginationPageSize);
@@ -232,6 +275,8 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
     paginationPageSizeSelector: PAGE_SIZE_OPTIONS,
     rowSelection: selectable ? 'multiple' : undefined,
     suppressRowClickSelection: !selectable,
+    // Запрет удаления колонок перетаскиванием за пределы таблицы
+    suppressDragLeaveHidesColumns: true,
     animateRows: true,
     domLayout: autoHeight ? 'autoHeight' : 'normal'
   }), [useClientPagination, paginationPageSize, selectable, autoHeight]);
@@ -253,12 +298,61 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
           flex: 1,
           width: '100%',
           minHeight: 0,
-          height: autoHeight ? undefined : '100%'
+          height: autoHeight ? undefined : '100%',
+          position: 'relative'
         }}
       >
+        {/* Кнопка управления колонками в левом верхнем углу */}
+        <div className="agtable-columns-menu" ref={columnsMenuRef}>
+          <button
+            className="agtable-columns-toggle"
+            onClick={() => setColumnsMenuOpen(!columnsMenuOpen)}
+            title="Управление колонками"
+          >
+            <svg
+              className="agtable-columns-icon"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+              <line x1="3" y1="15" x2="21" y2="15" />
+              <line x1="9" y1="3" x2="9" y2="21" />
+              <line x1="15" y1="3" x2="15" y2="21" />
+            </svg>
+          </button>
+          {columnsMenuOpen && (
+            <div className="agtable-columns-popup">
+              <div className="agtable-columns-header">Отображаемые колонки</div>
+              <div className="agtable-columns-list">
+                {columnDefs.map(col => {
+                  const key = col.field || col.colId;
+                  const isHidden = hiddenColumns[key] === true;
+                  return (
+                    <label key={key} className="agtable-column-item">
+                      <input
+                        type="checkbox"
+                        checked={!isHidden}
+                        onChange={() => toggleColumn(col)}
+                      />
+                      <span>{col.headerName || col.field || col.colId}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
         <AgGridReact
           ref={gridRef}
-          columnDefs={columnDefs}
+          columnDefs={visibleColumnDefs}
           rowData={rowData}
           onGridReady={onGridReady}
           onRowClicked={onRowClicked}

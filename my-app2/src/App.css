@@ -1212,6 +1212,88 @@ body {
   flex-shrink: 0;
 }
 
+/* ===== Менеджер колонок AGTable ===== */
+.agtable-columns-menu {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.agtable-columns-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 6px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.agtable-columns-icon {
+  display: block;
+  color: #333;
+}
+
+.agtable-columns-toggle:hover {
+  background: #f0f0f0;
+  border-color: #007bff;
+}
+
+.agtable-columns-popup {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 220px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 20;
+}
+
+.agtable-columns-header {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+}
+
+.agtable-columns-list {
+  padding: 6px;
+}
+
+.agtable-column-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.agtable-column-item:hover {
+  background: #f0f0f0;
+}
+
+.agtable-column-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
 /* ===== Панель пагинации AGTable ===== */
 .agtable-pagination {
   display: flex;
