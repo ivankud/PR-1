@@ -38,7 +38,9 @@ function buildApiUrl(baseUrl, { page, size, sortField, sortOrder }) {
   if (!baseUrl) return baseUrl;
   // Формируем параметры вручную, чтобы запятая не кодировалась как %2C
   const params = [];
-  params.push(`page=${page}`);
+  // Параметр page в запросе 0-based (начинается с 0),
+  // визуально страница отображается как 1-based (начинается с 1)
+  params.push(`page=${page - 1}`);
   params.push(`size=${size}`);
   if (sortField) {
     // Формат: sort=Поле,asc или sort=Поле,desc
