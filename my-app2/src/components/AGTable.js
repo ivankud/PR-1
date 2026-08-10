@@ -36,15 +36,16 @@ const PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 500];
 // Например: ?page=1&size=10&sort=Population
 function buildApiUrl(baseUrl, { page, size, sortField, sortOrder }) {
   if (!baseUrl) return baseUrl;
-  const url = new URL(baseUrl, window.location.origin);
-  url.searchParams.set('page', page);
-  url.searchParams.set('size', size);
+  // Формируем параметры вручную, чтобы запятая не кодировалась как %2C
+  const params = [];
+  params.push(`page=${page}`);
+  params.push(`size=${size}`);
   if (sortField) {
     // Формат: sort=Поле,asc или sort=Поле,desc
-    const sortValue = `${sortField},${sortOrder === 'desc' ? 'desc' : 'asc'}`;
-    url.searchParams.set('sort', sortValue);
+    params.push(`sort=${sortField},${sortOrder === 'desc' ? 'desc' : 'asc'}`);
   }
-  return url.toString().replace(window.location.origin, '');
+  const separator = baseUrl.includes('?') ? '&' : '?';
+  return `${baseUrl}${separator}${params.join('&')}`;
 }
 
 function AGTable({ primitive, context, onRowClicked, ...restProps }) {
@@ -161,11 +162,10 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
     if (!serverPagination) {
       // Добавляем только параметр сортировки, если она задана
       if (!sortField) return apiUrlRaw;
-      const url = new URL(apiUrlRaw, window.location.origin);
-      // Формат: sort=Поле,asc или sort=Поле,desc
+      // Формируем вручную, чтобы запятая не кодировалась как %2C
       const sortValue = `${sortField},${sortOrder === 'desc' ? 'desc' : 'asc'}`;
-      url.searchParams.set('sort', sortValue);
-      return url.toString().replace(window.location.origin, '');
+      const separator = apiUrlRaw.includes('?') ? '&' : '?';
+      return `${apiUrlRaw}${separator}sort=${sortValue}`;
     }
     return buildApiUrl(apiUrlRaw, {
       page: currentPage,
