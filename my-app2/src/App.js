@@ -7,6 +7,7 @@ import AppNav from './components/AppNav';
 import HomePage from './components/HomePage';
 import FormEditorRoute from './components/FormEditorRoute';
 import FormPreviewRoute from './components/FormPreviewRoute';
+import LoginPage from './components/LoginPage';
 
 // Общий макет с постоянным навигационным меню
 function AppLayout() {
@@ -35,6 +36,9 @@ function App() {
 
             {/* Готовые спроектированные веб-формы */}
             <Route path="/forms/:formId" element={<FormPreviewRoute />} />
+
+            {/* Страница авторизации — сохранение логина/пароля для API */}
+            <Route path="/login" element={<LoginPage />} />
 
             {/* Все остальные маршруты → главная */}
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -450,6 +450,139 @@ const primitiveFiles = [
 }
 ```
 
+### AGTable (продвинутая таблица на AG Grid)
+
+Мощная таблица на основе библиотеки **AG Grid**. Поддерживает сортировку, фильтрацию, изменение ширины колонок, пагинацию, выбор строк, автовысоту, а также загрузку данных из API или из ручного ввода.
+
+```json
+{
+  "type": "agtable",
+  "name": "AGTable",
+  "icon": "📊",
+  "defaults": {
+    "width": 600,
+    "height": 300,
+    "left": 0,
+    "top": 0,
+    "style": {
+      "border": "1px solid #ccc",
+      "borderRadius": "4px"
+    }
+  },
+  "properties": [
+    { "name": "title", "label": "Заголовок", "type": "string", "default": "Таблица" },
+    { "name": "dataSource", "label": "Источник данных", "type": "string", "default": "manual" },
+    { "name": "apiUrl", "label": "URL API", "type": "string", "default": "" },
+    { "name": "apiMethod", "label": "Метод API", "type": "string", "default": "GET" },
+    { "name": "apiHeaders", "label": "Заголовки (JSON)", "type": "string", "default": "{}" },
+    { "name": "apiDataPath", "label": "Путь к данным в ответе", "type": "string", "default": "" },
+    { "name": "columnDefs", "label": "Модель колонок (JSON)", "type": "textarea", "default": "[{\"field\":\"id\",\"headerName\":\"ID\"},{\"field\":\"name\",\"headerName\":\"Имя\"}]" },
+    { "name": "rowData", "label": "Данные (JSON)", "type": "textarea", "default": "[{\"id\":1,\"name\":\"Иван\"},{\"id\":2,\"name\":\"Пётр\"}]" },
+    { "name": "pagination", "label": "Пагинация", "type": "boolean", "default": true },
+    { "name": "paginationPageSize", "label": "Строк на странице", "type": "number", "default": 10 },
+    { "name": "sortable", "label": "Сортировка", "type": "boolean", "default": true },
+    { "name": "filterable", "label": "Фильтрация", "type": "boolean", "default": true },
+    { "name": "resizable", "label": "Изменение ширины колонок", "type": "boolean", "default": true },
+    { "name": "selectable", "label": "Выбор строк", "type": "boolean", "default": false },
+    { "name": "autoHeight", "label": "Автовысота", "type": "boolean", "default": false }
+  ],
+  "anchors": [
+    { "name": "columnDefs", "path": "agtable.columnDefs", "description": "Модель колонок из контекста" },
+    { "name": "rowData", "path": "agtable.rowData", "description": "Данные из контекста" },
+    { "name": "apiUrl", "path": "agtable.apiUrl", "description": "URL API из контекста" },
+    { "name": "apiDataPath", "path": "agtable.apiDataPath", "description": "Путь к данным в ответе API" }
+  ],
+  "render": {
+    "tag": "div",
+    "attributes": {
+      "data-agtable": "true"
+    }
+  },
+  "isContainer": false
+}
+```
+
+#### Свойства AGTable
+
+| Свойство | Тип | По умолчанию | Описание |
+|----------|-----|--------------|----------|
+| `title` | string | `Таблица` | Заголовок, отображаемый над таблицей. Пустая строка скрывает заголовок |
+| `dataSource` | string | `manual` | Источник данных: `manual` (ручной ввод) или `api` (загрузка с сервера) |
+| `apiUrl` | string | `` | URL API для загрузки данных (используется при `dataSource: "api"`) |
+| `apiMethod` | string | `GET` | HTTP-метод запроса: `GET`, `POST`, `PUT`, `DELETE` и др. |
+| `apiHeaders` | string (JSON) | `{}` | Дополнительные HTTP-заголовки в формате JSON, например `{"Authorization": "Bearer token"}` |
+| `apiDataPath` | string | `` | Путь к массиву данных в ответе API через точку (dot notation), например `data.items` |
+| `columnDefs` | textarea (JSON) | `[{"field":"id","headerName":"ID"},{"field":"name","headerName":"Имя"}]` | Модель колонок — массив объектов с полями `field` (поле данных) и `headerName` (заголовок) |
+| `rowData` | textarea (JSON) | `[{"id":1,"name":"Иван"},{"id":2,"name":"Пётр"}]` | Данные таблицы — массив объектов (используется при `dataSource: "manual"`) |
+| `pagination` | boolean | `true` | Включить пагинацию (разбиение на страницы) |
+| `paginationPageSize` | number | `10` | Количество строк на одной странице |
+| `sortable` | boolean | `true` | Включить сортировку по колонкам (клик по заголовку) |
+| `filterable` | boolean | `true` | Включить фильтрацию по колонкам |
+| `resizable` | boolean | `true` | Разрешить изменение ширины колонок перетаскиванием |
+| `selectable` | boolean | `false` | Включить выбор строк (множественный) |
+| `autoHeight` | boolean | `false` | Автоматическая высота таблицы по содержимому (без внутренней прокрутки) |
+
+#### Модель колонок (`columnDefs`)
+
+Каждая колонка — объект с полями:
+
+| Поле | Описание |
+|------|----------|
+| `field` | Имя поля в данных (обязательное) |
+| `headerName` | Заголовок колонки (если не указан, используется `field`) |
+| `sortable` | Переопределить сортировку для конкретной колонки |
+| `filter` | Переопределить фильтрацию для конкретной колонки |
+| `resizable` | Переопределить изменение ширины для конкретной колонки |
+
+Пример с переопределением:
+
+```json
+[
+  { "field": "id", "headerName": "ID", "width": 80, "sortable": false },
+  { "field": "name", "headerName": "Имя", "filter": "agTextColumnFilter" },
+  { "field": "age", "headerName": "Возраст", "resizable": false }
+]
+```
+
+#### Источник данных: API
+
+При `dataSource: "api"` таблица загружает данные с сервера:
+
+1. Выполняется запрос на `apiUrl` методом `apiMethod` с заголовками `apiHeaders`.
+2. Ответ парсится как JSON.
+3. Если задан `apiDataPath` (например `data.items`), из ответа извлекается массив по этому пути.
+4. Если извлечённое значение — массив, оно становится данными таблицы; иначе таблица остаётся пустой.
+
+Пример конфигурации для API:
+
+```json
+{
+  "dataSource": "api",
+  "apiUrl": "https://api.example.com/users",
+  "apiMethod": "GET",
+  "apiHeaders": "{\"Authorization\": \"Bearer token\"}",
+  "apiDataPath": "data.users"
+}
+```
+
+#### Якоря (anchors)
+
+AGTable поддерживает подстановку данных из контекста формы:
+
+| Якорь | Путь в контексте | Описание |
+|-------|------------------|----------|
+| `columnDefs` | `agtable.columnDefs` | Модель колонок из контекста |
+| `rowData` | `agtable.rowData` | Данные таблицы из контекста |
+| `apiUrl` | `agtable.apiUrl` | URL API из контекста |
+| `apiDataPath` | `agtable.apiDataPath` | Путь к данным в ответе API |
+
+#### Примечания
+
+- Приоритет подстановки значений: свойства примитива → контекст формы → значение по умолчанию.
+- `apiHeaders` мемоизируется, чтобы избежать бесконечного цикла перезагрузки данных.
+- При `autoHeight: true` таблица подстраивает высоту под количество строк, а внутренняя прокрутка отключается.
+- Ширина колонок автоматически подгоняется под ширину контейнера при первой отрисовке сетки.
+
 ---
 
 ## 6. Подстановка данных из контекста

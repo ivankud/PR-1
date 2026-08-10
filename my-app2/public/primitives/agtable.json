@@ -18,6 +18,8 @@
     { "name": "apiUrl", "label": "URL API", "type": "string", "default": "" },
     { "name": "apiMethod", "label": "Метод API", "type": "string", "default": "GET" },
     { "name": "apiHeaders", "label": "Заголовки (JSON)", "type": "string", "default": "{}" },
+    { "name": "useAuth", "label": "Использовать авторизацию", "type": "boolean", "default": false },
+    { "name": "serverPagination", "label": "Серверная пагинация", "type": "boolean", "default": false },
     { "name": "apiDataPath", "label": "Путь к данным в ответе", "type": "string", "default": "" },
     { "name": "columnDefs", "label": "Модель колонок (JSON)", "type": "textarea", "default": "[{\"field\":\"id\",\"headerName\":\"ID\"},{\"field\":\"name\",\"headerName\":\"Имя\"}]" },
     { "name": "rowData", "label": "Данные (JSON)", "type": "textarea", "default": "[{\"id\":1,\"name\":\"Иван\"},{\"id\":2,\"name\":\"Пётр\"}]" },

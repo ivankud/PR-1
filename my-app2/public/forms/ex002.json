@@ -203,8 +203,8 @@
       "height": 300,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 400,
-      "top": 410,
+      "left": 870,
+      "top": 310,
       "style": {
         "border": "1px solid #ccc",
         "borderRadius": "4px"
@@ -213,7 +213,51 @@
       "rowData": "[\n\t{\n        \"id\": 1,\n        \"name\": \"Иван\"\n    }, \n\t{\n        \"id\": 2,\n        \"name\": \"Пётр2\"\n    }, \n\t{\n        \"id\": 3,\n        \"name\": \"Пётр3\"\n    }, \n\t{\n        \"id\": 4,\n        \"name\": \"Пётр4\"\n    }, \n\t{\n        \"id\": 5,\n        \"name\": \"Пётр5\"\n    }, \n\t{\n        \"id\": 6,\n        \"name\": \"Пётр6\"\n    }, \n\t{\n        \"id\": 7,\n        \"name\": \"Пётр7\"\n    }, \n\t{\n        \"id\": 8,\n        \"name\": \"Пётр8\"\n    }, \n\t{\n        \"id\": 9,\n        \"name\": \"Пётр9\"\n    }, \n\t{\n        \"id\": 10,\n        \"name\": \"Пётр10\"\n    }, \n\t{\n        \"id\": 11,\n        \"name\": \"Пётр11\"\n    },\n\t{\n        \"id\": 12,\n        \"name\": \"Иван12\"\n    }, \n\t{\n        \"id\": 13,\n        \"name\": \"Пётр13\"\n    }, \n\t{\n        \"id\": 14,\n        \"name\": \"Пётр14\"\n    }, \n\t{\n        \"id\": 15,\n        \"name\": \"Пётр15\"\n    }, \n\t{\n        \"id\": 16,\n        \"name\": \"Пётр16\"\n    }, \n\t{\n        \"id\": 17,\n        \"name\": \"Пётр17\"\n    }, \n\t{\n        \"id\": 18,\n        \"name\": \"Пётр18\"\n    }, \n\t{\n        \"id\": 19,\n        \"name\": \"Пётр19\"\n    }, \n\t{\n        \"id\": 20,\n        \"name\": \"Пётр20\"\n    }, \n\t{\n        \"id\": 31,\n        \"name\": \"Пётр31\"\n    }\n]\n",
       "events": {
         "rowClicked": "logRowClick"
-      }
+      },
+      "apiUrl": ""
+    },
+    {
+      "id": "prim-1786339822648-9c5zd1t9p",
+      "type": "agtable",
+      "name": "AGTable1",
+      "width": 600,
+      "height": 300,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 60,
+      "top": 460,
+      "style": {
+        "border": "1px solid #ccc",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "columnDefs": "[\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"title\",\n        \"headerName\": \"Заголовок\"\n    },\n\t{\n        \"field\": \"body\",\n        \"headerName\": \"Текст\"\n    }\n]\n",
+      "apiUrl": "https://jsonplaceholder.typicode.com/posts",
+      "dataSource": "api"
+    },
+    {
+      "id": "prim-1786340816100-kmkof9wzc",
+      "type": "agtable",
+      "name": "AGTable",
+      "width": 600,
+      "height": 300,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 870,
+      "top": 660,
+      "style": {
+        "border": "1px solid #ccc",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "dataSource": "api",
+      "apiUrl": "http://172.16.50.42:9977/app/api/1.0/states",
+      "rowData": "",
+      "columnDefs": "[\n\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"smnemocode\",\n        \"headerName\": \"Код\"\n    },\n\t{\n        \"field\": \"scaption\",\n        \"headerName\": \"Наименование\"\n    }\n]\n",
+      "useAuth": true,
+      "apiDataPath": "content",
+      "paginationPageSize": 10,
+      "serverPagination": true
     }
   ]
 }

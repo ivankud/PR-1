@@ -120,6 +120,14 @@ function AppNav() {
         >
           🏠 Главная
         </NavLink>
+
+        <NavLink
+          to="/login"
+          className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}
+          title="Сохранение логина и пароля для запросов к API"
+        >
+          🔐 Авторизация
+        </NavLink>
       </div>
     </nav>
   );
