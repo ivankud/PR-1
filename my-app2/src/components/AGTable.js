@@ -40,7 +40,8 @@ function buildApiUrl(baseUrl, { page, size, sortField, sortOrder }) {
   url.searchParams.set('page', page);
   url.searchParams.set('size', size);
   if (sortField) {
-    const sortValue = sortOrder === 'desc' ? `-${sortField}` : sortField;
+    // Формат: sort=Поле,asc или sort=Поле,desc
+    const sortValue = `${sortField},${sortOrder === 'desc' ? 'desc' : 'asc'}`;
     url.searchParams.set('sort', sortValue);
   }
   return url.toString().replace(window.location.origin, '');
@@ -87,11 +88,13 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
     const defs = safeParse(columnDefsRaw, []);
     return defs.map(col => ({
       ...col,
-      sortable: col.sortable !== undefined ? col.sortable : sortable,
+      // При API-источнике отключаем клиентскую сортировку AG Grid,
+      // чтобы сортировка происходила только на сервере
+      sortable: dataSource === 'api' ? false : (col.sortable !== undefined ? col.sortable : sortable),
       filter: col.filter !== undefined ? col.filter : filterable,
       resizable: col.resizable !== undefined ? col.resizable : resizable
     }));
-  }, [columnDefsRaw, sortable, filterable, resizable]);
+  }, [columnDefsRaw, sortable, filterable, resizable, dataSource]);
 
   const [rowData, setRowData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -153,7 +156,17 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
   // Построение URL API с параметрами
   const builtApiUrl = useMemo(() => {
     if (dataSource !== 'api' || !apiUrlRaw) return apiUrlRaw;
-    if (!serverPagination) return apiUrlRaw;
+    // Если серверная пагинация выключена, но источник — API,
+    // при сортировке всё равно перезапрашиваем данные с сервера
+    if (!serverPagination) {
+      // Добавляем только параметр сортировки, если она задана
+      if (!sortField) return apiUrlRaw;
+      const url = new URL(apiUrlRaw, window.location.origin);
+      // Формат: sort=Поле,asc или sort=Поле,desc
+      const sortValue = `${sortField},${sortOrder === 'desc' ? 'desc' : 'asc'}`;
+      url.searchParams.set('sort', sortValue);
+      return url.toString().replace(window.location.origin, '');
+    }
     return buildApiUrl(apiUrlRaw, {
       page: currentPage,
       size: pageSize,
@@ -227,21 +240,35 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
     return () => { cancelled = true; };
   }, [dataSource, builtApiUrl, apiMethod, apiHeaders, useAuth, apiDataPath, rowDataRaw, serverPagination]);
 
-  // Обработчик сортировки для серверной пагинации
-  const onSortChanged = useCallback((params) => {
-    if (!serverPagination) return;
-    const sortModel = params?.api?.getSortModel?.() || [];
-    if (sortModel.length === 0) {
+  // Обработчик клика по заголовку колонки
+  // При API-источнике: перезапрашиваем данные с сервера с сортировкой по полю.
+  // Цикл сортировки: asc → desc → без сортировки → asc
+  const onColumnHeaderClicked = useCallback((params) => {
+    // Только для данных из API
+    if (dataSource !== 'api') return;
+    const colId = params?.column?.getColId?.() || params?.column?.colId;
+    if (!colId) return;
+
+    // Определяем следующее состояние сортировки
+    let nextSort = 'asc';
+    if (sortField === colId) {
+      if (sortOrder === 'asc') nextSort = 'desc';
+      else if (sortOrder === 'desc') nextSort = '';
+      else nextSort = 'asc';
+    }
+
+    if (!nextSort) {
+      // Сброс сортировки
       setSortField('');
       setSortOrder('');
       setCurrentPage(1);
       return;
     }
-    const { colId, sort } = sortModel[0];
+
     setSortField(colId);
-    setSortOrder(sort || 'asc');
+    setSortOrder(nextSort);
     setCurrentPage(1);
-  }, [serverPagination]);
+  }, [dataSource, sortField, sortOrder]);
 
   // Обработчики пагинации
   const handlePrevPage = () => {
@@ -356,7 +383,7 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
           rowData={rowData}
           onGridReady={onGridReady}
           onRowClicked={onRowClicked}
-          onSortChanged={onSortChanged}
+          onColumnHeaderClicked={onColumnHeaderClicked}
           {...gridOptions}
         />
       </div>

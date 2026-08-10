@@ -198,13 +198,13 @@
     {
       "id": "prim-1786102930144-q2nldz6fu",
       "type": "agtable",
-      "name": "AGTable",
+      "name": "AGTable2",
       "width": 600,
       "height": 300,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 870,
-      "top": 310,
+      "left": 770,
+      "top": 460,
       "style": {
         "border": "1px solid #ccc",
         "borderRadius": "4px"
@@ -224,8 +224,8 @@
       "height": 300,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 60,
-      "top": 460,
+      "left": 770,
+      "top": 780,
       "style": {
         "border": "1px solid #ccc",
         "borderRadius": "4px"
@@ -238,13 +238,13 @@
     {
       "id": "prim-1786340816100-kmkof9wzc",
       "type": "agtable",
-      "name": "AGTable",
+      "name": "AGTable3",
       "width": 600,
       "height": 300,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 870,
-      "top": 660,
+      "left": 70,
+      "top": 440,
       "style": {
         "border": "1px solid #ccc",
         "borderRadius": "4px"
@@ -257,7 +257,8 @@
       "useAuth": true,
       "apiDataPath": "content",
       "paginationPageSize": 10,
-      "serverPagination": true
+      "serverPagination": true,
+      "selectable": false
     }
   ]
 }
