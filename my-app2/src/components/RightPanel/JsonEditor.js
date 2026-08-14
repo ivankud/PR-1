@@ -1,5 +1,6 @@
-// Редактор JSON данных примитива
+// Редактор JSON/JSON5 данных примитива
 import React, { useState, useEffect } from 'react';
+import JSON5 from 'json5';
 import { useEditor } from '../../state/EditorContext';
 
 function JsonEditor({ primitive }) {
@@ -10,7 +11,7 @@ function JsonEditor({ primitive }) {
 
   // Синхронизация при смене примитива
   useEffect(() => {
-    setJsonText(JSON.stringify(primitive, null, 2));
+    setJsonText(JSON5.stringify(primitive, null, 2));
     setError(null);
     setIsEditing(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -24,7 +25,7 @@ function JsonEditor({ primitive }) {
 
   const handleApply = () => {
     try {
-      const parsed = JSON.parse(jsonText);
+      const parsed = JSON5.parse(jsonText);
       if (!parsed.id) {
         setError('JSON должен содержать поле id');
         return;
@@ -33,19 +34,19 @@ function JsonEditor({ primitive }) {
       setError(null);
       setIsEditing(false);
     } catch (e) {
-      setError('Ошибка парсинга JSON: ' + e.message);
+      setError('Ошибка парсинга JSON5: ' + e.message);
     }
   };
 
   const handleReset = () => {
-    setJsonText(JSON.stringify(primitive, null, 2));
+    setJsonText(JSON5.stringify(primitive, null, 2));
     setError(null);
     setIsEditing(false);
   };
 
   return (
     <div className="json-editor">
-      <div className="properties-section-title">JSON данных</div>
+      <div className="properties-section-title">JSON данных (JSON5, поддерживает комментарии)</div>
       <textarea
         className="json-textarea"
         value={jsonText}

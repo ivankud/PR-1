@@ -1,7 +1,8 @@
-// Модальное диалоговое окно для редактирования JSON-свойства
+// Модальное диалоговое окно для редактирования JSON/JSON5-свойства
 import React, { useState, useEffect } from 'react';
+import JSON5 from 'json5';
 
-function JsonDialog({ title, value, onSave, onClose }) {
+function JsonDialog({ title, value, onSave, onClose, format = 'json' }) {
   const [text, setText] = useState('');
   const [error, setError] = useState(null);
 
@@ -13,11 +14,16 @@ function JsonDialog({ title, value, onSave, onClose }) {
 
   const handleSave = () => {
     try {
-      JSON.parse(text);
+      if (format === 'json5') {
+        // JSON5 поддерживает комментарии и другие расширения
+        JSON5.parse(text);
+      } else {
+        JSON.parse(text);
+      }
       onSave(text);
       onClose();
     } catch (e) {
-      setError('Ошибка парсинга JSON: ' + e.message);
+      setError('Ошибка парсинга ' + (format === 'json5' ? 'JSON5' : 'JSON') + ': ' + e.message);
     }
   };
 
@@ -25,7 +31,7 @@ function JsonDialog({ title, value, onSave, onClose }) {
     <div className="json-dialog-overlay" onClick={onClose}>
       <div className="json-dialog" onClick={(e) => e.stopPropagation()}>
         <div className="json-dialog-header">
-          <span className="json-dialog-title">{title}</span>
+          <span className="json-dialog-title">{title} {format === 'json5' && '(JSON5, поддерживает комментарии)'}</span>
           <button className="json-dialog-close" onClick={onClose} title="Закрыть">✕</button>
         </div>
         <textarea

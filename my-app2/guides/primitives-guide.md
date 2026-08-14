@@ -474,10 +474,10 @@ const primitiveFiles = [
     { "name": "dataSource", "label": "Источник данных", "type": "string", "default": "manual" },
     { "name": "apiUrl", "label": "URL API", "type": "string", "default": "" },
     { "name": "apiMethod", "label": "Метод API", "type": "string", "default": "GET" },
-    { "name": "apiHeaders", "label": "Заголовки (JSON)", "type": "string", "default": "{}" },
+    { "name": "apiHeaders", "label": "Заголовки (JSON5)", "type": "json5", "default": "{}" },
     { "name": "apiDataPath", "label": "Путь к данным в ответе", "type": "string", "default": "" },
-    { "name": "columnDefs", "label": "Модель колонок (JSON)", "type": "textarea", "default": "[{\"field\":\"id\",\"headerName\":\"ID\"},{\"field\":\"name\",\"headerName\":\"Имя\"}]" },
-    { "name": "rowData", "label": "Данные (JSON)", "type": "textarea", "default": "[{\"id\":1,\"name\":\"Иван\"},{\"id\":2,\"name\":\"Пётр\"}]" },
+    { "name": "columnDefs", "label": "Модель колонок (JSON5)", "type": "json5", "default": "[\n  // Первичный ключ\n  { field: 'id', headerName: 'ID', width: 80 },\n  // Основное имя\n  { field: 'name', headerName: 'Имя' }\n]" },
+    { "name": "rowData", "label": "Данные (JSON5)", "type": "json5", "default": "[\n  { id: 1, name: 'Иван' },\n  { id: 2, name: 'Пётр' }\n]" },
     { "name": "pagination", "label": "Пагинация", "type": "boolean", "default": true },
     { "name": "paginationPageSize", "label": "Строк на странице", "type": "number", "default": 10 },
     { "name": "sortable", "label": "Сортировка", "type": "boolean", "default": true },
@@ -530,17 +530,119 @@ const primitiveFiles = [
 |------|----------|
 | `field` | Имя поля в данных (обязательное) |
 | `headerName` | Заголовок колонки (если не указан, используется `field`) |
+| `width` | Ширина колонки в px |
 | `sortable` | Переопределить сортировку для конкретной колонки |
 | `filter` | Переопределить фильтрацию для конкретной колонки |
 | `resizable` | Переопределить изменение ширины для конкретной колонки |
+| `notFiltered` | `true` — запретить фильтрацию по полю |
+| `notSorted` | `true` — запретить сортировку по полю |
+| `hidden` | `true` — скрыть поле полностью (не отображается даже в меню колонок) |
+| `cellRendererFramework` | Функция/React-компонент для кастомного отображения содержимого ячейки. Получает контекст формы и данные строки (`params.data`) |
 
-Пример с переопределением:
+`cellRendererFramework` позволяет определить своё содержимое ячейки. Функция получает параметр `params`, из которого доступны:
+- `params.data` — объект данных текущей строки
+- `params.context` — контекст AG Grid (можно передать контекст формы)
+- `params.value` — значение поля текущей ячейки
 
-```json
+Пример с `cellRendererFramework`:
+
+```jsx
+{
+  field: 'action',
+  headerName: '',
+  width: 130,
+  resizable: false,
+  notFiltered: true,
+  notSorted: true,
+  hidden: true,
+  cellRendererFramework: (params) => {
+    const row = params.data;
+    const ref = React.createRef();
+    const refEdit = React.createRef();
+
+    return (
+      <>
+        <DataProviderCRUD>
+          {(provider) => {
+            const { deleting } = provider.state;
+            const isProviderBusy = deleting.length > 0;
+            return (
+              <>
+                <Button
+                  id={row.id}
+                  className="mr-1"
+                  color="secondary"
+                  innerRef={refEdit}
+                  disabled={
+                    isProviderBusy ||
+                    !row.accesses?.[ACCESS_FUNCTIONS.SMK_AUDITPROGRAMSTEP_EDIT]?.[
+                      ACCESS_FUNCTION_PROPS.ENABLED
+                    ].val
+                  }
+                  size="sm"
+                  onClick={() => {
+                    onEditCorrection();
+                  }}>
+                  <FontAwesomeIcon icon="pencil-alt" fixedWidth />
+                </Button>
+                <UncontrolledTooltip placement="left" target={refEdit}>
+                  Редактировать
+                  <div>
+                    {
+                      row.accesses?.[ACCESS_FUNCTIONS.SMK_AUDITPROGRAMSTEP_EDIT]?.[
+                        ACCESS_FUNCTION_PROPS.ENABLED
+                      ].sreason
+                    }
+                  </div>
+                </UncontrolledTooltip>
+              </>
+            );
+          }}
+        </DataProviderCRUD>
+      </>
+    );
+  },
+}
+```
+
+#### JSON5 в свойствах AGTable
+
+Свойства `columnDefs`, `rowData` и `apiHeaders` используют формат **JSON5** — расширение JSON, которое позволяет:
+
+- **Комментарии** `//` и `/* */`
+- **Одинарные кавычки** `'...'`
+- **Трейлинг-запятые** (запятая после последнего элемента)
+- **Без кавычек** у ключей объектов
+- **Многострочные строки**
+
+Пример `columnDefs` в формате JSON5:
+
+```json5
 [
-  { "field": "id", "headerName": "ID", "width": 80, "sortable": false },
-  { "field": "name", "headerName": "Имя", "filter": "agTextColumnFilter" },
-  { "field": "age", "headerName": "Возраст", "resizable": false }
+  // Первичный ключ
+  { field: 'id', headerName: 'ID', width: 80 },
+  // Основные данные
+  { field: 'name', headerName: 'Имя', notFiltered: true },
+  { field: 'age', headerName: 'Возраст', width: 60, resizable: false, },
+]
+```
+
+#### Примеры `columnDefs` с новыми свойствами
+
+```json5
+[
+  {
+    field: 'action',
+    headerName: '',
+    width: 130,
+    resizable: false,
+    notFiltered: true,
+    notSorted: true,
+    hidden: true,
+    cellRendererFramework: (params) => '...'
+  },
+  { field: 'id', headerName: 'ID', width: 80, notSorted: true },
+  { field: 'secret', headerName: 'Секрет', hidden: true }
 ]
 ```
 

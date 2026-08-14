@@ -3,17 +3,23 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
+import JSON5 from 'json5';
 import { withAuthHeaders } from '../utils/auth';
 
-// Утилита для безопасного парсинга JSON
+// Утилита для безопасного парсинга JSON5 (поддерживает комментарии, одинарные кавычки и т.д.)
 function safeParse(json, fallback) {
   if (json === undefined || json === null) return fallback;
   if (typeof json !== 'string') return json;
   try {
-    return JSON.parse(json);
+    return JSON5.parse(json);
   } catch (e) {
-    console.warn('AGTable: не удалось распарсить JSON:', e.message);
-    return fallback;
+    console.warn('AGTable: не удалось распарсить JSON5:', e.message);
+    try {
+      return JSON.parse(json);
+    } catch (e2) {
+      console.warn('AGTable: не удалось распарсить JSON:', e2.message);
+      return fallback;
+    }
   }
 }
 
@@ -76,8 +82,8 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
   // Серверная пагинация
   const serverPagination = resolveValue('serverPagination', false);
   const apiDataPath = resolveValue('apiDataPath', '');
-  const columnDefsRaw = resolveValue('columnDefs', '[{"field":"id","headerName":"ID"},{"field":"name","headerName":"Имя"}]');
-  const rowDataRaw = resolveValue('rowData', '[{"id":1,"name":"Иван"},{"id":2,"name":"Пётр"}]');
+  const columnDefsRaw = resolveValue('columnDefs', "[\n  // Первичный ключ\n  { field: 'id', headerName: 'ID', width: 80 },\n  // Основное имя\n  { field: 'name', headerName: 'Имя' }\n]");
+  const rowDataRaw = resolveValue('rowData', "[\n  { id: 1, name: 'Иван' },\n  { id: 2, name: 'Пётр' }\n]");
   const clientPagination = resolveValue('pagination', true);
   const paginationPageSize = resolveValue('paginationPageSize', 10);
   const sortable = resolveValue('sortable', true);
@@ -89,14 +95,26 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
   // Парсим модель колонок
   const columnDefs = useMemo(() => {
     const defs = safeParse(columnDefsRaw, []);
-    return defs.map(col => ({
-      ...col,
-      // При API-источнике отключаем клиентскую сортировку AG Grid,
-      // чтобы сортировка происходила только на сервере
-      sortable: dataSource === 'api' ? false : (col.sortable !== undefined ? col.sortable : sortable),
-      filter: col.filter !== undefined ? col.filter : filterable,
-      resizable: col.resizable !== undefined ? col.resizable : resizable
-    }));
+    return defs.map(col => {
+      // notFiltered — запретить фильтрацию по полю
+      const colFilter = col.notFiltered === true ? false : (col.filter !== undefined ? col.filter : filterable);
+      // notSorted — запретить сортировку по полю
+      const colSortable = col.notSorted === true ? false : (col.sortable !== undefined ? col.sortable : sortable);
+      // resizable — переопределение изменения ширины для конкретной колонки
+      const colResizable = col.resizable !== undefined ? col.resizable : resizable;
+      // hidden — скрыть поле
+      const colHidden = col.hidden === true ? true : (col.hide !== undefined ? col.hide : false);
+
+      return {
+        ...col,
+        // При API-источнике отключаем клиентскую сортировку AG Grid,
+        // чтобы сортировка происходила только на сервере
+        sortable: dataSource === 'api' ? false : colSortable,
+        filter: colFilter,
+        resizable: colResizable,
+        hide: colHidden
+      };
+    });
   }, [columnDefsRaw, sortable, filterable, resizable, dataSource]);
 
   const [rowData, setRowData] = useState([]);
@@ -108,7 +126,7 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
     // Инициализируем скрытыми все колонки, у которых есть поле hide в модели
     const hidden = {};
     for (const col of columnDefs) {
-      if (col.hide) hidden[col.field || col.colId] = true;
+      if (col.hide || col.hidden) hidden[col.field || col.colId] = true;
     }
     return hidden;
   });
@@ -132,7 +150,7 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
       const key = col.field || col.colId;
       return {
         ...col,
-        hide: hiddenColumns[key] === true
+        hide: hiddenColumns[key] === true || col.hidden === true
       };
     });
   }, [columnDefs, hiddenColumns]);
@@ -362,6 +380,8 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
               <div className="agtable-columns-list">
                 {columnDefs.map(col => {
                   const key = col.field || col.colId;
+                  // Полностью скрытые колонки (hidden: true) не показываем в списке
+                  if (col.hidden === true) return null;
                   const isHidden = hiddenColumns[key] === true;
                   return (
                     <label key={key} className="agtable-column-item">

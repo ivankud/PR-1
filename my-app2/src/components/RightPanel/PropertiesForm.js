@@ -98,14 +98,15 @@ function PropertiesForm({ primitive }) {
           />
         );
       case 'json':
-        // JSON-свойство: показываем кнопку-переключатель для открытия диалогового окна
+      case 'json5':
+        // JSON/JSON5-свойство: показываем кнопку-переключатель для открытия диалогового окна
         return (
           <div className="property-json-toggle">
             <button
               type="button"
               className="btn btn-secondary btn-sm"
               onClick={() => setDialogProp(prop)}
-              title="Открыть редактор JSON"
+              title={prop.type === 'json5' ? 'Открыть редактор JSON5 (поддерживает комментарии)' : 'Открыть редактор JSON'}
             >
               ⚙ Открыть редактор
             </button>
@@ -146,6 +147,7 @@ function PropertiesForm({ primitive }) {
           value={primitive[dialogProp.name] !== undefined ? primitive[dialogProp.name] : (dialogProp.default !== undefined ? dialogProp.default : '')}
           onSave={(newValue) => handleChange(dialogProp.name, newValue)}
           onClose={() => setDialogProp(null)}
+          format={dialogProp.type === 'json5' ? 'json5' : 'json'}
         />
       )}
 
