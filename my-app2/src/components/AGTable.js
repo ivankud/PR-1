@@ -38,6 +38,40 @@ function getValueByPath(obj, path) {
 // Доступные размеры страницы для выпадающего списка
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 500];
 
+// Компонент для отображения кнопки в ячейке таблицы.
+// Используется, когда в модели колонки указано cellRenderer: 'button'.
+// Колонка рендерится как контейнер (div), внутри которого размещена кнопка.
+// При клике вызывает обработчик onCellButtonClick (передаётся через контекст AG Grid).
+const ButtonCellRenderer = (props) => {
+  const { data, context, colDef, rowIndex, node } = props;
+  const buttonText = colDef?.buttonText || 'Кнопка';
+  const handleClick = (e) => {
+    e.stopPropagation();
+    if (context?.onCellButtonClick) {
+      context.onCellButtonClick({ data, rowIndex, node });
+    }
+  };
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        width: '100%'
+      }}
+    >
+      <button
+        type="button"
+        onClick={handleClick}
+        style={{ padding: '4px 12px', cursor: 'pointer' }}
+      >
+        {buttonText}
+      </button>
+    </div>
+  );
+};
+
 // Построение URL с параметрами пагинации и сортировки в формате DataUSA
 // Например: ?page=1&size=10&sort=Population
 function buildApiUrl(baseUrl, { page, size, sortField, sortOrder }) {
@@ -56,7 +90,7 @@ function buildApiUrl(baseUrl, { page, size, sortField, sortOrder }) {
   return `${baseUrl}${separator}${params.join('&')}`;
 }
 
-function AGTable({ primitive, context, onRowClicked, ...restProps }) {
+function AGTable({ primitive, context, onRowClicked, onCellButtonClick, ...restProps }) {
   const gridRef = useRef(null);
 
   // Свойства примитива (с подстановкой из контекста)
@@ -123,6 +157,12 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
       // чтобы клиентская сортировка AG Grid не изменяла порядок строк
       if (isApi && !hasComparator) {
         colDef.comparator = () => 0;
+      }
+
+      // Если колонка — кнопка (cellRenderer: 'button'), используем кастомный рендер.
+      // В AG Grid 36+ для React-компонентов используется cellRenderer (не cellRendererFramework).
+      if (col.cellRenderer === 'button') {
+        colDef.cellRenderer = ButtonCellRenderer;
       }
 
       return colDef;
@@ -345,8 +385,10 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
     // Запрет удаления колонок перетаскиванием за пределы таблицы
     suppressDragLeaveHidesColumns: true,
     animateRows: true,
-    domLayout: autoHeight ? 'autoHeight' : 'normal'
-  }), [useClientPagination, paginationPageSize, selectable, autoHeight]);
+    domLayout: autoHeight ? 'autoHeight' : 'normal',
+    // Контекст AG Grid: передаём обработчик клика по кнопке в ячейке
+    context: { onCellButtonClick }
+  }), [useClientPagination, paginationPageSize, selectable, autoHeight, onCellButtonClick]);
 
   return (
     <div className="agtable-container" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
