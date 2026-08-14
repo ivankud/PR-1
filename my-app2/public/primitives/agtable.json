@@ -21,7 +21,7 @@
     { "name": "useAuth", "label": "Использовать авторизацию", "type": "boolean", "default": false },
     { "name": "serverPagination", "label": "Серверная пагинация", "type": "boolean", "default": false },
     { "name": "apiDataPath", "label": "Путь к данным в ответе", "type": "string", "default": "" },
-    { "name": "columnDefs", "label": "Модель колонок (JSON)", "type": "textarea", "default": "[{\"field\":\"id\",\"headerName\":\"ID\"},{\"field\":\"name\",\"headerName\":\"Имя\"}]" },
+    { "name": "columnDefs", "label": "Модель колонок (JSON)", "type": "json", "default": "[{\"field\":\"id\",\"headerName\":\"ID\"},{\"field\":\"name\",\"headerName\":\"Имя\"}]" },
     { "name": "rowData", "label": "Данные (JSON)", "type": "textarea", "default": "[{\"id\":1,\"name\":\"Иван\"},{\"id\":2,\"name\":\"Пётр\"}]" },
     { "name": "pagination", "label": "Пагинация", "type": "boolean", "default": true },
     { "name": "paginationPageSize", "label": "Строк на странице", "type": "number", "default": 10 },

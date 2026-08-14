@@ -1,12 +1,15 @@
 // Форма свойств выбранного примитива
-import React from 'react';
+import React, { useState } from 'react';
 import { useEditor } from '../../state/EditorContext';
 import { getPrimitiveTemplate } from '../../utils/primitiveRenderer';
 import { SIZE_UNITS } from '../../utils/sizeUtils';
+import JsonDialog from './JsonDialog';
 
 function PropertiesForm({ primitive }) {
   const { state, dispatch } = useEditor();
   const { primitives } = state;
+  // Свойство, открытое в диалоговом окне JSON-редактора
+  const [dialogProp, setDialogProp] = useState(null);
 
   const template = getPrimitiveTemplate(primitives, primitive.type);
 
@@ -94,6 +97,20 @@ function PropertiesForm({ primitive }) {
             rows={3}
           />
         );
+      case 'json':
+        // JSON-свойство: показываем кнопку-переключатель для открытия диалогового окна
+        return (
+          <div className="property-json-toggle">
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => setDialogProp(prop)}
+              title="Открыть редактор JSON"
+            >
+              ⚙ Открыть редактор
+            </button>
+          </div>
+        );
       default:
         return (
           <input
@@ -121,6 +138,16 @@ function PropertiesForm({ primitive }) {
           );
         })}
       </div>
+
+      {/* Диалоговое окно редактирования JSON-свойства */}
+      {dialogProp && (
+        <JsonDialog
+          title={dialogProp.label || dialogProp.name}
+          value={primitive[dialogProp.name] !== undefined ? primitive[dialogProp.name] : (dialogProp.default !== undefined ? dialogProp.default : '')}
+          onSave={(newValue) => handleChange(dialogProp.name, newValue)}
+          onClose={() => setDialogProp(null)}
+        />
+      )}
 
       <div className="properties-section">
         <div className="properties-section-title">Стиль</div>
