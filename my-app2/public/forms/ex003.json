@@ -253,7 +253,7 @@
       "dataSource": "api",
       "apiUrl": "http://172.16.50.42:9977/app/api/1.0/auditprograms",
       "rowData": "",
-      "columnDefs": "[\n\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"smnemocode\",\n        \"headerName\": \"Код\",\n        \"width\": 300, \n        \"notFiltered\": true, \n        \"notSorted\": true\n    },\n\t{\n        \"field\": \"scaption\",\n        \"headerName\": \"Наименование\"\n    },\n\t{\n        \"field\": \"nactive\",\n        \"headerName\": \"Используется\"\n    }\n]",
+      "columnDefs": "[\n\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"smnemocode\",\n        \"headerName\": \"Код\",\n        \"width\": 500, \n        \"notFiltered\": true,\n        \"notSorted\": false\n    },\n\t{\n        \"field\": \"scaption\",\n        \"headerName\": \"Наименование\"\n    },\n\t{\n        \"field\": \"nactive\",\n        \"headerName\": \"Используется\"\n    }\n]",
       "useAuth": true,
       "apiDataPath": "content",
       "paginationPageSize": 10,

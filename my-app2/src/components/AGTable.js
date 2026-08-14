@@ -112,7 +112,9 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
         sortable: dataSource === 'api' ? false : colSortable,
         filter: colFilter,
         resizable: colResizable,
-        hide: colHidden
+        hide: colHidden,
+        // Сохраняем флаг notSorted для проверки в обработчике клика по заголовку
+        notSorted: col.notSorted === true
       };
     });
   }, [columnDefsRaw, sortable, filterable, resizable, dataSource]);
@@ -268,6 +270,10 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
     if (dataSource !== 'api') return;
     const colId = params?.column?.getColId?.() || params?.column?.colId;
     if (!colId) return;
+
+    // Если для колонки запрещена сортировка (notSorted: true) — игнорируем клик
+    const colDef = params?.column?.getColDef?.();
+    if (colDef?.notSorted === true) return;
 
     // Определяем следующее состояние сортировки
     let nextSort = 'asc';
