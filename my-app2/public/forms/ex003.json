@@ -33,6 +33,12 @@
       "name": "showHello",
       "description": "Показывает alert Hello",
       "code": "alert('Hello');"
+    },
+    {
+      "id": "fn-show-hello2",
+      "name": "showHello2",
+      "description": "Показывает alert Hello 2",
+      "code": "alert('Hello 2');"
     }
   ],
   "events": {},
@@ -259,14 +265,15 @@
       "dataSource": "api",
       "apiUrl": "http://172.16.50.42:9977/app/api/1.0/auditprograms",
       "rowData": "",
-      "columnDefs": "[\n\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"smnemocode\",\n        \"headerName\": \"Код\",\n        \"width\": 500, \n        \"notFiltered\": true,\n        \"notSorted\": true\n    },\n\t{\n        \"field\": \"scaption\",\n        \"headerName\": \"Наименование\"\n    },\n\t{\n        \"field\": \"nactive\",\n        \"headerName\": \"Используется\"\n    },\n\t{\n        \"field\": \"action\",\n        \"headerName\": \"123\",\n        \"width\": 100,\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"button\",\n        \"buttonText\": \"Hello\"\n    }\n]",
+      "columnDefs": "[\n\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"smnemocode\",\n        \"headerName\": \"Код\",\n        \"width\": 500, \n        \"notFiltered\": true,\n        \"notSorted\": true\n    },\n\t{\n        \"field\": \"scaption\",\n        \"headerName\": \"Наименование\"\n    },\n\t{\n        \"field\": \"nactive\",\n        \"headerName\": \"Используется\"\n    },\n\t{\n        \"field\": \"action\",\n        \"headerName\": \"123\",\n        \"width\": 100,\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"button\",\n        \"buttonText\": \"Hello\"\n    },\n\t{\n        \"field\": \"actions\",\n        \"headerName\": \"Действия\",\n        \"width\": 250,\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"custom\",\n        \"cellContent\": [\n            {\n                \"type\": \"text\",\n                \"text\": \"Операции:\",\n                \"style\": {\n                    \"fontWeight\": \"bold\",\n                    \"marginRight\": \"4px\"\n                }\n            },\n            {\n                \"type\": \"button\",\n                \"text\": \"Кнопка 1\",\n                \"event\": \"cellButtonClick\",\n                \"style\": {\n                    \"backgroundColor\": \"#007bff\",\n                    \"color\": \"#ffffff\",\n                    \"border\": \"none\",\n                    \"borderRadius\": \"4px\"\n                }\n            },\n            {\n                \"type\": \"button\",\n                \"text\": \"Кнопка 2\",\n                \"event\": \"cellButtonClick2\",\n                \"style\": {\n                    \"backgroundColor\": \"#28a745\",\n                    \"color\": \"#ffffff\",\n                    \"border\": \"none\",\n                    \"borderRadius\": \"4px\"\n                }\n            }\n        ]\n    }\n]",
       "useAuth": true,
       "apiDataPath": "content",
       "paginationPageSize": 10,
       "serverPagination": true,
       "selectable": false,
       "events": {
-        "cellButtonClick": "showHello"
+        "cellButtonClick": "showHello",
+        "cellButtonClick2": "showHello2"
       }
     }
   ]

@@ -72,6 +72,69 @@ const ButtonCellRenderer = (props) => {
   );
 };
 
+// Компонент для отображения произвольного контента в ячейке таблицы.
+// Используется, когда в модели колонки указано cellRenderer: 'custom'.
+// Колонка рендерится как контейнер (div), внутри которого размещаются
+// несколько кнопок, надписи и другие элементы, описанные в colDef.cellContent.
+// Формат cellContent — массив объектов:
+//   { type: 'button', text: '...', event: 'cellButtonClick', style: {...} } — кнопка
+//   { type: 'text', text: '...', style: {...} } — надпись
+// При клике на кнопку вызывается обработчик onCellEvent (передаётся через контекст AG Grid)
+// с указанием имени события (eventName), чтобы можно было привязать разные функции.
+const CustomCellRenderer = (props) => {
+  const { data, context, colDef, rowIndex, node } = props;
+  const content = colDef?.cellContent || [];
+
+  const handleButtonClick = (e, item) => {
+    e.stopPropagation();
+    if (context?.onCellEvent) {
+      context.onCellEvent({
+        data,
+        rowIndex,
+        node,
+        eventName: item.event || 'cellButtonClick'
+      });
+    }
+  };
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        height: '100%',
+        width: '100%',
+        flexWrap: 'wrap',
+        overflow: 'hidden'
+      }}
+    >
+      {content.map((item, idx) => {
+        if (item.type === 'button') {
+          return (
+            <button
+              key={idx}
+              type="button"
+              onClick={(e) => handleButtonClick(e, item)}
+              style={{ padding: '4px 8px', cursor: 'pointer', ...(item.style || {}) }}
+            >
+              {item.text || 'Кнопка'}
+            </button>
+          );
+        }
+        if (item.type === 'text') {
+          return (
+            <span key={idx} style={{ ...(item.style || {}) }}>
+              {item.text || ''}
+            </span>
+          );
+        }
+        return null;
+      })}
+    </div>
+  );
+};
+
 // Построение URL с параметрами пагинации и сортировки в формате DataUSA
 // Например: ?page=1&size=10&sort=Population
 function buildApiUrl(baseUrl, { page, size, sortField, sortOrder }) {
@@ -90,7 +153,7 @@ function buildApiUrl(baseUrl, { page, size, sortField, sortOrder }) {
   return `${baseUrl}${separator}${params.join('&')}`;
 }
 
-function AGTable({ primitive, context, onRowClicked, onCellButtonClick, ...restProps }) {
+function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEvent, ...restProps }) {
   const gridRef = useRef(null);
 
   // Свойства примитива (с подстановкой из контекста)
@@ -163,6 +226,12 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, ...restP
       // В AG Grid 36+ для React-компонентов используется cellRenderer (не cellRendererFramework).
       if (col.cellRenderer === 'button') {
         colDef.cellRenderer = ButtonCellRenderer;
+      }
+
+      // Если колонка — произвольный контент (cellRenderer: 'custom'),
+      // используем кастомный рендер с поддержкой нескольких кнопок и надписей.
+      if (col.cellRenderer === 'custom') {
+        colDef.cellRenderer = CustomCellRenderer;
       }
 
       return colDef;
@@ -386,9 +455,9 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, ...restP
     suppressDragLeaveHidesColumns: true,
     animateRows: true,
     domLayout: autoHeight ? 'autoHeight' : 'normal',
-    // Контекст AG Grid: передаём обработчик клика по кнопке в ячейке
-    context: { onCellButtonClick }
-  }), [useClientPagination, paginationPageSize, selectable, autoHeight, onCellButtonClick]);
+    // Контекст AG Grid: передаём обработчики кликов по кнопкам в ячейках
+    context: { onCellButtonClick, onCellEvent }
+  }), [useClientPagination, paginationPageSize, selectable, autoHeight, onCellButtonClick, onCellEvent]);
 
   return (
     <div className="agtable-container" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>

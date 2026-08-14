@@ -32,10 +32,37 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
     return buildEventHandlersWithUpdate(primitive, fns, ctxClone, onUpdateContext);
   }, [primitive?.id, primitive?.events, context, fns, onUpdateContext]);
 
+  // Обработчик событий из ячеек AGTable (кнопки в колонках с cellRenderer: 'custom')
+  // Вызывает функцию формы по имени события, указанному в конфигурации кнопки
+  const handleCellEvent = useMemo(() => {
+    if (!fns || !primitive?.events) return undefined;
+    return (cellParams) => {
+      const { data, rowIndex, node, eventName } = cellParams || {};
+      const fnName = primitive.events[eventName];
+      if (!fnName || !fns[fnName]) return;
+
+      // Клонируем контекст чтобы не мутировать
+      const eventContext = JSON.parse(JSON.stringify(context));
+      eventContext.event = {
+        type: eventName,
+        data,
+        rowIndex,
+        node
+      };
+      eventContext.primitiveId = primitive?.id;
+      eventContext.primitiveName = primitive?.name;
+
+      const result = callFunction(fns, fnName, eventContext);
+      if (onUpdateContext && result && typeof result === 'object') {
+        onUpdateContext(result);
+      }
+    };
+  }, [primitive?.id, primitive?.events, primitive?.name, context, fns, onUpdateContext]);
+
   // Рендерим примитив и прикрепляем обработчики событий напрямую к элементу
   const rendered = renderPrimitive(primitive, template, context);
-  const renderedWithHandlers = rendered && Object.keys(handlers).length > 0
-    ? React.cloneElement(rendered, handlers)
+  const renderedWithHandlers = rendered && (Object.keys(handlers).length > 0 || handleCellEvent)
+    ? React.cloneElement(rendered, { ...handlers, onCellEvent: handleCellEvent })
     : rendered;
 
   return (
