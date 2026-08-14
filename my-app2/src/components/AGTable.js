@@ -105,17 +105,27 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
       // hidden — скрыть поле
       const colHidden = col.hidden === true ? true : (col.hide !== undefined ? col.hide : false);
 
-      return {
+      // Для API-источника включаем sortable (чтобы AG Grid показывал стрелку сортировки),
+      // но задаём нейтральный компаратор, который не меняет порядок строк,
+      // т.к. данные приходят уже отсортированными с сервера.
+      const isApi = dataSource === 'api';
+      const hasComparator = col.comparator !== undefined;
+
+      const colDef = {
         ...col,
-        // При API-источнике отключаем клиентскую сортировку AG Grid,
-        // чтобы сортировка происходила только на сервере
-        sortable: dataSource === 'api' ? false : colSortable,
+        sortable: colSortable,
         filter: colFilter,
         resizable: colResizable,
-        hide: colHidden,
-        // Сохраняем флаг notSorted для проверки в обработчике клика по заголовку
-        notSorted: col.notSorted === true
+        hide: colHidden
       };
+
+      // Для API-источника без явно заданного компаратора добавляем нейтральный,
+      // чтобы клиентская сортировка AG Grid не изменяла порядок строк
+      if (isApi && !hasComparator) {
+        colDef.comparator = () => 0;
+      }
+
+      return colDef;
     });
   }, [columnDefsRaw, sortable, filterable, resizable, dataSource]);
 
@@ -264,6 +274,8 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
 
   // Обработчик клика по заголовку колонки
   // При API-источнике: перезапрашиваем данные с сервера с сортировкой по полю.
+  // Применяем сортировку через applyColumnState, чтобы AG Grid отрисовал стрелку,
+  // и обновляем sortField/sortOrder, чтобы изменился URL и произошёл перезапрос.
   // Цикл сортировки: asc → desc → без сортировки → asc
   const onColumnHeaderClicked = useCallback((params) => {
     // Только для данных из API
@@ -283,16 +295,18 @@ function AGTable({ primitive, context, onRowClicked, ...restProps }) {
       else nextSort = 'asc';
     }
 
-    if (!nextSort) {
-      // Сброс сортировки
-      setSortField('');
-      setSortOrder('');
-      setCurrentPage(1);
-      return;
+    // Применяем состояние сортировки в AG Grid через applyColumnState,
+    // чтобы стрелка сортировки в заголовке обновилась
+    if (params?.api?.applyColumnState) {
+      params.api.applyColumnState({
+        state: [{ colId, sort: nextSort || null }],
+        defaultState: { sort: null }
+      });
     }
 
-    setSortField(colId);
-    setSortOrder(nextSort);
+    // Обновляем состояние — builtApiUrl изменится и данные перезапросятся
+    setSortField(nextSort ? colId : '');
+    setSortOrder(nextSort || '');
     setCurrentPage(1);
   }, [dataSource, sortField, sortOrder]);
 
