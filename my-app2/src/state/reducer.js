@@ -76,6 +76,51 @@ function collectWithChildren(node, ids, result = []) {
   return result;
 }
 
+// Абсолютная позиция примитива на холсте (с учётом всех родителей-контейнеров)
+function getAbsolutePosition(node, id, accLeft = 0, accTop = 0) {
+  if (!node) return null;
+  const curLeft = accLeft + (node.left || 0);
+  const curTop = accTop + (node.top || 0);
+  if (node.id === id) return { left: curLeft, top: curTop };
+  if (node.children) {
+    for (const child of node.children) {
+      const found = getAbsolutePosition(child, id, curLeft, curTop);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+// Абсолютная позиция родителя примитива (смещение контейнера относительно холста)
+// Используется для пересчёта абсолютных координат в локальные относительно родителя
+function getParentAbsolutePosition(node, id) {
+  const find = (cur, targetId, accLeft = 0, accTop = 0) => {
+    if (!cur) return null;
+    const curLeft = accLeft + (cur.left || 0);
+    const curTop = accTop + (cur.top || 0);
+    if (cur.children) {
+      for (const child of cur.children) {
+        if (child.id === targetId) {
+          return { left: curLeft, top: curTop };
+        }
+        const found = find(child, targetId, curLeft, curTop);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+  return find(node, id) || { left: 0, top: 0 };
+}
+
+// Пересчёт абсолютной позиции примитива в локальную относительно его родителя
+function toLocalPosition(newForm, primId, absLeft, absTop) {
+  const parentAbs = getParentAbsolutePosition(newForm, primId);
+  return {
+    left: Math.round(absLeft - parentAbs.left),
+    top: Math.round(absTop - parentAbs.top)
+  };
+}
+
 export function editorReducer(state, action) {
   switch (action.type) {
     case 'LOAD_FORM': {
@@ -420,59 +465,98 @@ export function editorReducer(state, action) {
     }
 
     case 'ALIGN': {
-      if (!state.form || state.selectedIds.length < 2) return state;
+      if (!state.form) return state;
       const { align } = action;
-      const newForm = deepClone(state.form);
+      let newForm = deepClone(state.form);
 
-      const selected = state.selectedIds
-        .map(id => findPrimitive(newForm, id))
-        .filter(Boolean);
-
-      if (selected.length < 2) return state;
-
-      // Вычисляем границы
-      let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
-      for (const prim of selected) {
-        minLeft = Math.min(minLeft, prim.left || 0);
-        minTop = Math.min(minTop, prim.top || 0);
-        maxRight = Math.max(maxRight, (prim.left || 0) + (prim.width || 0));
-        maxBottom = Math.max(maxBottom, (prim.top || 0) + (prim.height || 0));
+      // Определяем целевые примитивы:
+      // - если выбран один контейнер с детьми — применяем к его детям (1 уровень вложенности);
+      // - если выбрано 2+ примитивов — применяем к выбранным.
+      let selectors;
+      if (state.selectedIds.length === 1) {
+        const single = findPrimitive(newForm, state.selectedIds[0]);
+        if (single && single.children && single.children.length >= 2) {
+          selectors = { childOf: single.id };
+        } else {
+          return state;
+        }
+      } else if (state.selectedIds.length >= 2) {
+        selectors = state.selectedIds;
+      } else {
+        return state;
       }
 
-      const centerX = minLeft + (maxRight - minLeft) / 2;
-      const centerY = minTop + (maxBottom - minTop) / 2;
+      // Получаем целевые примитивы
+      let targets;
+      if (selectors.childOf) {
+        const container = findPrimitive(newForm, selectors.childOf);
+        if (!container || !container.children || container.children.length === 0) return state;
+        targets = container.children;
+      } else {
+        targets = selectors
+          .map(id => findPrimitive(newForm, id))
+          .filter(Boolean);
+      }
 
-      for (const prim of selected) {
-        let newLeft = prim.left;
-        let newTop = prim.top;
+      if (targets.length < 2) return state;
+
+      // У всех целей должен быть один и тот же родитель (контейнер)
+      const parentId = targets.length > 0 ? (findParent(newForm, targets[0].id)?.parent?.id || null) : null;
+      const sameParent = targets.every(prim =>
+        (findParent(newForm, prim.id)?.parent?.id || null) === parentId
+      );
+      if (!sameParent) return state;
+
+      // Рабочая область = область родительского контейнера (или форма)
+      const parent = parentId ? findPrimitive(newForm, parentId) : newForm;
+      const workLeft = 0;
+      const workTop = 0;
+      const workWidth = parent.width || (newForm.canvas?.width || 800);
+      const workHeight = parent.height || (newForm.canvas?.height || 600);
+
+      // Собираем абсолютные позиции целевых примитивов
+      const absolute = targets.map(prim => ({
+        prim,
+        abs: getAbsolutePosition(newForm, prim.id) || { left: 0, top: 0 }
+      }));
+
+      for (const { prim, abs } of absolute) {
+        let newAbsLeft = abs.left;
+        let newAbsTop = abs.top;
+        const w = prim.width || 0;
+        const h = prim.height || 0;
 
         switch (align) {
           case 'left':
-            newLeft = minLeft;
+            newAbsLeft = workLeft;
             break;
           case 'center-h':
-            newLeft = centerX - (prim.width || 0) / 2;
+            newAbsLeft = workLeft + (workWidth - w) / 2;
             break;
           case 'right':
-            newLeft = maxRight - (prim.width || 0);
+            newAbsLeft = workLeft + workWidth - w;
             break;
           case 'top':
-            newTop = minTop;
+            newAbsTop = workTop;
             break;
           case 'center-v':
-            newTop = centerY - (prim.height || 0) / 2;
+            newAbsTop = workTop + (workHeight - h) / 2;
             break;
           case 'bottom':
-            newTop = maxBottom - (prim.height || 0);
+            newAbsTop = workTop + workHeight - h;
             break;
           default:
             break;
         }
 
-        updatePrimitiveInTree(newForm, prim.id, (node) => ({
+        // Пересчитываем абсолютную позицию в локальную относительно родителя и ограничиваем границами контейнера
+        const local = toLocalPosition(newForm, prim.id, newAbsLeft, newAbsTop);
+        const clampedLeft = Math.max(0, Math.min(local.left, workWidth - w));
+        const clampedTop = Math.max(0, Math.min(local.top, workHeight - h));
+        newForm = updatePrimitiveInTree(newForm, prim.id, (node) => ({
           ...node,
-          left: Math.round(newLeft),
-          top: Math.round(newTop)
+          left: clampedLeft,
+          top: clampedTop
         }));
       }
 
@@ -484,55 +568,113 @@ export function editorReducer(state, action) {
     }
 
     case 'DISTRIBUTE': {
-      if (!state.form || state.selectedIds.length < 3) return state;
+      if (!state.form) return state;
       const { direction } = action;
-      const newForm = deepClone(state.form);
+      let newForm = deepClone(state.form);
 
-      const selected = state.selectedIds
-        .map(id => findPrimitive(newForm, id))
-        .filter(Boolean)
-        .sort((a, b) => direction === 'horizontal' ? (a.left || 0) - (b.left || 0) : (a.top || 0) - (b.top || 0));
+      // Определяем целевые примитивы (аналогично ALIGN)
+      let selectors;
+      if (state.selectedIds.length === 1) {
+        const single = findPrimitive(newForm, state.selectedIds[0]);
+        if (single && single.children && single.children.length >= 3) {
+          selectors = { childOf: single.id };
+        } else {
+          return state;
+        }
+      } else if (state.selectedIds.length >= 3) {
+        selectors = state.selectedIds;
+      } else {
+        return state;
+      }
 
-      if (selected.length < 3) return state;
+      let targets;
+      if (selectors.childOf) {
+        const container = findPrimitive(newForm, selectors.childOf);
+        if (!container || !container.children || container.children.length < 3) return state;
+        targets = container.children;
+      } else {
+        targets = selectors
+          .map(id => findPrimitive(newForm, id))
+          .filter(Boolean);
+      }
+
+      if (targets.length < 3) return state;
+
+      // У всех целей должен быть один и тот же родитель
+      const parentId = targets.length > 0 ? (findParent(newForm, targets[0].id)?.parent?.id || null) : null;
+      const sameParent = targets.every(prim =>
+        (findParent(newForm, prim.id)?.parent?.id || null) === parentId
+      );
+      if (!sameParent) return state;
+
+      // Абсолютные позиции целей
+      const absolute = targets.map(prim => ({
+        prim,
+        abs: getAbsolutePosition(newForm, prim.id) || { left: 0, top: 0 }
+      }));
+
+      // Определяем крайние положения:
+      // - при распределении детей контейнера — границы самого контейнера (в абсолютных координатах);
+      // - при распределении выбранных примитивов — их собственные крайние положения.
+      const container = selectors.childOf ? findPrimitive(newForm, selectors.childOf) : null;
+      const useContainerBounds = !!container;
+      const containerAbs = container
+        ? (getAbsolutePosition(newForm, container.id) || { left: 0, top: 0 })
+        : { left: 0, top: 0 };
+      const containerWidth = container ? (container.width || 0) : 0;
+      const containerHeight = container ? (container.height || 0) : 0;
+
+      // Вычисляем новые позиции заранее, используя исходные абсолютные координаты,
+      // чтобы избежать накопления ошибок при обновлении newForm в цикле.
+      const updates = [];
 
       if (direction === 'horizontal') {
-        const first = selected[0];
-        const last = selected[selected.length - 1];
-        const totalWidth = (last.left || 0) + (last.width || 0) - (first.left || 0);
-        const sumWidths = selected.reduce((sum, p) => sum + (p.width || 0), 0);
-        const gap = (totalWidth - sumWidths) / (selected.length - 1);
+        const sorted = [...absolute].sort((a, b) => a.abs.left - b.abs.left);
+        // Крайние положения (в абсолютных координатах)
+        const minLeft = useContainerBounds
+          ? containerAbs.left
+          : Math.min(...sorted.map(({ abs }) => abs.left));
+        const maxRight = useContainerBounds
+          ? containerAbs.left + containerWidth
+          : Math.max(...sorted.map(({ prim, abs }) => abs.left + (prim.width || 0)));
+        const totalWidth = maxRight - minLeft;
+        const sumWidths = sorted.reduce((sum, { prim }) => sum + (prim.width || 0), 0);
+        const gap = (totalWidth - sumWidths) / (sorted.length - 1);
 
-        let currentX = first.left || 0;
-        const positions = selected.map(prim => {
-          const pos = currentX;
+        let currentX = minLeft;
+        for (const { prim, abs } of sorted) {
+          const local = toLocalPosition(newForm, prim.id, currentX, abs.top);
+          updates.push({ id: prim.id, left: local.left });
           currentX += (prim.width || 0) + gap;
-          return pos;
-        });
-        selected.forEach((prim, i) => {
-          updatePrimitiveInTree(newForm, prim.id, (node) => ({
-            ...node,
-            left: Math.round(positions[i])
-          }));
-        });
+        }
       } else {
-        const first = selected[0];
-        const last = selected[selected.length - 1];
-        const totalHeight = (last.top || 0) + (last.height || 0) - (first.top || 0);
-        const sumHeights = selected.reduce((sum, p) => sum + (p.height || 0), 0);
-        const gap = (totalHeight - sumHeights) / (selected.length - 1);
+        const sorted = [...absolute].sort((a, b) => a.abs.top - b.abs.top);
+        // Крайние положения (в абсолютных координатах)
+        const minTop = useContainerBounds
+          ? containerAbs.top
+          : Math.min(...sorted.map(({ abs }) => abs.top));
+        const maxBottom = useContainerBounds
+          ? containerAbs.top + containerHeight
+          : Math.max(...sorted.map(({ prim, abs }) => abs.top + (prim.height || 0)));
+        const totalHeight = maxBottom - minTop;
+        const sumHeights = sorted.reduce((sum, { prim }) => sum + (prim.height || 0), 0);
+        const gap = (totalHeight - sumHeights) / (sorted.length - 1);
 
-        let currentY = first.top || 0;
-        const positions = selected.map(prim => {
-          const pos = currentY;
+        let currentY = minTop;
+        for (const { prim, abs } of sorted) {
+          const local = toLocalPosition(newForm, prim.id, abs.left, currentY);
+          updates.push({ id: prim.id, top: local.top });
           currentY += (prim.height || 0) + gap;
-          return pos;
-        });
-        selected.forEach((prim, i) => {
-          updatePrimitiveInTree(newForm, prim.id, (node) => ({
-            ...node,
-            top: Math.round(positions[i])
-          }));
-        });
+        }
+      }
+
+      // Применяем все обновления
+      for (const upd of updates) {
+        newForm = updatePrimitiveInTree(newForm, upd.id, (node) => ({
+          ...node,
+          ...(upd.left !== undefined ? { left: upd.left } : {}),
+          ...(upd.top !== undefined ? { top: upd.top } : {})
+        }));
       }
 
       return pushHistory({

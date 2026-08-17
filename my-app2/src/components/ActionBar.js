@@ -1,15 +1,44 @@
 // Панель действий с примитивами
 import React from 'react';
 import { useEditor } from '../state/EditorContext';
-import { downloadJson } from '../utils/jsonUtils';
+import { downloadJson, findPrimitive } from '../utils/jsonUtils';
 
 function ActionBar({ onBack, onPreview }) {
   const { state, dispatch } = useEditor();
-  const { form, selectedIds, historyIndex, history, isDirty } = state;
+  const { form, primitives, selectedIds, historyIndex, history, isDirty } = state;
 
   const hasSelection = selectedIds.length > 0;
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
+
+  // Проверка: выбран ли единственный контейнер, содержащий дочерние примитивы.
+  // В этом случае выравнивание/распределение применяется к его детям.
+  const selectedSingleContainer = (() => {
+    if (selectedIds.length !== 1 || !form) return null;
+    const prim = findPrimitive(form, selectedIds[0]);
+    if (!prim) return null;
+    const template = primitives.find(p => p.type === prim.type);
+    const isContainer = template?.isContainer || (prim.children && prim.children.length > 0);
+    if (!isContainer || !prim.children || prim.children.length === 0) return null;
+    return prim;
+  })();
+
+  // Кнопки выравнивания доступны:
+  // - при выборе 2+ примитивов;
+  // - при выборе одного контейнера с дочерними примитивами (применяется к детям).
+  const canAlign = hasSelection && (
+    selectedIds.length >= 2 ||
+    !!selectedSingleContainer ||
+    (selectedSingleContainer && selectedSingleContainer.children.length >= 2)
+  );
+
+  // Кнопки распределения доступны:
+  // - при выборе 3+ примитивов;
+  // - при выборе одного контейнера с 3+ дочерними примитивами.
+  const canDistribute = hasSelection && (
+    selectedIds.length >= 3 ||
+    (!!selectedSingleContainer && selectedSingleContainer.children.length >= 3)
+  );
 
   const handleSave = () => {
     if (!form) return;
@@ -106,18 +135,18 @@ function ActionBar({ onBack, onPreview }) {
 
       <div className="action-bar-group">
         <span className="action-bar-label">Выравнивание:</span>
-        <button className="btn btn-icon" onClick={() => handleAlign('left')} title="По левому краю" disabled={!hasSelection || selectedIds.length < 2}>⇤</button>
-        <button className="btn btn-icon" onClick={() => handleAlign('center-h')} title="По центру по горизонтали" disabled={!hasSelection || selectedIds.length < 2}>⇔</button>
-        <button className="btn btn-icon" onClick={() => handleAlign('right')} title="По правому краю" disabled={!hasSelection || selectedIds.length < 2}>⇥</button>
-        <button className="btn btn-icon" onClick={() => handleAlign('top')} title="По верхнему краю" disabled={!hasSelection || selectedIds.length < 2}>⇧</button>
-        <button className="btn btn-icon" onClick={() => handleAlign('center-v')} title="По центру по вертикали" disabled={!hasSelection || selectedIds.length < 2}>⇕</button>
-        <button className="btn btn-icon" onClick={() => handleAlign('bottom')} title="По нижнему краю" disabled={!hasSelection || selectedIds.length < 2}>⇩</button>
+        <button className="btn btn-icon" onClick={() => handleAlign('left')} title="По левому краю" disabled={!canAlign}>⇤</button>
+        <button className="btn btn-icon" onClick={() => handleAlign('center-h')} title="По центру по горизонтали" disabled={!canAlign}>⇔</button>
+        <button className="btn btn-icon" onClick={() => handleAlign('right')} title="По правому краю" disabled={!canAlign}>⇥</button>
+        <button className="btn btn-icon" onClick={() => handleAlign('top')} title="По верхнему краю" disabled={!canAlign}>⇧</button>
+        <button className="btn btn-icon" onClick={() => handleAlign('center-v')} title="По центру по вертикали" disabled={!canAlign}>⇕</button>
+        <button className="btn btn-icon" onClick={() => handleAlign('bottom')} title="По нижнему краю" disabled={!canAlign}>⇩</button>
       </div>
 
       <div className="action-bar-group">
         <span className="action-bar-label">Распределить:</span>
-        <button className="btn btn-icon" onClick={() => handleDistribute('horizontal')} title="По горизонтали" disabled={!hasSelection || selectedIds.length < 3}>↔</button>
-        <button className="btn btn-icon" onClick={() => handleDistribute('vertical')} title="По вертикали" disabled={!hasSelection || selectedIds.length < 3}>↕</button>
+        <button className="btn btn-icon" onClick={() => handleDistribute('horizontal')} title="По горизонтали" disabled={!canDistribute}>↔</button>
+        <button className="btn btn-icon" onClick={() => handleDistribute('vertical')} title="По вертикали" disabled={!canDistribute}>↕</button>
       </div>
 
       <div className="action-bar-group">

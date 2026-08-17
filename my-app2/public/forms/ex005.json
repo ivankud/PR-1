@@ -1,6 +1,6 @@
 {
-  "id": "ex004",
-  "name": "ex004",
+  "id": "ex005",
+  "name": "ex005",
   "context": {
     "source": "inline",
     "inline": {
@@ -116,8 +116,8 @@
       "id": "prim-label-3",
       "type": "text",
       "name": "Надпись 3",
-      "left": 50,
-      "top": 150,
+      "left": 1080,
+      "top": 840,
       "width": 200,
       "height": 30,
       "style": {
@@ -239,12 +239,12 @@
       "id": "prim-1786953163994-jaizr35z2",
       "type": "container",
       "name": "Контейнер",
-      "width": 300,
+      "width": 640,
       "height": 200,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 1100,
-      "top": 170,
+      "left": 1060,
+      "top": 120,
       "style": {
         "border": "1px dashed #999999",
         "backgroundColor": "#f9f9f9",
@@ -260,8 +260,8 @@
           "height": 40,
           "widthUnit": "px",
           "heightUnit": "px",
-          "left": 200,
-          "top": -60,
+          "left": 0,
+          "top": 0,
           "style": {
             "backgroundColor": "#007bff",
             "color": "#ffffff",
@@ -280,8 +280,8 @@
           "height": 40,
           "widthUnit": "px",
           "heightUnit": "px",
-          "left": 450,
-          "top": 10,
+          "left": 0,
+          "top": 0,
           "style": {
             "backgroundColor": "#007bff",
             "color": "#ffffff",
@@ -300,8 +300,8 @@
           "height": 35,
           "widthUnit": "px",
           "heightUnit": "px",
-          "left": 110,
-          "top": -130,
+          "left": 0,
+          "top": 0,
           "style": {
             "border": "1px solid #cccccc",
             "borderRadius": "4px",
