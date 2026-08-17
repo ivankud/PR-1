@@ -42,6 +42,17 @@ function CanvasPrimitive({
     style.overflow = 'visible';
   }
 
+  // Если контейнер использует flex-раскладку, передаём её вложенному контейнеру детей,
+  // чтобы дочерние примитивы корректно располагались (горизонтально/вертикально)
+  const childrenStyle = {};
+  if (primitive.style?.display === 'flex') {
+    childrenStyle.display = 'flex';
+    childrenStyle.flexDirection = primitive.style.flexDirection || 'row';
+    childrenStyle.gap = primitive.style.gap;
+    childrenStyle.justifyContent = primitive.style.justifyContent;
+    childrenStyle.alignItems = primitive.style.alignItems;
+  }
+
   const rendered = renderPrimitive(primitive, template, context);
 
   return (
@@ -56,7 +67,7 @@ function CanvasPrimitive({
 
       {/* Дочерние примитивы (для контейнеров) */}
       {primitive.children && primitive.children.length > 0 && (
-        <div className="canvas-primitive-children">
+        <div className="canvas-primitive-children" style={childrenStyle}>
           {primitive.children.map(child => (
             <CanvasPrimitive
               key={child.id}

@@ -1,0 +1,98 @@
+{
+  "id": "ex007",
+  "name": "ex007",
+  "context": {
+    "source": "inline",
+    "inline": {
+      "var1": "aaaa",
+      "var2": "bbbb",
+      "var3": "cccc"
+    }
+  },
+  "functions": [
+    {
+      "id": "fn-1786087142974-5by1873ql",
+      "name": "exampleFunction",
+      "description": "Меняет переменную контекста и возвращает обновлённый контекст",
+      "code": "console.log('var1:', context.var1);\nconsole.log('var2:', context.var2);\nconsole.log('var3:', context.var3);\n\n// Меняем значение переменной контекста\ncontext.var1 = 'новое значение var1';\ncontext.var2 = 'новое значение var2';\n\n// Возвращаем обновлённый контекст, чтобы он применился ко всей форме\nreturn context;"
+    },
+    {
+      "id": "fn-1786089562373-5ia7ikwf3",
+      "name": "changeVar3",
+      "description": "",
+      "code": "context.var3 = '123123';\ncontext.var3 = context.event?.value;\nreturn context;"
+    },
+    {
+      "id": "fn-log-row-click",
+      "name": "logRowClick",
+      "description": "Выводит в консоль строку, по которой произошёл клик",
+      "code": "console.log('Клик по строке:', context.event?.data);"
+    },
+    {
+      "id": "fn-show-hello",
+      "name": "showHello",
+      "description": "Показывает alert Hello",
+      "code": "alert('Hello');"
+    },
+    {
+      "id": "fn-show-hello2",
+      "name": "showHello2",
+      "description": "Показывает alert Hello 2",
+      "code": "alert('Hello 2');"
+    }
+  ],
+  "events": {},
+  "canvas": {
+    "width": 100,
+    "height": 100,
+    "widthUnit": "%",
+    "heightUnit": "%",
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "children": [
+    {
+      "id": "prim-1786968821353-hpt15sg0d",
+      "type": "input",
+      "name": "Поле ввода",
+      "width": 200,
+      "height": 35,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 160,
+      "top": 243,
+      "style": {
+        "border": "",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "14px"
+      },
+      "customProperties": {},
+      "readOnly": false,
+      "defaultValue": "123123",
+      "value": "23"
+    },
+    {
+      "id": "prim-1786968919915-ytzvjcyh6",
+      "type": "button",
+      "name": "Кнопка",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 160,
+      "top": 330,
+      "style": {
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "Кнопка1"
+    }
+  ]
+}

@@ -277,8 +277,76 @@
       "height": 200,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 680,
-      "top": 140,
+      "left": 270,
+      "top": 330,
+      "style": {
+        "border": "1px solid #ccc",
+        "backgroundColor": "#f9f9f9",
+        "borderRadius": "14px",
+        "display": "flex",
+        "gridAutoFlow": "column",
+        "gap": "20px",
+        "gridTemplateColumns": "repeat(3, 1fr)",
+        "justifyContent": "center",
+        "alignItems": "center",
+        "padding": "20px"
+      },
+      "customProperties": {},
+      "children": [
+        {
+          "id": "prim-1786963788167-l7sefqwis",
+          "type": "button",
+          "name": "Кнопка",
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "style": {
+            "backgroundColor": "#007bff",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer",
+            "position": "static"
+          },
+          "customProperties": {},
+          "text": "Кнопка1"
+        },
+        {
+          "id": "prim-1786963803409-3hldh350h",
+          "type": "button",
+          "name": "Кнопка",
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 270,
+          "top": 100,
+          "style": {
+            "backgroundColor": "#007bff",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer",
+            "position": "static"
+          },
+          "customProperties": {},
+          "text": "Кнопка2"
+        }
+      ]
+    },
+    {
+      "id": "prim-1786964486088-83g9fdhe0",
+      "type": "container",
+      "name": "Контейнер",
+      "width": 300,
+      "height": 200,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 350,
+      "top": 620,
       "style": {
         "border": "1px dashed #999999",
         "backgroundColor": "#f9f9f9",
@@ -286,6 +354,26 @@
       },
       "customProperties": {},
       "children": []
+    },
+    {
+      "id": "prim-1786964544284-ewu9rsf8c",
+      "type": "button",
+      "name": "Кнопка",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 520,
+      "top": 220,
+      "style": {
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {}
     }
   ]
 }

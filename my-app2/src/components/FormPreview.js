@@ -23,6 +23,17 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
     style.overflow = 'visible';
   }
 
+  // Если контейнер использует flex-раскладку, передаём её вложенному контейнеру детей,
+  // чтобы дочерние примитивы корректно располагались (горизонтально/вертикально)
+  const childrenStyle = {};
+  if (primitive.style?.display === 'flex') {
+    childrenStyle.display = 'flex';
+    childrenStyle.flexDirection = primitive.style.flexDirection || 'row';
+    childrenStyle.gap = primitive.style.gap;
+    childrenStyle.justifyContent = primitive.style.justifyContent;
+    childrenStyle.alignItems = primitive.style.alignItems;
+  }
+
   // Создаем обработчики событий с callback для обновления контекста
   const handlers = useMemo(() => {
     if (!fns || !primitive?.events) return {};
@@ -72,7 +83,7 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
     >
       {renderedWithHandlers}
       {primitive.children && primitive.children.length > 0 && (
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, ...childrenStyle }}>
           {primitive.children.map(child => (
             <PreviewPrimitive
               key={child.id}
