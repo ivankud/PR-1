@@ -1,0 +1,280 @@
+{
+  "id": "ex004",
+  "name": "ex004",
+  "context": {
+    "source": "inline",
+    "inline": {
+      "var1": "aaaa",
+      "var2": "bbbb",
+      "var3": "cccc"
+    }
+  },
+  "functions": [
+    {
+      "id": "fn-1786087142974-5by1873ql",
+      "name": "exampleFunction",
+      "description": "Меняет переменную контекста и возвращает обновлённый контекст",
+      "code": "console.log('var1:', context.var1);\nconsole.log('var2:', context.var2);\nconsole.log('var3:', context.var3);\n\n// Меняем значение переменной контекста\ncontext.var1 = 'новое значение var1';\ncontext.var2 = 'новое значение var2';\n\n// Возвращаем обновлённый контекст, чтобы он применился ко всей форме\nreturn context;"
+    },
+    {
+      "id": "fn-1786089562373-5ia7ikwf3",
+      "name": "changeVar3",
+      "description": "",
+      "code": "context.var3 = '123123';\ncontext.var3 = context.event?.value;\nreturn context;"
+    },
+    {
+      "id": "fn-log-row-click",
+      "name": "logRowClick",
+      "description": "Выводит в консоль строку, по которой произошёл клик",
+      "code": "console.log('Клик по строке:', context.event?.data);"
+    },
+    {
+      "id": "fn-show-hello",
+      "name": "showHello",
+      "description": "Показывает alert Hello",
+      "code": "alert('Hello');"
+    },
+    {
+      "id": "fn-show-hello2",
+      "name": "showHello2",
+      "description": "Показывает alert Hello 2",
+      "code": "alert('Hello 2');"
+    }
+  ],
+  "events": {},
+  "canvas": {
+    "width": 100,
+    "height": 100,
+    "widthUnit": "%",
+    "heightUnit": "%",
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "children": [
+    {
+      "id": "prim-label-1",
+      "type": "text",
+      "name": "Надпись 1",
+      "left": 50,
+      "top": 50,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "text": "{{var1}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{var1}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "var1",
+          "description": "Значение первой переменной"
+        }
+      ]
+    },
+    {
+      "id": "prim-label-2",
+      "type": "text",
+      "name": "Надпись 2",
+      "left": 50,
+      "top": 100,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "text": "{{var2}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{var2}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "var2",
+          "description": "Значение второй переменной"
+        }
+      ]
+    },
+    {
+      "id": "prim-label-3",
+      "type": "text",
+      "name": "Надпись 3",
+      "left": 50,
+      "top": 150,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "text": "{{var3}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{var3}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "var3",
+          "description": "Значение третьей переменной"
+        }
+      ]
+    },
+    {
+      "id": "prim-1786089478361-e5it2hq58",
+      "type": "input",
+      "name": "Поле ввода",
+      "width": 440,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 600,
+      "top": 230,
+      "style": {
+        "border": "1px solid #cccccc",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "14px"
+      },
+      "customProperties": {},
+      "value": "{{var3}}",
+      "defaultValue": "{{var3}}",
+      "events": {
+        "change": "changeVar3"
+      }
+    },
+    {
+      "id": "prim-1786097441478-zz33vfwif",
+      "type": "select",
+      "name": "Выпадающий список",
+      "width": 200,
+      "height": 35,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 440,
+      "top": 323,
+      "style": {
+        "border": "1px solid #cccccc",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "14px"
+      },
+      "customProperties": {}
+    },
+    {
+      "id": "prim-1786087094918-guhcpvfbn",
+      "type": "button",
+      "name": "Кнопка",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 110,
+      "top": 370,
+      "style": {
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "Кнопка1",
+      "events": {
+        "click": "exampleFunction"
+      }
+    },
+    {
+      "id": "prim-1786102930144-q2nldz6fu",
+      "type": "agtable",
+      "name": "AGTable2",
+      "width": 600,
+      "height": 300,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 60,
+      "top": 980,
+      "style": {
+        "border": "1px solid #ccc",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "rowData": "[\n\t{\n        \"id\": 1,\n        \"name\": \"Иван\"\n    }, \n\t{\n        \"id\": 2,\n        \"name\": \"Пётр2\"\n    }, \n\t{\n        \"id\": 3,\n        \"name\": \"Пётр3\"\n    }, \n\t{\n        \"id\": 4,\n        \"name\": \"Пётр4\"\n    }, \n\t{\n        \"id\": 5,\n        \"name\": \"Пётр5\"\n    }, \n\t{\n        \"id\": 6,\n        \"name\": \"Пётр6\"\n    }, \n\t{\n        \"id\": 7,\n        \"name\": \"Пётр7\"\n    }, \n\t{\n        \"id\": 8,\n        \"name\": \"Пётр8\"\n    }, \n\t{\n        \"id\": 9,\n        \"name\": \"Пётр9\"\n    }, \n\t{\n        \"id\": 10,\n        \"name\": \"Пётр10\"\n    }, \n\t{\n        \"id\": 11,\n        \"name\": \"Пётр11\"\n    },\n\t{\n        \"id\": 12,\n        \"name\": \"Иван12\"\n    }, \n\t{\n        \"id\": 13,\n        \"name\": \"Пётр13\"\n    }, \n\t{\n        \"id\": 14,\n        \"name\": \"Пётр14\"\n    }, \n\t{\n        \"id\": 15,\n        \"name\": \"Пётр15\"\n    }, \n\t{\n        \"id\": 16,\n        \"name\": \"Пётр16\"\n    }, \n\t{\n        \"id\": 17,\n        \"name\": \"Пётр17\"\n    }, \n\t{\n        \"id\": 18,\n        \"name\": \"Пётр18\"\n    }, \n\t{\n        \"id\": 19,\n        \"name\": \"Пётр19\"\n    }, \n\t{\n        \"id\": 20,\n        \"name\": \"Пётр20\"\n    }, \n\t{\n        \"id\": 31,\n        \"name\": \"Пётр31\"\n    }\n]\n",
+      "events": {
+        "rowClicked": "logRowClick"
+      },
+      "apiUrl": ""
+    },
+    {
+      "id": "prim-1786339822648-9c5zd1t9p",
+      "type": "agtable",
+      "name": "AGTable1",
+      "width": 600,
+      "height": 300,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 700,
+      "top": 990,
+      "style": {
+        "border": "1px solid #ccc",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "columnDefs": "[\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"title\",\n        \"headerName\": \"Заголовок\"\n    },\n\t{\n        \"field\": \"body\",\n        \"headerName\": \"Текст\"\n    }\n]\n",
+      "apiUrl": "https://jsonplaceholder.typicode.com/posts",
+      "dataSource": "api"
+    },
+    {
+      "id": "prim-1786340816100-kmkof9wzc",
+      "type": "agtable",
+      "name": "AGTable3",
+      "width": 95,
+      "height": 300,
+      "widthUnit": "%",
+      "heightUnit": "px",
+      "left": 100,
+      "top": 450,
+      "style": {
+        "border": "1px solid #ccc",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "dataSource": "api",
+      "apiUrl": "http://172.16.50.42:9977/app/api/1.0/auditprograms",
+      "rowData": "",
+      "columnDefs": "[\n\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"smnemocode\",\n        \"headerName\": \"Код\",\n        \"width\": 500, \n        \"notFiltered\": true,\n        \"notSorted\": true\n    },\n\t{\n        \"field\": \"scaption\",\n        \"headerName\": \"Наименование\"\n    },\n\t{\n        \"field\": \"nactive\",\n        \"headerName\": \"Используется\"\n    },\n\t{\n        \"field\": \"action\",\n        \"headerName\": \"123\",\n        \"width\": 100,\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"button\",\n        \"buttonText\": \"Hello\"\n    },\n\t{\n        \"field\": \"actions\",\n        \"headerName\": \"Действия\",\n        \"width\": 250,\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"custom\",\n        \"cellContent\": [\n            {\n                \"type\": \"text\",\n                \"text\": \"Операции:\",\n                \"style\": {\n                    \"fontWeight\": \"bold\",\n                    \"marginRight\": \"4px\"\n                }\n            },\n            {\n                \"type\": \"button\",\n                \"text\": \"Кнопка 1\",\n                \"event\": \"cellButtonClick\",\n                \"style\": {\n                    \"backgroundColor\": \"#007bff\",\n                    \"color\": \"#ffffff\",\n                    \"border\": \"none\",\n                    \"borderRadius\": \"4px\"\n                }\n            },\n            {\n                \"type\": \"button\",\n                \"text\": \"Кнопка 2\",\n                \"event\": \"cellButtonClick2\",\n                \"style\": {\n                    \"backgroundColor\": \"#28a745\",\n                    \"color\": \"#ffffff\",\n                    \"border\": \"none\",\n                    \"borderRadius\": \"4px\"\n                }\n            }\n        ]\n    }\n]",
+      "useAuth": true,
+      "apiDataPath": "content",
+      "paginationPageSize": 10,
+      "serverPagination": true,
+      "selectable": false,
+      "events": {
+        "cellButtonClick": "showHello",
+        "cellButtonClick2": "showHello2"
+      }
+    }
+  ]
+}

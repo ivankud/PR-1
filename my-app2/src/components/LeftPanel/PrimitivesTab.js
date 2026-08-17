@@ -1,6 +1,7 @@
 // Вкладка со списком примитивов для добавления на холст
 import React from 'react';
 import { useEditor } from '../../state/EditorContext';
+import { findPrimitive } from '../../utils/jsonUtils';
 
 function PrimitivesTab() {
   const { state, dispatch } = useEditor();
@@ -12,8 +13,26 @@ function PrimitivesTab() {
   };
 
   const handleClick = (primitiveType) => {
-    // Добавление примитива по клику (в центр холста)
-    dispatch({ type: 'ADD_PRIMITIVE', primitiveType });
+    // Добавление примитива по клику
+    // Если выбран примитив-контейнер — добавляем внутрь него (центр контейнера)
+    let parentId = null;
+    if (state.selectedIds.length === 1) {
+      const selected = state.form
+        ? findPrimitive(state.form, state.selectedIds[0])
+        : null;
+      if (selected) {
+        const template = primitives.find(p => p.type === selected.type);
+        // Контейнер — если у шаблона isContainer=true или есть дочерние элементы
+        if (template?.isContainer || (selected.children && selected.children.length > 0)) {
+          parentId = selected.id;
+        }
+      }
+    }
+    dispatch({
+      type: 'ADD_PRIMITIVE',
+      primitiveType,
+      parentId
+    });
   };
 
   return (

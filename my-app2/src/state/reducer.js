@@ -100,15 +100,40 @@ export function editorReducer(state, action) {
       if (!template) return state;
 
       const newPrimitive = createPrimitiveFromTemplate(template, action.id || generateId());
-      // Позиционируем в центре холста
-      const canvas = state.form.canvas || { width: 800, height: 600 };
-      newPrimitive.left = action.left !== undefined ? action.left : Math.round((canvas.width - newPrimitive.width) / 2);
-      newPrimitive.top = action.top !== undefined ? action.top : Math.round((canvas.height - newPrimitive.height) / 2);
 
-      const newForm = {
-        ...state.form,
-        children: [...(state.form.children || []), newPrimitive]
-      };
+      // Определяем родителя: если передан parentId — ищем контейнер, иначе корень формы
+      let parent = null;
+      if (action.parentId) {
+        parent = findPrimitive(state.form, action.parentId);
+      }
+
+      // Позиционирование нового примитива
+      if (action.left !== undefined && action.top !== undefined) {
+        // Позиция передана явно (например, из drag&drop) — уже в координатах родителя
+        newPrimitive.left = action.left;
+        newPrimitive.top = action.top;
+      } else {
+        // Центрирование относительно родителя (контейнера) или холста
+        const parentWidth = parent ? (parent.width || 0) : (state.form.canvas?.width || 800);
+        const parentHeight = parent ? (parent.height || 0) : (state.form.canvas?.height || 600);
+        newPrimitive.left = Math.round((parentWidth - newPrimitive.width) / 2);
+        newPrimitive.top = Math.round((parentHeight - newPrimitive.height) / 2);
+      }
+
+      let newForm;
+      if (parent) {
+        // Добавляем примитив внутрь контейнера
+        newForm = updatePrimitiveInTree(deepClone(state.form), parent.id, (node) => ({
+          ...node,
+          children: [...(node.children || []), newPrimitive]
+        }));
+      } else {
+        // Добавляем в корень формы
+        newForm = {
+          ...state.form,
+          children: [...(state.form.children || []), newPrimitive]
+        };
+      }
 
       return pushHistory({
         ...state,

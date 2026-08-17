@@ -11,6 +11,69 @@ const snapToGrid = (value, gridSize) => {
   return Math.round(value / gridSize) * gridSize;
 };
 
+// Поиск самого глубокого контейнера, в который попадает точка
+// point: { x, y } — координаты относительно холста (формы)
+// node: примитив, проверяемый рекурсивно
+// offset: { left, top } — смещение текущего примитива относительно холста
+// Возвращает самый глубокий контейнер, чья область содержит точку, либо null
+function findContainerAtPoint(node, point, offset = { left: 0, top: 0 }) {
+  if (!node) return null;
+
+  // Абсолютные координаты текущего примитива на холсте
+  const absLeft = offset.left + (node.left || 0);
+  const absTop = offset.top + (node.top || 0);
+  const absRight = absLeft + (node.width || 0);
+  const absBottom = absTop + (node.height || 0);
+
+  // Сначала проверяем детей (самый глубокий приоритетнее)
+  let deepestChild = null;
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findContainerAtPoint(child, point, { left: absLeft, top: absTop });
+      if (found) deepestChild = found;
+    }
+  }
+
+  // Если в детях нашли контейнер — возвращаем его (самый глубокий)
+  if (deepestChild) return deepestChild;
+
+  // Проверяем, является ли текущий примитив контейнером и попадает ли точка в его область
+  const isContainer = node.children !== undefined || node.type === 'container';
+  if (isContainer &&
+      point.x >= absLeft && point.x <= absRight &&
+      point.y >= absTop && point.y <= absBottom) {
+    return node;
+  }
+
+  return null;
+}
+
+// Получение абсолютной позиции (смещение относительно холста) целевого примитива.
+// Используется для вычисления координат точки относительно целевого контейнера.
+function getOffsetToNode(root, targetId) {
+  let offset = { left: 0, top: 0 };
+
+  const traverse = (node, accLeft, accTop) => {
+    if (!node) return false;
+    const curLeft = accLeft + (node.left || 0);
+    const curTop = accTop + (node.top || 0);
+    if (node.id === targetId) {
+      // Абсолютная позиция самого узла (левая/верхняя граница)
+      offset = { left: curLeft, top: curTop };
+      return true;
+    }
+    if (node.children) {
+      for (const child of node.children) {
+        if (traverse(child, curLeft, curTop)) return true;
+      }
+    }
+    return false;
+  };
+
+  traverse(root, 0, 0);
+  return offset;
+}
+
 function Canvas() {
   const { state, dispatch } = useEditor();
   const { form, primitives, selectedIds, zoom } = state;
@@ -227,6 +290,7 @@ function Canvas() {
     if (!primitiveType) return;
 
     const rect = canvasRef.current.getBoundingClientRect();
+    // Координаты точки сброса относительно холста (canvas-viewport, без учёта панорамирования)
     const x = (e.clientX - rect.left) / zoom - pan.x;
     const y = (e.clientY - rect.top) / zoom - pan.y;
 
@@ -234,15 +298,29 @@ function Canvas() {
     const width = template?.defaults?.width || 100;
     const height = template?.defaults?.height || 40;
 
+    // Определяем контейнер, в область которого попадает точка сброса
+    const targetContainer = findContainerAtPoint(form, { x, y });
+    const parentId = targetContainer ? targetContainer.id : null;
+
+    // Координаты точки относительно родителя (контейнера или корня)
+    let localX = x;
+    let localY = y;
+    if (targetContainer) {
+      const offset = getOffsetToNode(form, targetContainer.id);
+      localX = x - offset.left;
+      localY = y - offset.top;
+    }
+
     // Примагничивание позиции нового элемента к узлам сетки
-    const snappedX = snapToGrid(Math.round(x - width / 2), gridSize);
-    const snappedY = snapToGrid(Math.round(y - height / 2), gridSize);
+    const snappedX = snapToGrid(Math.round(localX - width / 2), gridSize);
+    const snappedY = snapToGrid(Math.round(localY - height / 2), gridSize);
 
     dispatch({
       type: 'ADD_PRIMITIVE',
       primitiveType,
       left: snappedX,
-      top: snappedY
+      top: snappedY,
+      parentId
     });
   };
 
