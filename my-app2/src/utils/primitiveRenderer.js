@@ -29,6 +29,22 @@ export function renderPrimitive(primitive, template, context) {
     attributes.style = primitive.style;
   }
 
+  // Для input с пустым/отсутствующим типом устанавливаем 'text'
+  if (tag === 'input' && (!attributes.type || attributes.type === '{{inputType}}')) {
+    attributes.type = 'text';
+  }
+
+  // Поля ввода (input/textarea/select) заполняют весь контейнер примитива,
+  // чтобы фактический размер совпадал с размерами, указанными в примитиве
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') {
+    attributes.style = {
+      ...(attributes.style || {}),
+      width: '100%',
+      height: '100%',
+      boxSizing: 'border-box'
+    };
+  }
+
   // Обработка специальных случаев для input/textarea
   if (tag === 'input' || tag === 'textarea') {
     // Если есть defaultValue и оно не пустое, удаляем value чтобы избежать конфликта

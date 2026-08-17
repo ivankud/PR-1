@@ -7,6 +7,7 @@
     "height": 35,
     "left": 0,
     "top": 0,
+    "inputType": "text",
     "style": {
       "border": "1px solid #cccccc",
       "borderRadius": "4px",
@@ -15,6 +16,7 @@
     }
   },
   "properties": [
+    { "name": "inputType", "label": "Тип значения", "type": "select", "options": ["text", "number", "date", "time"], "default": "text" },
     { "name": "placeholder", "label": "Подсказка", "type": "string", "default": "Введите текст..." },
     { "name": "value", "label": "Значение", "type": "string", "default": "" },
     { "name": "defaultValue", "label": "Начальное значение", "type": "string", "default": "" },
@@ -33,7 +35,7 @@
   "render": {
     "tag": "input",
     "attributes": {
-      "type": "text",
+      "type": "{{inputType}}",
       "placeholder": "{{placeholder}}",
       "defaultValue": "{{defaultValue}}",
       "value": "{{value}}",

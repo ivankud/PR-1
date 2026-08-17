@@ -56,12 +56,12 @@
       "id": "prim-1786968821353-hpt15sg0d",
       "type": "input",
       "name": "Поле ввода",
-      "width": 200,
-      "height": 35,
+      "width": 370,
+      "height": 40,
       "widthUnit": "px",
       "heightUnit": "px",
       "left": 160,
-      "top": 243,
+      "top": 240,
       "style": {
         "border": "",
         "borderRadius": "4px",
@@ -71,7 +71,8 @@
       "customProperties": {},
       "readOnly": false,
       "defaultValue": "123123",
-      "value": "23"
+      "value": "23",
+      "inputType": "number"
     },
     {
       "id": "prim-1786968919915-ytzvjcyh6",

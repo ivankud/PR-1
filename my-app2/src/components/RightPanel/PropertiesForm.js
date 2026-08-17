@@ -89,6 +89,17 @@ function PropertiesForm({ primitive }) {
             onChange={(e) => handleChange(prop.name, e.target.checked)}
           />
         );
+      case 'select':
+        return (
+          <select
+            value={value}
+            onChange={(e) => handleChange(prop.name, e.target.value)}
+          >
+            {(prop.options || []).map(opt => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        );
       case 'textarea':
         return (
           <textarea

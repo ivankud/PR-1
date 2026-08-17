@@ -8,10 +8,13 @@ import CustomProperties from './CustomProperties';
 import JsonEditor from './JsonEditor';
 import CssEditor from './CssEditor';
 import EventsTab from './EventsTab';
+import JsonDialog from './JsonDialog';
 
 // Настройки холста (корневой элемент формы)
 function FormSettings({ form }) {
   const { dispatch } = useEditor();
+  // Состояние диалогового окна редактирования inline-контекста
+  const [contextDialogOpen, setContextDialogOpen] = useState(false);
 
   const handleCanvasChange = (prop, value) => {
     dispatch({
@@ -72,6 +75,25 @@ function FormSettings({ form }) {
       parsed = value ? JSON.parse(value) : {};
     } catch (e) {
       // Невалидный JSON - не обновляем
+      return;
+    }
+    dispatch({
+      type: 'UPDATE_FORM',
+      updates: {
+        context: {
+          ...(form.context || {}),
+          inline: parsed
+        }
+      }
+    });
+  };
+
+  // Сохранение inline-контекста из JSON-диалога
+  const handleInlineContextSave = (text) => {
+    let parsed = {};
+    try {
+      parsed = text ? JSON.parse(text) : {};
+    } catch (e) {
       return;
     }
     dispatch({
@@ -162,9 +184,29 @@ function FormSettings({ form }) {
               onChange={(e) => handleInlineContextChange(e.target.value)}
               spellCheck={false}
             />
+            <div className="property-json-toggle">
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => setContextDialogOpen(true)}
+                title="Открыть редактор JSON контекста"
+              >
+                ⚙ Открыть редактор
+              </button>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Диалоговое окно редактирования inline-контекста */}
+      {contextDialogOpen && form.context?.source === 'inline' && (
+        <JsonDialog
+          title="Контекст формы (inline)"
+          value={form.context.inline || {}}
+          onSave={handleInlineContextSave}
+          onClose={() => setContextDialogOpen(false)}
+        />
+      )}
 
       <div className="properties-section">
         <div className="properties-section-title">Действия при открытии</div>
