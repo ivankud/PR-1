@@ -507,18 +507,23 @@ export function editorReducer(state, action) {
       );
       if (!sameParent) return state;
 
-      // Рабочая область = область родительского контейнера (или форма)
-      const parent = parentId ? findPrimitive(newForm, parentId) : newForm;
-      const workLeft = 0;
-      const workTop = 0;
-      const workWidth = parent.width || (newForm.canvas?.width || 800);
-      const workHeight = parent.height || (newForm.canvas?.height || 600);
-
       // Собираем абсолютные позиции целевых примитивов
       const absolute = targets.map(prim => ({
         prim,
         abs: getAbsolutePosition(newForm, prim.id) || { left: 0, top: 0 }
       }));
+
+      // Крайние положения по выбранным примитивам (с учётом размеров)
+      const minLeft = Math.min(...absolute.map(({ abs }) => abs.left));
+      const minTop = Math.min(...absolute.map(({ abs }) => abs.top));
+      const maxRight = Math.max(...absolute.map(({ prim, abs }) => abs.left + (prim.width || 0)));
+      const maxBottom = Math.max(...absolute.map(({ prim, abs }) => abs.top + (prim.height || 0)));
+      const centerH = (minLeft + maxRight) / 2;
+      const centerV = (minTop + maxBottom) / 2;
+
+      // Вычисляем новые локальные позиции заранее, используя исходные абсолютные координаты,
+      // чтобы избежать накопления ошибок при обновлении newForm в цикле.
+      const updates = [];
 
       for (const { prim, abs } of absolute) {
         let newAbsLeft = abs.left;
@@ -528,35 +533,48 @@ export function editorReducer(state, action) {
 
         switch (align) {
           case 'left':
-            newAbsLeft = workLeft;
+            // Минимальное левое положение из всех выбранных
+            newAbsLeft = minLeft;
             break;
           case 'center-h':
-            newAbsLeft = workLeft + (workWidth - w) / 2;
+            // Горизонтальная середина совпадает с серединой области (minLeft..maxRight)
+            newAbsLeft = centerH - w / 2;
             break;
           case 'right':
-            newAbsLeft = workLeft + workWidth - w;
+            // Максимальное правое положение с учётом ширины
+            newAbsLeft = maxRight - w;
             break;
           case 'top':
-            newAbsTop = workTop;
+            // Минимальное верхнее положение из всех выбранных
+            newAbsTop = minTop;
             break;
           case 'center-v':
-            newAbsTop = workTop + (workHeight - h) / 2;
+            // Вертикальная середина совпадает с серединой области (minTop..maxBottom)
+            newAbsTop = centerV - h / 2;
             break;
           case 'bottom':
-            newAbsTop = workTop + workHeight - h;
+            // Максимальное нижнее положение с учётом высоты
+            newAbsTop = maxBottom - h;
             break;
           default:
             break;
         }
 
-        // Пересчитываем абсолютную позицию в локальную относительно родителя и ограничиваем границами контейнера
+        // Пересчитываем абсолютную позицию в локальную относительно родителя
         const local = toLocalPosition(newForm, prim.id, newAbsLeft, newAbsTop);
-        const clampedLeft = Math.max(0, Math.min(local.left, workWidth - w));
-        const clampedTop = Math.max(0, Math.min(local.top, workHeight - h));
-        newForm = updatePrimitiveInTree(newForm, prim.id, (node) => ({
+        updates.push({
+          id: prim.id,
+          left: local.left,
+          top: local.top
+        });
+      }
+
+      // Применяем все обновления без кламппинга к границам формы/контейнера
+      for (const upd of updates) {
+        newForm = updatePrimitiveInTree(newForm, upd.id, (node) => ({
           ...node,
-          left: clampedLeft,
-          top: clampedTop
+          left: upd.left,
+          top: upd.top
         }));
       }
 

@@ -116,8 +116,8 @@
       "id": "prim-label-3",
       "type": "text",
       "name": "Надпись 3",
-      "left": 1080,
-      "top": 840,
+      "left": 50,
+      "top": 440,
       "width": 200,
       "height": 30,
       "style": {
@@ -143,108 +143,69 @@
       ]
     },
     {
-      "id": "prim-1786087094918-guhcpvfbn",
-      "type": "button",
-      "name": "Кнопка",
-      "width": 120,
-      "height": 40,
+      "id": "prim-1786959762635-ifedabg1i",
+      "type": "text",
+      "name": "Текст (label)",
+      "width": 200,
+      "height": 30,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 110,
-      "top": 370,
+      "left": 680,
+      "top": 105,
       "style": {
-        "backgroundColor": "#007bff",
-        "color": "#ffffff",
-        "border": "none",
-        "borderRadius": "4px",
         "fontSize": "14px",
-        "cursor": "pointer"
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
       },
       "customProperties": {},
-      "text": "Кнопка1",
-      "events": {
-        "click": "exampleFunction"
-      }
+      "text": "Текст2"
     },
     {
-      "id": "prim-1786102930144-q2nldz6fu",
-      "type": "agtable",
-      "name": "AGTable2",
-      "width": 600,
-      "height": 300,
+      "id": "prim-1786959773120-34gs5uzdc",
+      "type": "text",
+      "name": "Текст (label)",
+      "width": 200,
+      "height": 30,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 60,
-      "top": 980,
+      "left": 820,
+      "top": 95,
       "style": {
-        "border": "1px solid #ccc",
-        "borderRadius": "4px"
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
       },
       "customProperties": {},
-      "rowData": "[\n\t{\n        \"id\": 1,\n        \"name\": \"Иван\"\n    }, \n\t{\n        \"id\": 2,\n        \"name\": \"Пётр2\"\n    }, \n\t{\n        \"id\": 3,\n        \"name\": \"Пётр3\"\n    }, \n\t{\n        \"id\": 4,\n        \"name\": \"Пётр4\"\n    }, \n\t{\n        \"id\": 5,\n        \"name\": \"Пётр5\"\n    }, \n\t{\n        \"id\": 6,\n        \"name\": \"Пётр6\"\n    }, \n\t{\n        \"id\": 7,\n        \"name\": \"Пётр7\"\n    }, \n\t{\n        \"id\": 8,\n        \"name\": \"Пётр8\"\n    }, \n\t{\n        \"id\": 9,\n        \"name\": \"Пётр9\"\n    }, \n\t{\n        \"id\": 10,\n        \"name\": \"Пётр10\"\n    }, \n\t{\n        \"id\": 11,\n        \"name\": \"Пётр11\"\n    },\n\t{\n        \"id\": 12,\n        \"name\": \"Иван12\"\n    }, \n\t{\n        \"id\": 13,\n        \"name\": \"Пётр13\"\n    }, \n\t{\n        \"id\": 14,\n        \"name\": \"Пётр14\"\n    }, \n\t{\n        \"id\": 15,\n        \"name\": \"Пётр15\"\n    }, \n\t{\n        \"id\": 16,\n        \"name\": \"Пётр16\"\n    }, \n\t{\n        \"id\": 17,\n        \"name\": \"Пётр17\"\n    }, \n\t{\n        \"id\": 18,\n        \"name\": \"Пётр18\"\n    }, \n\t{\n        \"id\": 19,\n        \"name\": \"Пётр19\"\n    }, \n\t{\n        \"id\": 20,\n        \"name\": \"Пётр20\"\n    }, \n\t{\n        \"id\": 31,\n        \"name\": \"Пётр31\"\n    }\n]\n",
-      "events": {
-        "rowClicked": "logRowClick"
-      },
-      "apiUrl": ""
+      "text": "Текст3"
     },
     {
-      "id": "prim-1786339822648-9c5zd1t9p",
-      "type": "agtable",
-      "name": "AGTable1",
-      "width": 600,
-      "height": 300,
+      "id": "prim-1786959777943-hsosfxhty",
+      "type": "text",
+      "name": "Текст (label)",
+      "width": 200,
+      "height": 30,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": -1840,
-      "top": 70,
+      "left": 1470,
+      "top": 105,
       "style": {
-        "border": "1px solid #ccc",
-        "borderRadius": "4px"
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
       },
       "customProperties": {},
-      "columnDefs": "[\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"title\",\n        \"headerName\": \"Заголовок\"\n    },\n\t{\n        \"field\": \"body\",\n        \"headerName\": \"Текст\"\n    }\n]\n",
-      "apiUrl": "https://jsonplaceholder.typicode.com/posts",
-      "dataSource": "api"
+      "text": "Текст4"
     },
     {
-      "id": "prim-1786340816100-kmkof9wzc",
-      "type": "agtable",
-      "name": "AGTable3",
-      "width": 95,
-      "height": 300,
-      "widthUnit": "%",
-      "heightUnit": "px",
-      "left": 100,
-      "top": 450,
-      "style": {
-        "border": "1px solid #ccc",
-        "borderRadius": "4px"
-      },
-      "customProperties": {},
-      "dataSource": "api",
-      "apiUrl": "http://172.16.50.42:9977/app/api/1.0/auditprograms",
-      "rowData": "",
-      "columnDefs": "[\n\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"smnemocode\",\n        \"headerName\": \"Код\",\n        \"width\": 500, \n        \"notFiltered\": true,\n        \"notSorted\": true\n    },\n\t{\n        \"field\": \"scaption\",\n        \"headerName\": \"Наименование\"\n    },\n\t{\n        \"field\": \"nactive\",\n        \"headerName\": \"Используется\"\n    },\n\t{\n        \"field\": \"action\",\n        \"headerName\": \"123\",\n        \"width\": 100,\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"button\",\n        \"buttonText\": \"Hello\"\n    },\n\t{\n        \"field\": \"actions\",\n        \"headerName\": \"Действия\",\n        \"width\": 250,\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"custom\",\n        \"cellContent\": [\n            {\n                \"type\": \"text\",\n                \"text\": \"Операции:\",\n                \"style\": {\n                    \"fontWeight\": \"bold\",\n                    \"marginRight\": \"4px\"\n                }\n            },\n            {\n                \"type\": \"button\",\n                \"text\": \"Кнопка 1\",\n                \"event\": \"cellButtonClick\",\n                \"style\": {\n                    \"backgroundColor\": \"#007bff\",\n                    \"color\": \"#ffffff\",\n                    \"border\": \"none\",\n                    \"borderRadius\": \"4px\"\n                }\n            },\n            {\n                \"type\": \"button\",\n                \"text\": \"Кнопка 2\",\n                \"event\": \"cellButtonClick2\",\n                \"style\": {\n                    \"backgroundColor\": \"#28a745\",\n                    \"color\": \"#ffffff\",\n                    \"border\": \"none\",\n                    \"borderRadius\": \"4px\"\n                }\n            }\n        ]\n    }\n]",
-      "useAuth": true,
-      "apiDataPath": "content",
-      "paginationPageSize": 10,
-      "serverPagination": true,
-      "selectable": false,
-      "events": {
-        "cellButtonClick": "showHello",
-        "cellButtonClick2": "showHello2"
-      }
-    },
-    {
-      "id": "prim-1786953163994-jaizr35z2",
+      "id": "prim-1786959799821-746puuho4",
       "type": "container",
       "name": "Контейнер",
-      "width": 640,
+      "width": 300,
       "height": 200,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 1060,
-      "top": 120,
+      "left": 910,
+      "top": 470,
       "style": {
         "border": "1px dashed #999999",
         "backgroundColor": "#f9f9f9",
@@ -253,142 +214,78 @@
       "customProperties": {},
       "children": [
         {
-          "id": "prim-1786953170400-9zp6gbdnf",
-          "type": "button",
-          "name": "Кнопка",
-          "width": 120,
-          "height": 40,
-          "widthUnit": "px",
-          "heightUnit": "px",
-          "left": 0,
-          "top": 0,
-          "style": {
-            "backgroundColor": "#007bff",
-            "color": "#ffffff",
-            "border": "none",
-            "borderRadius": "4px",
-            "fontSize": "14px",
-            "cursor": "pointer"
-          },
-          "customProperties": {}
-        },
-        {
-          "id": "prim-1786953172897-aqajaio5w",
-          "type": "button",
-          "name": "Кнопка",
-          "width": 120,
-          "height": 40,
-          "widthUnit": "px",
-          "heightUnit": "px",
-          "left": 0,
-          "top": 0,
-          "style": {
-            "backgroundColor": "#007bff",
-            "color": "#ffffff",
-            "border": "none",
-            "borderRadius": "4px",
-            "fontSize": "14px",
-            "cursor": "pointer"
-          },
-          "customProperties": {}
-        },
-        {
-          "id": "prim-1786953608798-jy4pqrkxl",
-          "type": "input",
-          "name": "Поле ввода",
+          "id": "prim-1786959803091-9wum490b4",
+          "type": "text",
+          "name": "Текст (label)",
           "width": 200,
-          "height": 35,
+          "height": 30,
           "widthUnit": "px",
           "heightUnit": "px",
-          "left": 0,
+          "left": 210,
           "top": 0,
           "style": {
-            "border": "1px solid #cccccc",
-            "borderRadius": "4px",
-            "padding": "4px 8px",
-            "fontSize": "14px"
+            "fontSize": "14px",
+            "color": "#333333",
+            "fontFamily": "Arial, sans-serif"
           },
-          "customProperties": {}
+          "customProperties": {},
+          "text": "Текст1"
+        },
+        {
+          "id": "prim-1786959808401-tpld1mqsi",
+          "type": "text",
+          "name": "Текст (label)",
+          "width": 200,
+          "height": 30,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 210,
+          "top": 70,
+          "style": {
+            "fontSize": "14px",
+            "color": "#333333",
+            "fontFamily": "Arial, sans-serif"
+          },
+          "customProperties": {},
+          "text": "Текст2"
+        },
+        {
+          "id": "prim-1786959815309-0df8rs4g0",
+          "type": "text",
+          "name": "Текст (label)",
+          "width": 200,
+          "height": 30,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 210,
+          "top": 150,
+          "style": {
+            "fontSize": "14px",
+            "color": "#333333",
+            "fontFamily": "Arial, sans-serif"
+          },
+          "customProperties": {},
+          "text": "Текст4"
         }
       ]
     },
     {
-      "id": "group-1786953211315-rxt1hys0j",
+      "id": "prim-1786961305657-8hz2kz75l",
       "type": "container",
-      "name": "Группа",
-      "width": 600,
-      "height": 128,
-      "left": 340,
-      "top": 210,
+      "name": "Контейнер",
+      "width": 990,
+      "height": 200,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 680,
+      "top": 140,
       "style": {
         "border": "1px dashed #999999",
-        "backgroundColor": "rgba(0, 123, 255, 0.05)",
+        "backgroundColor": "#f9f9f9",
         "borderRadius": "4px"
       },
       "customProperties": {},
-      "children": [
-        {
-          "id": "prim-1786089478361-e5it2hq58",
-          "type": "input",
-          "name": "Поле ввода",
-          "width": 360,
-          "height": 310,
-          "widthUnit": "px",
-          "heightUnit": "px",
-          "left": 230,
-          "top": -110,
-          "style": {
-            "border": "1px solid #cccccc",
-            "borderRadius": "4px",
-            "padding": "4px 8px",
-            "fontSize": "14px"
-          },
-          "customProperties": {},
-          "value": "{{var3}}",
-          "defaultValue": "{{var3}}",
-          "events": {
-            "change": "changeVar3"
-          }
-        },
-        {
-          "id": "prim-1786097441478-zz33vfwif",
-          "type": "select",
-          "name": "Выпадающий список",
-          "width": 200,
-          "height": 35,
-          "widthUnit": "px",
-          "heightUnit": "px",
-          "left": 0,
-          "top": 93,
-          "style": {
-            "border": "1px solid #cccccc",
-            "borderRadius": "4px",
-            "padding": "4px 8px",
-            "fontSize": "14px"
-          },
-          "customProperties": {}
-        }
-      ]
-    },
-    {
-      "id": "prim-1786953875232-7w3hepr4p",
-      "type": "button",
-      "name": "Кнопка",
-      "width": 120,
-      "height": 40,
-      "widthUnit": "px",
-      "heightUnit": "px",
-      "left": 330,
-      "top": 130,
-      "style": {
-        "backgroundColor": "#007bff",
-        "color": "#ffffff",
-        "border": "none",
-        "borderRadius": "4px",
-        "fontSize": "14px",
-        "cursor": "pointer"
-      },
-      "customProperties": {}
+      "children": []
     }
   ]
 }
