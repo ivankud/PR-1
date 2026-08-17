@@ -143,47 +143,6 @@
       ]
     },
     {
-      "id": "prim-1786089478361-e5it2hq58",
-      "type": "input",
-      "name": "Поле ввода",
-      "width": 440,
-      "height": 40,
-      "widthUnit": "px",
-      "heightUnit": "px",
-      "left": 600,
-      "top": 230,
-      "style": {
-        "border": "1px solid #cccccc",
-        "borderRadius": "4px",
-        "padding": "4px 8px",
-        "fontSize": "14px"
-      },
-      "customProperties": {},
-      "value": "{{var3}}",
-      "defaultValue": "{{var3}}",
-      "events": {
-        "change": "changeVar3"
-      }
-    },
-    {
-      "id": "prim-1786097441478-zz33vfwif",
-      "type": "select",
-      "name": "Выпадающий список",
-      "width": 200,
-      "height": 35,
-      "widthUnit": "px",
-      "heightUnit": "px",
-      "left": 440,
-      "top": 323,
-      "style": {
-        "border": "1px solid #cccccc",
-        "borderRadius": "4px",
-        "padding": "4px 8px",
-        "fontSize": "14px"
-      },
-      "customProperties": {}
-    },
-    {
       "id": "prim-1786087094918-guhcpvfbn",
       "type": "button",
       "name": "Кнопка",
@@ -275,6 +234,123 @@
         "cellButtonClick": "showHello",
         "cellButtonClick2": "showHello2"
       }
+    },
+    {
+      "id": "prim-1786953163994-jaizr35z2",
+      "type": "container",
+      "name": "Контейнер",
+      "width": 300,
+      "height": 200,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 1220,
+      "top": 150,
+      "style": {
+        "border": "1px dashed #999999",
+        "backgroundColor": "#f9f9f9",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "children": [
+        {
+          "id": "prim-1786953170400-9zp6gbdnf",
+          "type": "button",
+          "name": "Кнопка",
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 90,
+          "top": 70,
+          "style": {
+            "backgroundColor": "#007bff",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer"
+          },
+          "customProperties": {}
+        },
+        {
+          "id": "prim-1786953172897-aqajaio5w",
+          "type": "button",
+          "name": "Кнопка",
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 340,
+          "top": 140,
+          "style": {
+            "backgroundColor": "#007bff",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer"
+          },
+          "customProperties": {}
+        }
+      ]
+    },
+    {
+      "id": "group-1786953211315-rxt1hys0j",
+      "type": "container",
+      "name": "Группа",
+      "width": 600,
+      "height": 128,
+      "left": 340,
+      "top": 210,
+      "style": {
+        "border": "1px dashed #999999",
+        "backgroundColor": "rgba(0, 123, 255, 0.05)",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "children": [
+        {
+          "id": "prim-1786089478361-e5it2hq58",
+          "type": "input",
+          "name": "Поле ввода",
+          "width": 440,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 230,
+          "top": -110,
+          "style": {
+            "border": "1px solid #cccccc",
+            "borderRadius": "4px",
+            "padding": "4px 8px",
+            "fontSize": "14px"
+          },
+          "customProperties": {},
+          "value": "{{var3}}",
+          "defaultValue": "{{var3}}",
+          "events": {
+            "change": "changeVar3"
+          }
+        },
+        {
+          "id": "prim-1786097441478-zz33vfwif",
+          "type": "select",
+          "name": "Выпадающий список",
+          "width": 200,
+          "height": 35,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 0,
+          "top": 93,
+          "style": {
+            "border": "1px solid #cccccc",
+            "borderRadius": "4px",
+            "padding": "4px 8px",
+            "fontSize": "14px"
+          },
+          "customProperties": {}
+        }
+      ]
     }
   ]
 }

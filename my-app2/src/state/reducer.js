@@ -112,12 +112,16 @@ export function editorReducer(state, action) {
         // Позиция передана явно (например, из drag&drop) — уже в координатах родителя
         newPrimitive.left = action.left;
         newPrimitive.top = action.top;
+      } else if (parent) {
+        // Добавление по клику внутрь контейнера — в левый верхний угол контейнера
+        newPrimitive.left = 0;
+        newPrimitive.top = 0;
       } else {
-        // Центрирование относительно родителя (контейнера) или холста
-        const parentWidth = parent ? (parent.width || 0) : (state.form.canvas?.width || 800);
-        const parentHeight = parent ? (parent.height || 0) : (state.form.canvas?.height || 600);
-        newPrimitive.left = Math.round((parentWidth - newPrimitive.width) / 2);
-        newPrimitive.top = Math.round((parentHeight - newPrimitive.height) / 2);
+        // Центрирование относительно холста
+        const canvasWidth = state.form.canvas?.width || 800;
+        const canvasHeight = state.form.canvas?.height || 600;
+        newPrimitive.left = Math.round((canvasWidth - newPrimitive.width) / 2);
+        newPrimitive.top = Math.round((canvasHeight - newPrimitive.height) / 2);
       }
 
       let newForm;
