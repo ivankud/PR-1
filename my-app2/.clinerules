@@ -1,0 +1,227 @@
+# Правила работы с проектом (Cline Rules)
+
+## 1. Архитектура проекта
+
+Проект — **React-приложение (Create React App)** для визуального редактора веб-форм. Данные форм хранятся в виде JSON-файлов в `public/forms/`, шаблоны примитивов — в `public/primitives/`.
+
+### Стек
+- React 18 (функциональные компоненты, хуки)
+- React Router v6 (роутинг)
+- React Context + useReducer (управление состоянием)
+- Чистый CSS (без CSS-фреймворков)
+
+### Слои приложения
+```
+src/
+├── App.js                    # Корневой компонент: роутинг + EditorProvider
+├── state/                    # Управление состоянием
+│   ├── EditorContext.js      # React Context: useReducer, загрузка примитивов, горячие клавиши
+│   └── reducer.js            # Все действия редактора (ADD_PRIMITIVE, MOVE, RESIZE, GROUP и т.д.)
+├── utils/                    # Чистые утилиты (без JSX)
+│   ├── jsonUtils.js          # deepClone, generateId, findPrimitive, findParent, loadJson, CSS-конвертеры
+│   ├── anchors.js            # resolveTemplate (подстановка {{path}}), getFormContext
+│   ├── primitiveRenderer.js  # renderPrimitive, createPrimitiveFromTemplate (содержит JSX)
+│   ├── functionRunner.js     # Компиляция/вызов пользовательских функций, обработчики событий
+│   ├── formLoader.js         # Загрузка форм из public/forms/ (manifest + по ID)
+│   ├── sizeUtils.js          # Работа с размерами и единицами измерения (px, %, vw, vh, auto)
+│   └── auth.js               # Basic Auth: сохранение/чтение учётных данных в localStorage
+└── components/               # UI-компоненты
+    ├── AppNav.js             # Постоянное навигационное меню
+    ├── HomePage.js           # Список форм
+    ├── LoginPage.js          # Страница авторизации (сохранение логина/пароля)
+    ├── FormEditorRoute.js    # Обёртка редактора (загрузка формы по ID)
+    ├── FormPreviewRoute.js   # Обёртка предпросмотра готовой формы
+    ├── FormEditor.js         # Основной редактор: Canvas + LeftPanel + RightPanel
+    ├── FormPreview.js        # Предпросмотр формы
+    ├── FormMenu.js           # Меню форм
+    ├── ActionBar.js          # Панель действий (undo/redo, группировка, выравнивание)
+    ├── AGTable.js            # Компонент таблицы AG Grid
+    ├── Splitter.js           # Разделитель панелей
+    ├── Canvas/               # Холст редактора
+    │   ├── Canvas.js         # Холст: рендер дерева примитивов, выделение, перемещение
+    │   └── CanvasPrimitive.js# Отдельный примитив на холсте (drag/resize/select)
+    ├── LeftPanel/            # Левая панель
+    │   ├── LeftPanel.js      # Контейнер вкладок
+    │   ├── PrimitivesTab.js  # Список примитивов для добавления
+    │   ├── LayersTab.js      # Дерево слоёв
+    │   └── FunctionsTab.js   # Редактор пользовательских функций
+    └── RightPanel/           # Правая панель
+        ├── RightPanel.js     # Контейнер вкладок
+        ├── PropertiesForm.js # Свойства примитива
+        ├── CssEditor.js      # Редактор CSS
+        ├── CustomProperties.js # Пользовательские свойства
+        ├── EventsTab.js      # События примитива/формы
+        ├── JsonEditor.js     # Редактор JSON
+        └── JsonDialog.js     # Диалог JSON
+```
+
+## 2. Ключевые файлы и их назначение
+
+### Состояние (state/)
+| Файл | Назначение |
+|------|-----------|
+| `EditorContext.js` | Провайдер контекста. Загружает шаблоны примитивов из `/primitives/*.json`, обрабатывает горячие клавиши (Ctrl+Z, Ctrl+Y, Delete). Экспортирует `useEditor()`. |
+| `reducer.js` | Все действия: `LOAD_FORM`, `ADD_PRIMITIVE`, `MOVE_PRIMITIVES`, `MOVE_PRIMITIVES_LIVE`, `RESIZE_PRIMITIVE`, `RESIZE_PRIMITIVE_LIVE`, `COMMIT_HISTORY`, `SELECT`, `DELETE_SELECTED`, `UPDATE_PROPERTY`, `UPDATE_STYLE`, `UPDATE_JSON`, `UPDATE_FORM`, `GROUP`, `UNGROUP`, `ALIGN`, `DISTRIBUTE`, `UNDO`, `REDO`, `SET_ZOOM`, `SET_DIRTY`, `ADD_FUNCTION`, `UPDATE_FUNCTION`, `DELETE_FUNCTION`, `UPDATE_FORM_EVENT`, `UPDATE_PRIMITIVE_EVENT`. История — до 100 состояний. |
+
+### Утилиты (utils/)
+| Файл | Назначение |
+|------|-----------|
+| `jsonUtils.js` | Базовые операции: `deepClone`, `generateId`, `findPrimitive`, `findParent`, `flattenTree`, `loadJson`, `downloadJson`, `getValueByPath`, `setValueByPath`, `cssObjectToString`, `cssStringToObject`, `createEmptyForm`. |
+| `anchors.js` | `resolveTemplate` — многопроходная подстановка `{{path}}` из свойств примитива и контекста. `getFormContext` — получение контекста (inline или loadedData). |
+| `primitiveRenderer.js` | `renderPrimitive` — рендер примитива по шаблону (спец-обработка AGTable, input/textarea, select, table). `createPrimitiveFromTemplate` — создание примитива из шаблона. |
+| `functionRunner.js` | `buildFunctions` — компиляция функций через `new Function`. `callFunction` — вызов. `buildEventHandlersWithUpdate` — обработчики событий с обновлением контекста. |
+| `formLoader.js` | `loadFormList` (из `/forms/index.json`), `loadFormById`, `loadFormsWithData`, `normalizeFormId`. |
+| `sizeUtils.js` | `SIZE_UNITS = ['px', '%', 'vw', 'vh', 'auto']`. Функции `getWidthValue`, `getHeightValue`, `getSizeStyle`, `updateSize`, а также для холста (`getCanvasSizeStyle`). |
+| `auth.js` | `saveCredentials`, `getCredentials`, `clearCredentials`, `hasCredentials`, `getBasicAuthHeader`, `withAuthHeaders`. Хранение в localStorage (Base64). |
+
+### Компоненты (components/)
+| Файл | Назначение |
+|------|-----------|
+| `App.js` | Роутинг: `/` (HomePage), `/editor`, `/editor/:formId`, `/forms/:formId`, `/login`. Обёрнут в `EditorProvider`. |
+| `FormEditor.js` | Основной редактор: Canvas + LeftPanel + RightPanel + ActionBar. |
+| `Canvas/Canvas.js` | Холст: рендер дерева примитивов, выделение, перемещение, зум. |
+| `Canvas/CanvasPrimitive.js` | Примитив на холсте: drag, resize, select. |
+| `LeftPanel/PrimitivesTab.js` | Список примитивов для добавления на холст. |
+| `LeftPanel/LayersTab.js` | Дерево слоёв формы. |
+| `LeftPanel/FunctionsTab.js` | Редактор пользовательских функций. |
+| `RightPanel/PropertiesForm.js` | Свойства выбранного примитива. |
+| `RightPanel/CssEditor.js` | Редактор CSS-стилей. |
+| `RightPanel/EventsTab.js` | События примитива/формы. |
+| `RightPanel/JsonEditor.js` | Редактор JSON. |
+| `AGTable.js` | Таблица AG Grid. |
+
+### Публичные данные (public/)
+| Путь | Назначение |
+|------|-----------|
+| `public/forms/index.json` | Манифест форм (список имён файлов). |
+| `public/forms/*.json` | JSON-файлы форм. |
+| `public/primitives/*.json` | Шаблоны примитивов: `button`, `text`, `input`, `textarea`, `container`, `image`, `checkbox`, `radio`, `select`, `table`, `agtable`. |
+
+## 3. Структура JSON формы
+
+```json
+{
+  "id": "form-...",
+  "type": "form",
+  "name": "Название формы",
+  "canvas": {
+    "width": 800,
+    "height": 600,
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "context": {
+    "source": "inline",
+    "url": "",
+    "inline": {}
+  },
+  "onOpen": {
+    "type": "loadContext",
+    "params": {}
+  },
+  "functions": [],
+  "events": {},
+  "children": []
+}
+```
+
+## 4. Структура JSON примитива
+
+```json
+{
+  "id": "prim-...",
+  "type": "button",
+  "name": "Кнопка",
+  "width": 100,
+  "height": 40,
+  "widthUnit": "px",
+  "heightUnit": "px",
+  "left": 0,
+  "top": 0,
+  "style": {},
+  "customProperties": {},
+  "children": [],
+  "events": {}
+}
+```
+
+## 5. Ключевые паттерны
+
+### Добавление нового действия в reducer
+1. Добавить case в `src/state/reducer.js`.
+2. Если действие изменяет форму — использовать `pushHistory` (кроме `*_LIVE` действий).
+3. Для `*_LIVE` действий (перемещение/ресайз) — не писать в историю, только `isDirty: true`.
+4. После завершения drag/resize вызывать `COMMIT_HISTORY`.
+
+### Добавление нового примитива
+1. Создать шаблон в `public/primitives/<type>.json`.
+2. Добавить имя файла в массив `primitiveFiles` в `EditorContext.js`.
+3. При необходимости — добавить специальную обработку в `primitiveRenderer.js`.
+
+### Работа с контекстом и якорями
+- Якоря `{{path}}` резолвятся через `resolveTemplate` (utils/anchors.js).
+- Контекст формы: `form.context.inline` (если `source === 'inline'`) или `form.context.loadedData`.
+- Пользовательские функции компилируются через `new Function('context', code)`.
+
+### События
+- События формы: `form.events = { onOpen: 'fnName', onSubmit: 'fnName' }`.
+- События примитива: `primitive.events = { click: 'fnName', change: 'fnName' }`.
+- Обработчики создаются через `buildEventHandlersWithUpdate` (utils/functionRunner.js).
+
+## 6. ЗАПРЕТ на повторное чтение неизменённых модулей
+
+**Критическое правило:** НЕ перечитывать файлы, которые не были изменены в рамках текущей задачи.
+
+- Если файл уже был прочитан ранее и не менялся — **не читать его снова**.
+- Если нужно понять контекст — использовать `search_files` для точечного поиска, а не полное чтение файла.
+- Повторное чтение допускается **только** если:
+  - файл был изменён (вами или пользователем) после последнего чтения;
+  - требуется проверить результат собственного редактирования (после `write_to_file`/`replace_in_file` система сама возвращает итоговое состояние).
+
+## 7. Правила внесения изменений
+
+1. **Минимальные изменения** — менять только то, что требуется задачей.
+2. **Не ломать существующее** — перед изменением утилиты проверить все места её использования (`search_files`).
+3. **Следовать стилю** — функциональные компоненты, хуки, без классовых компонентов.
+4. **Комментарии на русском** — в начале каждого файла краткое описание назначения.
+5. **Не добавлять лишних зависимостей** — проект использует только React, React Router и AG Grid.
+6. **История (undo/redo)** — любые изменения формы, кроме `*_LIVE`, должны проходить через `pushHistory`.
+7. **Единицы измерения** — при работе с размерами использовать `sizeUtils.js`, не хардкодить `px`.
+8. **Авторизация** — для запросов к API использовать `withAuthHeaders` из `utils/auth.js`.
+
+## 8. Банк памяти (memory/)
+
+Каталог `memory/` содержит структурированную информацию о проекте для быстрого восстановления контекста.
+
+### Структура
+| Файл | Содержимое |
+|------|-----------|
+| `memory/README.md` | Индекс банка памяти, правила использования |
+| `memory/architecture.md` | Общая архитектура проекта, слои приложения, стек |
+| `memory/state.md` | Управление состоянием: EditorContext, reducer, все действия |
+| `memory/utils.md` | Все утилиты: jsonUtils, anchors, primitiveRenderer, functionRunner, formLoader, sizeUtils, auth |
+| `memory/components.md` | Все UI-компоненты и их назначение |
+| `memory/data-models.md` | Модели данных: форма, примитив, шаблон, контекст, функции |
+| `memory/patterns.md` | Ключевые паттерны: добавление действий, примитивов, события, история |
+| `memory/decisions.md` | Архитектурные решения и их обоснование |
+
+### Правила использования
+1. **Перед началом задачи** — прочитать `memory/architecture.md` и `memory/data-models.md` для восстановления контекста.
+2. **При работе с состоянием** — обратиться к `memory/state.md`.
+3. **При работе с утилитами** — обратиться к `memory/utils.md`.
+4. **При работе с компонентами** — обратиться к `memory/components.md`.
+5. **При следовании паттернам** — обратиться к `memory/patterns.md`.
+6. **При принятии решений** — проверить `memory/decisions.md`, чтобы не противоречить существующим.
+
+### Обновление
+- Файлы обновляются при значительных изменениях в архитектуре.
+- Новые архитектурные решения добавляются в `memory/decisions.md`.
+- Новые паттерны добавляются в `memory/patterns.md`.
+
+## 9. Тестирование
+
+- Тесты: `src/App.test.js` (стандартный тест CRA).
+- Запуск: `npm test`.
+- Сборка: `npm run build`.
+- Dev-сервер: `npm start`.
