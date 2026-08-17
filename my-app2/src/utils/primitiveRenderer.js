@@ -59,8 +59,18 @@ export function renderPrimitive(primitive, template, context) {
     } else if (typeof attributes.readOnly !== 'boolean') {
       attributes.readOnly = false;
     }
-    // Для input/textarea не рендерим children как текст
-    return React.createElement(tag, attributes);
+    // Для input — не рендерим children как текст
+    if (tag === 'input') {
+      return React.createElement(tag, attributes);
+    }
+    // Для textarea — значение рендерится как текст внутри элемента (children), 
+    // а не через атрибут value
+    const textareaValue = resolveTemplate(
+      primitive.value !== undefined ? primitive.value : (render.text !== undefined ? render.text : ''),
+      primitive,
+      context
+    );
+    return React.createElement(tag, attributes, textareaValue);
   }
 
   // Текст

@@ -15,6 +15,10 @@ export function resolveTemplate(template, primitive, context) {
 
     result = result.replace(/\{\{([^}]+)\}\}/g, (match, path) => {
       const trimmedPath = path.trim();
+      // Специальный случай: {{.}} или {{}} — весь контекст целиком
+      if (trimmedPath === '.' || trimmedPath === '') {
+        return typeof context === 'object' ? JSON.stringify(context, null, 2) : String(context);
+      }
       // Сначала ищем в свойствах примитива
       if (primitive && primitive[trimmedPath] !== undefined) {
         return String(primitive[trimmedPath]);
