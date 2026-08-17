@@ -121,6 +121,29 @@ function toLocalPosition(newForm, primId, absLeft, absTop) {
   };
 }
 
+// Смещение порядка примитива в слое (массив children) на delta позиций.
+// delta: -1 — на одну позицию назад (вглубь слоя), +1 — на одну позицию вперёд (наверх слоя).
+function reorderInLayer(node, id, delta) {
+  if (!node) return node;
+  if (node.children && node.children.some(child => child.id === id)) {
+    const children = [...node.children];
+    const idx = children.findIndex(child => child.id === id);
+    if (idx === -1) return node;
+    const newIdx = idx + delta;
+    if (newIdx < 0 || newIdx >= children.length) return node; // крайние позиции не меняются
+    const [item] = children.splice(idx, 1);
+    children.splice(newIdx, 0, item);
+    return { ...node, children };
+  }
+  if (node.children) {
+    return {
+      ...node,
+      children: node.children.map(child => reorderInLayer(child, id, delta))
+    };
+  }
+  return node;
+}
+
 export function editorReducer(state, action) {
   switch (action.type) {
     case 'LOAD_FORM': {
@@ -596,6 +619,30 @@ export function editorReducer(state, action) {
         }));
       }
 
+      return pushHistory({
+        ...state,
+        form: newForm,
+        isDirty: true
+      }, newForm);
+    }
+
+    // Перемещение примитива на одну позицию назад в слое
+    case 'MOVE_BACKWARD': {
+      if (!state.form || state.selectedIds.length !== 1) return state;
+      const id = state.selectedIds[0];
+      const newForm = reorderInLayer(deepClone(state.form), id, -1);
+      return pushHistory({
+        ...state,
+        form: newForm,
+        isDirty: true
+      }, newForm);
+    }
+
+    // Перемещение примитива на одну позицию вперёд в слое
+    case 'MOVE_FORWARD': {
+      if (!state.form || state.selectedIds.length !== 1) return state;
+      const id = state.selectedIds[0];
+      const newForm = reorderInLayer(deepClone(state.form), id, 1);
       return pushHistory({
         ...state,
         form: newForm,

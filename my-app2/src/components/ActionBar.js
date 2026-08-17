@@ -55,6 +55,14 @@ function ActionBar({ onBack, onPreview }) {
     dispatch({ type: 'UNGROUP' });
   };
 
+  const handleMoveBackward = () => {
+    dispatch({ type: 'MOVE_BACKWARD' });
+  };
+
+  const handleMoveForward = () => {
+    dispatch({ type: 'MOVE_FORWARD' });
+  };
+
   const handleAlign = (align) => {
     dispatch({ type: 'ALIGN', align });
   };
@@ -147,6 +155,12 @@ function ActionBar({ onBack, onPreview }) {
         <span className="action-bar-label">Распределить:</span>
         <button className="btn btn-icon" onClick={() => handleDistribute('horizontal')} title="По горизонтали" disabled={!canDistribute}>↔</button>
         <button className="btn btn-icon" onClick={() => handleDistribute('vertical')} title="По вертикали" disabled={!canDistribute}>↕</button>
+      </div>
+
+      <div className="action-bar-group">
+        <span className="action-bar-label">Слой:</span>
+        <button className="btn btn-icon" onClick={handleMoveBackward} title="На одну позицию назад (вглубь слоя)" disabled={!hasSelection || selectedIds.length !== 1}>⤒</button>
+        <button className="btn btn-icon" onClick={handleMoveForward} title="На одну позицию вперёд (наверх слоя)" disabled={!hasSelection || selectedIds.length !== 1}>⤓</button>
       </div>
 
       <div className="action-bar-group">
