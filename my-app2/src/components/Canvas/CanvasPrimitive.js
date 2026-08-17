@@ -7,13 +7,16 @@ function CanvasPrimitive({
   primitive,
   primitives,
   context,
-  isSelected,
-  isMultiSelected,
+  selectedIds,
   onSelect,
   onMouseDown,
   onResizeStart
 }) {
   const template = getPrimitiveTemplate(primitives, primitive.type);
+  const isSelected = selectedIds && selectedIds.includes(primitive.id);
+  const isMultiSelected = selectedIds
+    ? selectedIds.length > 1 && selectedIds.includes(primitive.id)
+    : false;
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -60,8 +63,7 @@ function CanvasPrimitive({
               primitive={child}
               primitives={primitives}
               context={context}
-              isSelected={isSelected}
-              isMultiSelected={isMultiSelected}
+              selectedIds={selectedIds}
               onSelect={onSelect}
               onMouseDown={onMouseDown}
               onResizeStart={onResizeStart}

@@ -415,8 +415,7 @@ function Canvas() {
               primitive={primitive}
               primitives={primitives}
               context={context}
-              isSelected={selectedIds.includes(primitive.id)}
-              isMultiSelected={selectedIds.length > 1 && selectedIds.includes(primitive.id)}
+              selectedIds={selectedIds}
               onSelect={(id, additive) => dispatch({ type: 'SELECT', id, additive })}
               onMouseDown={handlePrimitiveMouseDown}
               onResizeStart={handleResizeStart}
