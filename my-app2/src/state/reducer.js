@@ -513,11 +513,29 @@ export function editorReducer(state, action) {
         abs: getAbsolutePosition(newForm, prim.id) || { left: 0, top: 0 }
       }));
 
-      // Крайние положения по выбранным примитивам (с учётом размеров)
-      const minLeft = Math.min(...absolute.map(({ abs }) => abs.left));
-      const minTop = Math.min(...absolute.map(({ abs }) => abs.top));
-      const maxRight = Math.max(...absolute.map(({ prim, abs }) => abs.left + (prim.width || 0)));
-      const maxBottom = Math.max(...absolute.map(({ prim, abs }) => abs.top + (prim.height || 0)));
+      // Крайние положения:
+      // - если выбран контейнер (применяем к его детям) — границы самого контейнера;
+      // - если выбраны примитивы — их собственные крайние положения (с учётом размеров).
+      const alignContainer = selectors.childOf ? findPrimitive(newForm, selectors.childOf) : null;
+      const useContainerBounds = !!alignContainer;
+      const containerAbs = alignContainer
+        ? (getAbsolutePosition(newForm, alignContainer.id) || { left: 0, top: 0 })
+        : { left: 0, top: 0 };
+      const containerWidth = alignContainer ? (alignContainer.width || 0) : 0;
+      const containerHeight = alignContainer ? (alignContainer.height || 0) : 0;
+
+      const minLeft = useContainerBounds
+        ? containerAbs.left
+        : Math.min(...absolute.map(({ abs }) => abs.left));
+      const minTop = useContainerBounds
+        ? containerAbs.top
+        : Math.min(...absolute.map(({ abs }) => abs.top));
+      const maxRight = useContainerBounds
+        ? containerAbs.left + containerWidth
+        : Math.max(...absolute.map(({ prim, abs }) => abs.left + (prim.width || 0)));
+      const maxBottom = useContainerBounds
+        ? containerAbs.top + containerHeight
+        : Math.max(...absolute.map(({ prim, abs }) => abs.top + (prim.height || 0)));
       const centerH = (minLeft + maxRight) / 2;
       const centerV = (minTop + maxBottom) / 2;
 
