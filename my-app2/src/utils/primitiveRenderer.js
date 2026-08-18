@@ -70,7 +70,11 @@ export function renderPrimitive(primitive, template, context) {
       primitive,
       context
     );
-    return React.createElement(tag, attributes, textareaValue);
+    // Для textarea значение рендерится как children (неконтролируемое поле, defaultValue).
+    // Чтобы при изменении контекста (например, в предпросмотре, когда контекст загружается
+    // уже после первого рендера) содержимое перерисовывалось, используем key на основе
+    // вычисленного значения — React перемонтирует textarea при его изменении.
+    return React.createElement(tag, { ...attributes, key: textareaValue }, textareaValue);
   }
 
   // Текст

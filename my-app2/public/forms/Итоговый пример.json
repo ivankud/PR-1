@@ -21,6 +21,12 @@
       "name": "updateField1",
       "description": "Обновление первой переменной контекста при вводе",
       "code": "if (context.event && context.event.value !== undefined) {\n  context.field1.value = context.event.value;\n  console.log('Контекст обновлен:', context);\n}\nreturn context;"
+    },
+    {
+      "id": "fn-show-context",
+      "name": "showContext",
+      "description": "Показ контекста формы в всплывающем окне",
+      "code": "const { event, primitiveId, primitiveName, ...data } = context;\nconsole.log(event);\nconsole.log(primitiveId);\nconsole.log(primitiveName);\nconsole.log(JSON.stringify(data, null, 2));\nalert(JSON.stringify(data, null, 2));"
     }
   ],
   "events": {},
@@ -131,8 +137,8 @@
       "id": "prim-input-1",
       "type": "input",
       "name": "Поле ввода",
-      "left": 50,
-      "top": 220,
+      "left": 220,
+      "top": 40,
       "width": 200,
       "height": 35,
       "style": {
@@ -167,36 +173,40 @@
       "events": {
         "change": "updateField1",
         "input": "updateField1"
+      },
+      "value": "{{field1.value}}"
+    },
+    {
+      "id": "prim-button-show-context",
+      "type": "button",
+      "name": "Показать контекст",
+      "left": 30,
+      "top": 270,
+      "width": 200,
+      "height": 40,
+      "style": {
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "text": "Показать контекст",
+      "events": {
+        "click": "showContext"
       }
     },
     {
-      "id": "prim-1786048434777-bx5o1qkjm",
-      "type": "input",
-      "name": "Поле ввода",
-      "width": 100,
-      "height": 100,
-      "widthUnit": "px",
-      "heightUnit": "px",
-      "left": 330,
-      "top": 63,
-      "style": {
-        "border": "1px solid #cccccc",
-        "borderRadius": "4px",
-        "padding": "4px 8px",
-        "fontSize": "14px"
-      },
-      "customProperties": {}
-    },
-    {
-      "id": "prim-1786049029647-eyss92x86",
+      "id": "prim-1787037632587-zodz3tbkm",
       "type": "textarea",
       "name": "Многострочный текст",
-      "width": 99,
-      "height": 360,
-      "widthUnit": "%",
+      "width": 770,
+      "height": 260,
+      "widthUnit": "px",
       "heightUnit": "px",
-      "left": 10,
-      "top": 640,
+      "left": 0,
+      "top": 750,
       "style": {
         "border": "1px solid #cccccc",
         "borderRadius": "4px",
@@ -206,65 +216,6 @@
       },
       "customProperties": {},
       "value": "{{.}}"
-    },
-    {
-      "id": "prim-1786050072893-dc01d22jq",
-      "type": "input",
-      "name": "Поле ввода",
-      "width": 200,
-      "height": 35,
-      "widthUnit": "px",
-      "heightUnit": "px",
-      "left": 140,
-      "top": 503,
-      "style": {
-        "border": "1px solid #cccccc",
-        "borderRadius": "4px",
-        "padding": "4px 8px",
-        "fontSize": "14px"
-      },
-      "customProperties": {},
-      "value": "22222"
-    },
-    {
-      "id": "prim-1786050660830-9djpnm3ou",
-      "type": "input",
-      "name": "Поле ввода",
-      "width": 200,
-      "height": 35,
-      "widthUnit": "px",
-      "heightUnit": "px",
-      "left": 580,
-      "top": 103,
-      "style": {
-        "border": "1px solid #cccccc",
-        "borderRadius": "4px",
-        "padding": "4px 8px",
-        "fontSize": "14px"
-      },
-      "customProperties": {},
-      "value": "231231",
-      "defaultValue": "333333"
-    },
-    {
-      "id": "prim-1786971213576-uxnmqd13m",
-      "type": "input",
-      "name": "Поле ввода",
-      "width": 200,
-      "height": 35,
-      "widthUnit": "px",
-      "heightUnit": "px",
-      "left": 1060,
-      "top": 523,
-      "style": {
-        "border": "1px solid #cccccc",
-        "borderRadius": "4px",
-        "padding": "4px 8px",
-        "fontSize": "14px"
-      },
-      "customProperties": {},
-      "inputType": "text",
-      "value": "{{field1.value}}"
     }
   ]
 }
