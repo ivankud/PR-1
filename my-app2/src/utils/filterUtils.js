@@ -101,30 +101,37 @@ export function buildFilterParam(filterState) {
   return `${op}:${value}`;
 }
 
-// Формирование объекта с параметрами фильтрации для URL (GET)
-// Возвращает объект { key: 'filter.fieldname', value: 'operator:value' }
+// Формирование массива фильтров для запроса в API.
+// Каждый элемент: { name, datatype, operator, val }
+// name — значение из поля field модели фильтра
+// datatype — тип поля
+// operator — выбранный оператор
+// val — значение фильтра
 export function buildFilterParams(filterModel, activeFilters) {
-  const params = {};
-  if (!Array.isArray(filterModel) || !activeFilters) return params;
+  const filters = [];
+  if (!Array.isArray(filterModel) || !activeFilters) return filters;
 
   for (const filter of filterModel) {
     const state = activeFilters[filter.field];
     if (!state || state.disabled) continue;
     const param = buildFilterParam(state);
     if (param) {
-      params[`filter.${filter.field}`] = param;
+      filters.push({
+        name: filter.field,
+        datatype: normalizeType(filter.type),
+        operator: state.operator,
+        val: state.value
+      });
     }
   }
-  return params;
+  return filters;
 }
 
 // Построение строки запроса с фильтрами. Добавляется к существующему URL.
-export function appendFilterParamsToUrl(baseUrl, filterParams) {
-  if (!baseUrl || !filterParams || Object.keys(filterParams).length === 0) return baseUrl;
+// Параметр filter — JSON-массив объектов { name, datatype, operator, val }.
+export function appendFilterParamsToUrl(baseUrl, filterArray) {
+  if (!baseUrl || !Array.isArray(filterArray) || filterArray.length === 0) return baseUrl;
   const separator = baseUrl.includes('?') ? '&' : '?';
-  const parts = [];
-  for (const [key, value] of Object.entries(filterParams)) {
-    parts.push(`${encodeURIComponent(key)}=${encodeURIComponent(value)}`);
-  }
-  return `${baseUrl}${separator}${parts.join('&')}`;
+  const json = JSON.stringify(filterArray);
+  return `${baseUrl}${separator}filter=${encodeURIComponent(json)}`;
 }

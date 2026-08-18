@@ -24,7 +24,9 @@ function FilterSelect({ filterModel = [], value = {}, onChange }) {
       initialState[f.field] = {
         operator: prev?.operator || (getOperatorsForFilter(f)[0] || 'equal'),
         value: prev?.value !== undefined ? prev.value : '',
-        disabled: prev?.disabled !== undefined ? prev.disabled : (f.notFiltered === true)
+        // По умолчанию фильтр отключён (disabled: true).
+        // Пользователь включает его галочкой в выпадающей части.
+        disabled: prev?.disabled !== undefined ? prev.disabled : true
       };
     }
     return initialState;
