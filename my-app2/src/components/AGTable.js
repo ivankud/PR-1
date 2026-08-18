@@ -5,6 +5,11 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import JSON5 from 'json5';
 import { withAuthHeaders } from '../utils/auth';
+import FilterSelect from './FilterSelect';
+import {
+  buildFilterParams,
+  appendFilterParamsToUrl
+} from '../utils/filterUtils';
 
 // Утилита для безопасного парсинга JSON5 (поддерживает комментарии, одинарные кавычки и т.д.)
 function safeParse(json, fallback) {
@@ -182,6 +187,9 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEv
   const rowDataRaw = resolveValue('rowData', "[\n  { id: 1, name: 'Иван' },\n  { id: 2, name: 'Пётр' }\n]");
   const clientPagination = resolveValue('pagination', true);
   const paginationPageSize = resolveValue('paginationPageSize', 10);
+  const filterModelRaw = resolveValue('filterModel', '[]');
+  const filterModel = useMemo(() => safeParse(filterModelRaw, []), [filterModelRaw]);
+  const [activeFilters, setActiveFilters] = useState({});
   const sortable = resolveValue('sortable', true);
   const filterable = resolveValue('filterable', true);
   const resizable = resolveValue('resizable', true);
@@ -305,26 +313,33 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEv
   // Нормализация используемой пагинации
   const useClientPagination = !serverPagination && clientPagination;
 
-  // Построение URL API с параметрами
+  // Построение URL API с параметрами (пагинация, сортировка, фильтры)
   const builtApiUrl = useMemo(() => {
     if (dataSource !== 'api' || !apiUrlRaw) return apiUrlRaw;
+    let url = apiUrlRaw;
+
+    // Параметры фильтрации
+    const filterParams = buildFilterParams(filterModel, activeFilters);
+    url = appendFilterParamsToUrl(url, filterParams);
+
     // Если серверная пагинация выключена, но источник — API,
     // при сортировке всё равно перезапрашиваем данные с сервера
     if (!serverPagination) {
       // Добавляем только параметр сортировки, если она задана
-      if (!sortField) return apiUrlRaw;
-      // Формируем вручную, чтобы запятая не кодировалась как %2C
-      const sortValue = `${sortField},${sortOrder === 'desc' ? 'desc' : 'asc'}`;
-      const separator = apiUrlRaw.includes('?') ? '&' : '?';
-      return `${apiUrlRaw}${separator}sort=${sortValue}`;
+      if (sortField) {
+        const sortValue = `${sortField},${sortOrder === 'desc' ? 'desc' : 'asc'}`;
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}sort=${sortValue}`;
+      }
+      return url;
     }
-    return buildApiUrl(apiUrlRaw, {
+    return buildApiUrl(url, {
       page: currentPage,
       size: pageSize,
       sortField,
       sortOrder
     });
-  }, [dataSource, apiUrlRaw, serverPagination, currentPage, pageSize, sortField, sortOrder]);
+  }, [dataSource, apiUrlRaw, serverPagination, currentPage, pageSize, sortField, sortOrder, filterModel, activeFilters]);
 
   // Сброс страницы при изменении размера
   useEffect(() => {
@@ -473,6 +488,16 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEv
     <div className="agtable-container" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
       {title && (
         <div className="agtable-title">{title}</div>
+      )}
+      {/* Панель фильтров (опциональный элемент, настраиваемый через filterModel) */}
+      {Array.isArray(filterModel) && filterModel.length > 0 && (
+        <div className="agtable-filters">
+          <FilterSelect
+            filterModel={filterModel}
+            value={{}}
+            onChange={setActiveFilters}
+          />
+        </div>
       )}
       {error && (
         <div className="agtable-error">{error}</div>

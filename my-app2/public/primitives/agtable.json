@@ -23,6 +23,7 @@
     { "name": "apiDataPath", "label": "Путь к данным в ответе", "type": "string", "default": "" },
     { "name": "columnDefs", "label": "Модель колонок (JSON5)", "type": "json5", "default": "[\n  // Первичный ключ\n  { field: 'id', headerName: 'ID', width: 80 },\n  // Основное имя\n  { field: 'name', headerName: 'Имя' }\n]" },
     { "name": "rowData", "label": "Данные (JSON5)", "type": "json5", "default": "[\n  { id: 1, name: 'Иван' },\n  { id: 2, name: 'Пётр' }\n]" },
+    { "name": "filterModel", "label": "Модель фильтров (JSON5)", "type": "json5", "default": "[]" },
     { "name": "pagination", "label": "Пагинация", "type": "boolean", "default": true },
     { "name": "paginationPageSize", "label": "Строк на странице", "type": "number", "default": 10 },
     { "name": "sortable", "label": "Сортировка", "type": "boolean", "default": true },

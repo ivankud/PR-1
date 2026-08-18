@@ -1505,6 +1505,202 @@ body {
   min-width: 60px;
 }
 
+/* ===== Компонент FilterSelect (фильтры AGTable) ===== */
+.agtable-filters {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.filter-select {
+  position: relative;
+  width: 100%;
+}
+
+.filter-select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 4px 8px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filter-select-trigger:hover {
+  border-color: #007bff;
+}
+
+.filter-select-placeholder {
+  color: #999;
+  font-size: 13px;
+  flex: 1;
+}
+
+.filter-select-caret {
+  font-size: 10px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.filter-select-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #0d47a1;
+  white-space: nowrap;
+}
+
+.filter-chip-name {
+  font-weight: 600;
+}
+
+.filter-chip-op {
+  background: #fff;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 11px;
+  border: 1px solid #bbdefb;
+}
+
+.filter-chip-value {
+  font-weight: 500;
+}
+
+.filter-chip-remove {
+  cursor: pointer;
+  color: #666;
+  font-size: 11px;
+  padding: 0 2px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.filter-chip-remove:hover {
+  color: #dc3545;
+  background: #f8d7da;
+}
+
+.filter-select-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 300;
+  padding: 8px;
+}
+
+.filter-dropdown-empty {
+  padding: 16px;
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-item:last-child {
+  border-bottom: none;
+}
+
+.filter-item.disabled {
+  opacity: 0.5;
+}
+
+.filter-item-check {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.filter-item-check input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.filter-item-name {
+  flex: 0 0 120px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-item-op {
+  flex: 0 0 130px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.filter-item-op:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+}
+
+.filter-item-value {
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-value-input {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.filter-value-input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.filter-row-values {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-between-sep {
+  color: #666;
+  font-size: 12px;
+}
+
 /* ===== Страница иконок ===== */
 .icons-page {
   flex: 1;

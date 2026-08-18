@@ -454,7 +454,8 @@
       "events": {
         "cellButtonClick": "showHello",
         "cellButtonClick2": "showHello2"
-      }
+      },
+      "filterModel": "[\n\t{\n\t\t\"field\": \"id\",\n\t\t\"headerName\": \"ID\",\n\t\t\"type\":\"numeric\"\n\t},\n\t{\n\t\t\"field\": \"smnemocode\",\n\t\t\"headerName\": \"Код\",\n\t\t\"type\":\"string\"\n\t},\n\t{\n\t\t\"field\": \"scaption\",\n\t\t\"headerName\": \"Наименование\",\n\t\t\"type\":\"string\"\n\t}\n]"
     },
     {
       "id": "prim-1786102930144-q2nldz6fu",
