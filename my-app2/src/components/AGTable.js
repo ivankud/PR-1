@@ -105,8 +105,7 @@ const CustomCellRenderer = (props) => {
         gap: '4px',
         height: '100%',
         width: '100%',
-        flexWrap: 'wrap',
-        overflow: 'hidden'
+        flexWrap: 'wrap'
       }}
     >
       {content.map((item, idx) => {
@@ -232,6 +231,17 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEv
       // используем кастомный рендер с поддержкой нескольких кнопок и надписей.
       if (col.cellRenderer === 'custom') {
         colDef.cellRenderer = CustomCellRenderer;
+        // В ячейке может быть несколько элементов (надпись + кнопки), которые
+        // не помещаются по ширине. Разрешаем перенос и автовысоту строки,
+        // чтобы перенесённые элементы (например, вторая кнопка) не обрезались
+        // фиксированной высотой строки AG Grid.
+        if (col.wrapText === undefined) colDef.wrapText = true;
+        if (col.autoHeight === undefined) colDef.autoHeight = true;
+        colDef.cellStyle = {
+          ...(col.cellStyle || {}),
+          whiteSpace: 'normal',
+          lineHeight: 'normal'
+        };
       }
 
       return colDef;

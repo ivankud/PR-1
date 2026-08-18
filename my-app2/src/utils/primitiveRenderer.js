@@ -2,6 +2,7 @@
 import React from 'react';
 import { resolveTemplate } from './anchors';
 import AGTable from '../components/AGTable';
+import { getIconById, IconSvg } from './iconLibrary';
 
 // Рендер примитива по шаблону
 export function renderPrimitive(primitive, template, context) {
@@ -82,6 +83,23 @@ export function renderPrimitive(primitive, template, context) {
   if (render.text !== undefined) {
     const text = resolveTemplate(render.text, primitive, context);
     children.push(text);
+  }
+
+  // Иконка для кнопки (если указана)
+  if (tag === 'button' && primitive.icon) {
+    const icon = getIconById(primitive.icon);
+    if (icon) {
+      const iconSize = primitive.iconSize || 16;
+      children.unshift(
+        React.createElement(IconSvg, {
+          key: 'icon',
+          icon,
+          size: iconSize,
+          color: 'currentColor',
+          className: 'button-icon'
+        })
+      );
+    }
   }
 
   // Дочерние элементы (например checkbox: input внутри label)

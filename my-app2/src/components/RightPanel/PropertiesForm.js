@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useEditor } from '../../state/EditorContext';
 import { getPrimitiveTemplate } from '../../utils/primitiveRenderer';
 import { SIZE_UNITS } from '../../utils/sizeUtils';
+import { getAllIcons, getIconById, IconSvg } from '../../utils/iconLibrary';
 import JsonDialog from './JsonDialog';
 
 function PropertiesForm({ primitive }) {
@@ -100,6 +101,30 @@ function PropertiesForm({ primitive }) {
             ))}
           </select>
         );
+      case 'icon': {
+        const icons = getAllIcons();
+        const selectedIcon = getIconById(value);
+        return (
+          <div className="property-icon-select">
+            <div className="property-icon-preview">
+              {selectedIcon ? (
+                <IconSvg icon={selectedIcon} size={18} />
+              ) : (
+                <span className="property-icon-empty">—</span>
+              )}
+            </div>
+            <select
+              value={value}
+              onChange={(e) => handleChange(prop.name, e.target.value)}
+            >
+              <option value="">Без иконки</option>
+              {icons.map(icon => (
+                <option key={icon.id} value={icon.id}>{icon.name}</option>
+              ))}
+            </select>
+          </div>
+        );
+      }
       case 'textarea':
         return (
           <textarea

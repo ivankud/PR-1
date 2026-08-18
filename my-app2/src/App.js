@@ -8,6 +8,7 @@ import HomePage from './components/HomePage';
 import FormEditorRoute from './components/FormEditorRoute';
 import FormPreviewRoute from './components/FormPreviewRoute';
 import LoginPage from './components/LoginPage';
+import IconsPage from './components/IconsPage';
 
 // Общий макет с постоянным навигационным меню
 function AppLayout() {
@@ -39,6 +40,9 @@ function App() {
 
             {/* Страница авторизации — сохранение логина/пароля для API */}
             <Route path="/login" element={<LoginPage />} />
+
+            {/* Страница библиотеки иконок */}
+            <Route path="/icons" element={<IconsPage />} />
 
             {/* Все остальные маршруты → главная */}
             <Route path="*" element={<Navigate to="/" replace />} />

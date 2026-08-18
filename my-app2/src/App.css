@@ -887,6 +887,45 @@ body {
   cursor: pointer;
 }
 
+/* Селектор иконки в свойствах */
+.property-icon-select {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.property-icon-select select {
+  flex: 1;
+  min-width: 0;
+}
+
+.property-icon-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  color: #333;
+  flex-shrink: 0;
+}
+
+.property-icon-empty {
+  color: #999;
+  font-size: 14px;
+}
+
+/* Иконка внутри кнопки */
+.button-icon {
+  vertical-align: middle;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
 .property-empty {
   font-size: 12px;
   color: #999;
@@ -1464,6 +1503,171 @@ body {
 
 .property-row .size-unit-select {
   min-width: 60px;
+}
+
+/* ===== Страница иконок ===== */
+.icons-page {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.icons-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.icons-page-header h1 {
+  font-size: 24px;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.icons-page-subtitle {
+  font-size: 13px;
+  color: #666;
+}
+
+.icons-page-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icons-add-form {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.icons-add-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.icons-add-textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  background: #f8f9fa;
+}
+
+.icons-add-textarea:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.icons-add-error {
+  color: #dc3545;
+  font-size: 12px;
+  background: #f8d7da;
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.icons-add-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.icons-search {
+  margin-bottom: 20px;
+}
+
+.icons-search input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.icons-search input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.icons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.icons-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  background: #fff;
+  border-radius: 8px;
+  border: 2px dashed #ccc;
+}
+
+.icon-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.icon-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-color: #007bff;
+}
+
+.icon-card-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #333;
+}
+
+.icon-card-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.icon-card-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* ===== Страница авторизации ===== */

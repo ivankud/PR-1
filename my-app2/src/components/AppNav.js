@@ -122,6 +122,14 @@ function AppNav() {
         </NavLink>
 
         <NavLink
+          to="/icons"
+          className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}
+          title="Библиотека SVG-иконок"
+        >
+          🎨 Иконки
+        </NavLink>
+
+        <NavLink
           to="/login"
           className={({ isActive }) => 'nav-link' + (isActive ? ' active' : '')}
           title="Сохранение логина и пароля для запросов к API"
