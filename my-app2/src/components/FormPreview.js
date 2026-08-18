@@ -91,6 +91,7 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
               primitives={primitives}
               context={context}
               fns={fns}
+              onUpdateContext={onUpdateContext}
             />
           ))}
         </div>

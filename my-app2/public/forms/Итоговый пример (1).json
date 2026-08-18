@@ -1,0 +1,221 @@
+{
+  "id": "Итоговый пример",
+  "name": "Итоговый пример",
+  "context": {
+    "source": "inline",
+    "inline": {
+      "field1": {
+        "value": "Иван Петров"
+      },
+      "field2": {
+        "value": "ivan@example.com"
+      },
+      "field3": {
+        "value": "Москва"
+      }
+    }
+  },
+  "functions": [
+    {
+      "id": "fn-update-field1",
+      "name": "updateField1",
+      "description": "Обновление первой переменной контекста при вводе",
+      "code": "if (context.event && context.event.value !== undefined) {\n  context.field1.value = context.event.value;\n  console.log('Контекст обновлен:', context);\n}\nreturn context;"
+    },
+    {
+      "id": "fn-show-context",
+      "name": "showContext",
+      "description": "Показ контекста формы в всплывающем окне",
+      "code": "const { event, primitiveId, primitiveName, ...data } = context;\nconsole.log(event);\nconsole.log(primitiveId);\nconsole.log(primitiveName);\nconsole.log(JSON.stringify(data, null, 2));\nalert(JSON.stringify(data, null, 2));"
+    }
+  ],
+  "events": {},
+  "canvas": {
+    "width": 100,
+    "height": 100,
+    "widthUnit": "%",
+    "heightUnit": "%",
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "children": [
+    {
+      "id": "prim-label-1",
+      "type": "text",
+      "name": "Переменная 1",
+      "left": 50,
+      "top": 50,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif",
+        "fontWeight": "bold"
+      },
+      "text": "{{field1.value}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{field1.value}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "field1.value",
+          "description": "Значение первой переменной"
+        }
+      ]
+    },
+    {
+      "id": "prim-label-2",
+      "type": "text",
+      "name": "Переменная 2",
+      "left": 50,
+      "top": 100,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif",
+        "fontWeight": "bold"
+      },
+      "text": "{{field2.value}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{field2.value}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "field2.value",
+          "description": "Значение второй переменной"
+        }
+      ]
+    },
+    {
+      "id": "prim-label-3",
+      "type": "text",
+      "name": "Переменная 3",
+      "left": 50,
+      "top": 150,
+      "width": 200,
+      "height": 30,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif",
+        "fontWeight": "bold"
+      },
+      "text": "{{field3.value}}",
+      "properties": [
+        {
+          "name": "text",
+          "label": "Текст",
+          "type": "string",
+          "default": "{{field3.value}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "text",
+          "path": "field3.value",
+          "description": "Значение третьей переменной"
+        }
+      ]
+    },
+    {
+      "id": "prim-input-1",
+      "type": "input",
+      "name": "Поле ввода",
+      "left": 220,
+      "top": 40,
+      "width": 200,
+      "height": 35,
+      "style": {
+        "border": "1px solid #cccccc",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "14px"
+      },
+      "placeholder": "Введите значение",
+      "defaultValue": "{{field1.value}}",
+      "properties": [
+        {
+          "name": "placeholder",
+          "label": "Подсказка",
+          "type": "string",
+          "default": "Введите значение"
+        },
+        {
+          "name": "defaultValue",
+          "label": "Начальное значение",
+          "type": "string",
+          "default": "{{field1.value}}"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "defaultValue",
+          "path": "field1.value",
+          "description": "Начальное значение поля"
+        }
+      ],
+      "events": {
+        "change": "updateField1",
+        "input": "updateField1"
+      },
+      "value": "{{field1.value}}"
+    },
+    {
+      "id": "prim-button-show-context",
+      "type": "button",
+      "name": "Показать контекст",
+      "left": 30,
+      "top": 270,
+      "width": 200,
+      "height": 40,
+      "style": {
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "text": "Показать контекст",
+      "events": {
+        "click": "showContext"
+      }
+    },
+    {
+      "id": "prim-1787037632587-zodz3tbkm",
+      "type": "textarea",
+      "name": "Многострочный текст",
+      "width": 1200,
+      "height": 260,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 0,
+      "top": 710,
+      "style": {
+        "border": "1px solid #cccccc",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "14px",
+        "resize": "none"
+      },
+      "customProperties": {},
+      "value": "{{.}}"
+    }
+  ]
+}
