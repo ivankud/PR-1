@@ -932,6 +932,17 @@ body {
   font-style: italic;
 }
 
+.property-hint {
+  font-size: 12px;
+  color: #666;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 4px;
+  padding: 6px 8px;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
 .anchor-path {
   flex: 1;
   font-size: 12px;

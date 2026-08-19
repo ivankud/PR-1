@@ -35,6 +35,36 @@ export function resolveTemplate(template, primitive, context) {
   return result;
 }
 
+// Оценка логического условия с ссылками на контекст.
+// Выражение может содержать шаблоны {{path}}, которые заменяются на JS-выражения
+// доступа к контексту (например {{rowT1}} -> context.rowT1, {{rowT1.id}} -> context.rowT1.id).
+// Примеры: "{{rowT1}} != null", "{{rowT1.id}} > 0", "{{field1.value}} === 'Иван'"
+export function resolveCondition(expression, context) {
+  if (expression === undefined || expression === null) return true;
+  if (typeof expression !== 'string') return Boolean(expression);
+
+  const trimmed = expression.trim();
+  if (trimmed === '') return true;
+
+  // Заменяем {{path}} на JS-выражение доступа к контексту
+  const jsExpr = trimmed.replace(/\{\{([^}]+)\}\}/g, (match, path) => {
+    const parts = path.trim().split('.').filter(Boolean);
+    if (parts.length === 0) return 'undefined';
+    // Экранируем ключи, чтобы безопасно строить путь доступа
+    const access = parts.map(p => /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(p) ? `.${p}` : `[${JSON.stringify(p)}]`).join('');
+    return `context${access}`;
+  });
+
+  try {
+    // eslint-disable-next-line no-new-func
+    const fn = new Function('context', `return (${jsExpr});`);
+    return Boolean(fn(context));
+  } catch (e) {
+    // Если выражение не удалось вычислить — считаем условие невыполненным
+    return false;
+  }
+}
+
 // Получение контекста формы (inline или загруженный)
 export function getFormContext(form) {
   if (!form || !form.context) return {};

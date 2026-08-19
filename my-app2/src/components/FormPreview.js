@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useEditor } from '../state/EditorContext';
 import { renderPrimitive, getPrimitiveTemplate } from '../utils/primitiveRenderer';
+import { resolveCondition } from '../utils/anchors';
 import { loadJson } from '../utils/jsonUtils';
 import { buildFunctions, callFunction, buildEventHandlersWithUpdate } from '../utils/functionRunner';
 import { getSizeStyle, getCanvasSizeStyle } from '../utils/sizeUtils';
@@ -10,6 +11,12 @@ import { getSizeStyle, getCanvasSizeStyle } from '../utils/sizeUtils';
 function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext }) {
   const template = getPrimitiveTemplate(primitives, primitive.type);
 
+  // Условие видимости: настраивается в блоке "Свои свойства" (customProperties)
+  // через ключ visibility — логическое выражение с ссылками на контекст {{path}}.
+  // Пример: "{{rowT1}} != null" — примитив виден, когда переменная rowT1 существует в контексте.
+  const visibilityCondition = primitive.customProperties?.visibility;
+  const isVisible = resolveCondition(visibilityCondition, context);
+
   const style = {
     position: 'absolute',
     left: primitive.left || 0,
@@ -17,6 +24,11 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
     ...getSizeStyle(primitive),
     ...(primitive.style || {})
   };
+
+  // Если условие видимости не выполнено — скрываем примитив
+  if (!isVisible) {
+    style.display = 'none';
+  }
 
   // Для контейнеров
   if (primitive.children && primitive.children.length > 0) {

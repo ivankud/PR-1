@@ -1,6 +1,7 @@
 // Отрисовка примитива на холсте
 import React from 'react';
 import { renderPrimitive, getPrimitiveTemplate } from '../../utils/primitiveRenderer';
+import { resolveCondition } from '../../utils/anchors';
 import { getSizeStyle } from '../../utils/sizeUtils';
 
 function CanvasPrimitive({
@@ -13,6 +14,13 @@ function CanvasPrimitive({
   onResizeStart
 }) {
   const template = getPrimitiveTemplate(primitives, primitive.type);
+
+  // Условие видимости: настраивается в блоке "Свои свойства" (customProperties)
+  // через ключ visibility — логическое выражение с ссылками на контекст {{path}}.
+  // Пример: "{{rowT1}} != null" — примитив виден, когда переменная rowT1 существует в контексте.
+  const visibilityCondition = primitive.customProperties?.visibility;
+  const isVisible = resolveCondition(visibilityCondition, context);
+
   const isSelected = selectedIds && selectedIds.includes(primitive.id);
   const isMultiSelected = selectedIds
     ? selectedIds.length > 1 && selectedIds.includes(primitive.id)
@@ -36,6 +44,11 @@ function CanvasPrimitive({
     ...getSizeStyle(primitive),
     ...(primitive.style || {})
   };
+
+  // Если условие видимости не выполнено — скрываем примитив
+  if (!isVisible) {
+    style.display = 'none';
+  }
 
   // Для контейнеров добавляем overflow visible
   if (primitive.children && primitive.children.length > 0) {

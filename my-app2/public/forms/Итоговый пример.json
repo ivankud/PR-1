@@ -76,6 +76,12 @@
       "name": "hideHideTable3",
       "description": "Скрывает кнопку Таблицу3",
       "code": "const tbl3 = getElementByName('AGTable3');\nif (tbl3) tbl3.style.display = 'none';"
+    },
+    {
+      "id": "fn-1787146420019-muglqpac8",
+      "name": "logRowClickT1",
+      "description": "Выводит в консоль строку, по которой произошёл клик",
+      "code": "let vrow = context.event?.data;\nconsole.log('Клик по строке:', vrow);\ncontext.rowT1 = vrow;\nreturn context;"
     }
   ],
   "events": {},
@@ -521,7 +527,10 @@
       "columnDefs": "[\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"title\",\n        \"headerName\": \"Заголовок\"\n    },\n\t{\n        \"field\": \"body\",\n        \"headerName\": \"Текст\"\n    }\n]\n",
       "apiUrl": "https://jsonplaceholder.typicode.com/posts",
       "dataSource": "api",
-      "title": "Таблица 1 подгрузка по апи из открытого источника"
+      "title": "Таблица 1 подгрузка по апи из открытого источника",
+      "events": {
+        "rowClicked": "logRowClickT1"
+      }
     },
     {
       "id": "prim-1786340816100-kmkof9wzc",
@@ -763,7 +772,9 @@
         "fontSize": "14px",
         "cursor": "pointer"
       },
-      "customProperties": {},
+      "customProperties": {
+        "visibility": "{{rowT1.id}} !=6"
+      },
       "text": "ShowRowT1"
     }
   ]

@@ -56,7 +56,14 @@ function CustomProperties({ primitive }) {
 
       {Object.entries(customProps).map(([key, value]) => (
         <div key={key} className="property-row">
-          <label className="property-label">{key}</label>
+          <label
+            className="property-label"
+            title={key === 'visibility'
+              ? 'Логическое условие видимости примитива. Ссылки на контекст через {{path}}. Пример: "{{rowT1}} != null" — примитив виден, когда переменная rowT1 существует в контексте.'
+              : undefined}
+          >
+            {key}
+          </label>
           <input
             type="text"
             value={value}
@@ -71,6 +78,13 @@ function CustomProperties({ primitive }) {
           </button>
         </div>
       ))}
+
+      {customProps.visibility !== undefined && (
+        <div className="property-hint">
+          💡 Условие видимости: примитив отображается, когда выражение истинно.
+          Ссылки на контекст — через {'{{path}}'}, например {'{{rowT1}} != null'}.
+        </div>
+      )}
 
       <div className="custom-property-add">
         <input
