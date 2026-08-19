@@ -52,6 +52,30 @@
       "name": "showHello2",
       "description": "Показывает alert Hello 2",
       "code": "alert('Hello 2');"
+    },
+    {
+      "id": "fn-hide-button2",
+      "name": "hideButton2",
+      "description": "Скрывает кнопку Button2",
+      "code": "const btn2 = getElementByName('Button2');\nif (btn2) btn2.style.display = 'none';"
+    },
+    {
+      "id": "fn-1787119205505-n9ryo7u79",
+      "name": "hideHideTable1",
+      "description": "Скрывает кнопку Таблицу1",
+      "code": "const tbl1 = getElementByName('AGTable1');\nif (tbl1) tbl1.style.display = 'none';"
+    },
+    {
+      "id": "fn-1787119292833-xdtvegvtg",
+      "name": "hideHideTable2",
+      "description": "Скрывает кнопку Таблицу2",
+      "code": "const tbl2 = getElementByName('AGTable2');\nif (tbl2) tbl2.style.display = 'none';"
+    },
+    {
+      "id": "fn-1787119329313-mcja26w6b",
+      "name": "hideHideTable3",
+      "description": "Скрывает кнопку Таблицу3",
+      "code": "const tbl3 = getElementByName('AGTable3');\nif (tbl3) tbl3.style.display = 'none';"
     }
   ],
   "events": {},
@@ -363,7 +387,7 @@
       "width": 200,
       "height": 140,
       "left": 250,
-      "top": 145,
+      "top": 185,
       "style": {
         "border": "1px dashed #999999",
         "backgroundColor": "rgba(0, 123, 255, 0.05)",
@@ -436,7 +460,7 @@
       "widthUnit": "%",
       "heightUnit": "px",
       "left": 30,
-      "top": 370,
+      "top": 320,
       "style": {
         "border": "1px solid #ccc",
         "borderRadius": "4px"
@@ -549,6 +573,198 @@
       "customProperties": {},
       "icon": "users",
       "text": "333"
+    },
+    {
+      "id": "prim-1787117214473-4rt8dfbkj",
+      "type": "text",
+      "name": "Текст (label)",
+      "width": 200,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 250,
+      "top": 155,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "customProperties": {},
+      "text": "Еще не определенный контекст"
+    },
+    {
+      "id": "prim-1787117307848-vn1u0hivu",
+      "type": "text",
+      "name": "label42",
+      "width": 200,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 1180,
+      "top": 95,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "customProperties": {},
+      "text": "Пример"
+    },
+    {
+      "id": "prim-1787117392064-uz61qe4dq",
+      "type": "button",
+      "name": "Button1",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 1180,
+      "top": 120,
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "Button1",
+      "events": {
+        "click": "hideButton2"
+      }
+    },
+    {
+      "id": "prim-1787117394680-c26kooe06",
+      "type": "button",
+      "name": "Button2",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 1360,
+      "top": 120,
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "Button2"
+    },
+    {
+      "id": "prim-1787118733529-fqtyyhewk",
+      "type": "button",
+      "name": "ButtonHT3",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 1230,
+      "top": 630,
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "HideTable3",
+      "events": {
+        "click": "hideHideTable3"
+      }
+    },
+    {
+      "id": "prim-1787118737256-gw5kymsqd",
+      "type": "button",
+      "name": "ButtonHT2",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 630,
+      "top": 630,
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "HideTable2",
+      "events": {
+        "click": "hideHideTable2"
+      }
+    },
+    {
+      "id": "prim-1787118741241-01cwscqda",
+      "type": "button",
+      "name": "ButtonHT1",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 30,
+      "top": 630,
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "HideTable1",
+      "events": {
+        "click": "hideHideTable1"
+      }
+    },
+    {
+      "id": "prim-1787120880874-bm8yigqgz",
+      "type": "button",
+      "name": "ButtonST1",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 160,
+      "top": 630,
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "ShowRowT1"
     }
   ]
 }

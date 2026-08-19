@@ -80,6 +80,7 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
     <div
       style={style}
       data-primitive-id={primitive.id}
+      data-primitive-name={primitive.name}
     >
       {renderedWithHandlers}
       {primitive.children && primitive.children.length > 0 && (

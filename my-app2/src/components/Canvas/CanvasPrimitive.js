@@ -62,6 +62,7 @@ function CanvasPrimitive({
       onClick={handleClick}
       onMouseDown={handleMouseDown}
       data-primitive-id={primitive.id}
+      data-primitive-name={primitive.name}
     >
       {rendered}
 

@@ -817,6 +817,30 @@ export function editorReducer(state, action) {
       return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
     }
 
+    case 'COPY_FUNCTION': {
+      if (!state.form) return state;
+      const functions = state.form.functions || [];
+      const source = functions.find(fn => fn.id === action.id);
+      if (!source) return state;
+
+      // Проверка: если функция с именем "<имя>-copy" уже существует — не копируем
+      const newName = `${source.name}-copy`;
+      const exists = functions.some(fn => fn.name === newName);
+      if (exists) return state;
+
+      const copy = {
+        id: generateId('fn'),
+        name: newName,
+        description: source.description || '',
+        code: source.code || ''
+      };
+      const newForm = {
+        ...state.form,
+        functions: [...functions, copy]
+      };
+      return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
+    }
+
     case 'DELETE_FUNCTION': {
       if (!state.form) return state;
       const functions = (state.form.functions || []).filter(fn => fn.id !== action.id);

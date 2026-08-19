@@ -1,6 +1,15 @@
 // Утилиты для работы с пользовательскими функциями форм
 import { getFormContext } from './anchors';
 
+// Глобальная функция поиска примитива по имени.
+// Доступна во всех пользовательских функциях форм (компилируются через new Function,
+// поэтому имеют доступ к глобальной области видимости).
+if (typeof window !== 'undefined' && !window.getElementByName) {
+  window.getElementByName = function (name) {
+    return document.querySelector('[data-primitive-name="' + name + '"]');
+  };
+}
+
 // Компиляция функций из form.functions в исполняемые функции
 // Каждая функция получает объект context (данные формы)
 export function buildFunctions(functions) {
