@@ -65,6 +65,34 @@ export function resolveCondition(expression, context) {
   }
 }
 
+// Вычисление условного значения из настраиваемого свойства.
+// Формат значения в customProperties:
+// {
+//   "default": "14px",
+//   "conditions": [
+//     { "when": "{{rowT1.id}} === 2", "value": "20px" },
+//     { "when": "{{rowT1.id}} === 3", "value": "40px" }
+//   ]
+// }
+// Возвращает значение первого истинного условия, иначе default.
+export function resolveConditionalValue(value, context) {
+  if (value === undefined || value === null) return undefined;
+  // Если значение не объект с условиями — возвращаем как есть
+  if (typeof value !== 'object' || !Array.isArray(value.conditions)) {
+    return value;
+  }
+
+  // Проверяем условия по порядку
+  for (const cond of value.conditions) {
+    if (cond && cond.when && resolveCondition(cond.when, context)) {
+      return cond.value;
+    }
+  }
+
+  // Если ни одно условие не выполнено — возвращаем default
+  return value.default !== undefined ? value.default : undefined;
+}
+
 // Получение контекста формы (inline или загруженный)
 export function getFormContext(form) {
   if (!form || !form.context) return {};

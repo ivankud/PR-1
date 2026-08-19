@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useEditor } from '../state/EditorContext';
 import { renderPrimitive, getPrimitiveTemplate } from '../utils/primitiveRenderer';
-import { resolveCondition } from '../utils/anchors';
+import { resolveCondition, resolveConditionalValue } from '../utils/anchors';
 import { loadJson } from '../utils/jsonUtils';
 import { buildFunctions, callFunction, buildEventHandlersWithUpdate } from '../utils/functionRunner';
 import { getSizeStyle, getCanvasSizeStyle } from '../utils/sizeUtils';
@@ -24,6 +24,20 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
     ...getSizeStyle(primitive),
     ...(primitive.style || {})
   };
+
+  // Условные стили из настраиваемых свойств (customProperties).
+  // Если ключ совпадает с CSS-свойством (например fontSize) и значение —
+  // объект с conditions, вычисляем значение по контексту и применяем к стилю.
+  const customProps = primitive.customProperties || {};
+  for (const [key, value] of Object.entries(customProps)) {
+    if (key === 'visibility') continue; // видимость обрабатывается отдельно
+    if (typeof value === 'object' && value !== null && Array.isArray(value.conditions)) {
+      const resolved = resolveConditionalValue(value, context);
+      if (resolved !== undefined) {
+        style[key] = resolved;
+      }
+    }
+  }
 
   // Если условие видимости не выполнено — скрываем примитив
   if (!isVisible) {

@@ -60,15 +60,54 @@ function CustomProperties({ primitive }) {
             className="property-label"
             title={key === 'visibility'
               ? 'Логическое условие видимости примитива. Ссылки на контекст через {{path}}. Пример: "{{rowT1}} != null" — примитив виден, когда переменная rowT1 существует в контексте.'
-              : undefined}
+              : (typeof value === 'object' && value !== null && Array.isArray(value.conditions)
+                  ? 'Условное значение. Формат: { "default": "...", "conditions": [ { "when": "{{path}} === ...", "value": "..." } ] }'
+                  : undefined)}
           >
             {key}
           </label>
-          <input
-            type="text"
-            value={value}
-            onChange={(e) => handleChange(key, e.target.value)}
-          />
+          {typeof value === 'object' && value !== null && Array.isArray(value.conditions) ? (
+            <div className="property-conditional">
+              <div className="property-conditional-default">
+                <span className="property-conditional-label">default:</span>
+                <input
+                  type="text"
+                  value={value.default || ''}
+                  onChange={(e) => handleChange(key, { ...value, default: e.target.value })}
+                />
+              </div>
+              {value.conditions.map((cond, idx) => (
+                <div key={idx} className="property-conditional-row">
+                  <span className="property-conditional-label">when:</span>
+                  <input
+                    type="text"
+                    value={cond.when || ''}
+                    onChange={(e) => {
+                      const conditions = [...value.conditions];
+                      conditions[idx] = { ...cond, when: e.target.value };
+                      handleChange(key, { ...value, conditions });
+                    }}
+                  />
+                  <span className="property-conditional-label">value:</span>
+                  <input
+                    type="text"
+                    value={cond.value || ''}
+                    onChange={(e) => {
+                      const conditions = [...value.conditions];
+                      conditions[idx] = { ...cond, value: e.target.value };
+                      handleChange(key, { ...value, conditions });
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => handleChange(key, e.target.value)}
+            />
+          )}
           <button
             className="btn btn-icon btn-remove"
             onClick={() => handleRemove(key)}

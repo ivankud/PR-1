@@ -745,7 +745,9 @@
         "fontSize": "14px",
         "cursor": "pointer"
       },
-      "customProperties": {},
+      "customProperties": {
+        "visibility": "{{rowT1}}"
+      },
       "text": "HideTable1",
       "events": {
         "click": "hideHideTable1"
@@ -776,6 +778,31 @@
         "visibility": "{{rowT1.id}} !=6"
       },
       "text": "ShowRowT1"
+    },
+    {
+      "id": "prim-1787147417868-2qn32xi3c",
+      "type": "text",
+      "name": "testlabel",
+      "width": 200,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 820,
+      "top": 1005,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "customProperties": {
+        "fontSize": {
+          "default": "14px",
+          "conditions": [
+            { "when": "{{rowT1.id}} === 2", "value": "20px" },
+            { "when": "{{rowT1.id}} === 3", "value": "40px" }
+          ]
+        }
+      }
     }
   ]
 }
