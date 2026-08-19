@@ -557,8 +557,8 @@
       "height": 40,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 810,
-      "top": 270,
+      "left": 700,
+      "top": 260,
       "style": {
         "display": "inline-flex",
         "alignItems": "center",
