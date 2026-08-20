@@ -1,5 +1,5 @@
 // Предпросмотр формы как отдельной страницы (без редактора)
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useEditor } from '../state/EditorContext';
 import { renderPrimitive, getPrimitiveTemplate } from '../utils/primitiveRenderer';
 import { resolveCondition, resolveConditionalValue } from '../utils/anchors';
@@ -138,9 +138,18 @@ function FormPreview({ onBack }) {
   // Компиляция функций формы
   const fns = useMemo(() => buildFunctions(form?.functions), [form?.functions]);
 
+  // Защита от повторного вызова onOpen/onLoad.
+  // React.StrictMode в dev-режиме вызывает useEffect дважды (mount → unmount → mount),
+  // из-за чего события onOpen/onLoad срабатывали бы два раза.
+  // Храним id уже обработанной формы, чтобы выполнить события только один раз.
+  const processedFormRef = useRef(null);
+
   // Обработка действия при открытии и загрузка контекста
   useEffect(() => {
     if (!form) return;
+    // Если эта форма уже обработана (например, повторный вызов эффекта из StrictMode) — пропускаем
+    if (processedFormRef.current === form.id) return;
+    processedFormRef.current = form.id;
 
     const loadData = async () => {
       setLoading(false);

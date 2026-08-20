@@ -21,13 +21,13 @@
       "id": "fn-on-open",
       "name": "onOpenHandler",
       "description": "Иллюстрация события onOpen: выполняется при открытии формы, добавляет метку в контекст",
-      "code": "console.log('Событие onOpen: форма открыта');\ncontext.eventLog = (context.eventLog || '') + 'onOpen; ';\ncontext.onOpenMessage = 'Событие onOpen выполнено при открытии формы';\nreturn context;"
+      "code": "console.log('Событие onOpen: форма открыта');\ncontext.eventLog = (context.eventLog || '') + 'onOpen; ';\ncontext.onOpenMessage = 'Событие onOpen выполнено при открытии формы';\nalert('onOpenHandler');\nreturn context;"
     },
     {
       "id": "fn-on-load",
       "name": "onLoadHandler",
       "description": "Иллюстрация события onLoad: выполняется после загрузки контекста, добавляет метку в контекст",
-      "code": "console.log('Событие onLoad: контекст загружен');\ncontext.eventLog = (context.eventLog || '') + 'onLoad; ';\ncontext.onLoadMessage = 'Событие onLoad выполнено после загрузки контекста';\nreturn context;"
+      "code": "console.log('Событие onLoad: контекст загружен');\ncontext.eventLog = (context.eventLog || '') + 'onLoad; ';\ncontext.onLoadMessage = 'Событие onLoad выполнено после загрузки контекста';\nalert('onLoadHandler');\nreturn context;"
     },
     {
       "id": "fn-on-submit",
@@ -60,7 +60,7 @@
       "widthUnit": "px",
       "heightUnit": "px",
       "left": 30,
-      "top": 1330,
+      "top": 110,
       "style": {
         "fontSize": "16px",
         "color": "#1a1a2e",
@@ -79,7 +79,7 @@
       "widthUnit": "px",
       "heightUnit": "px",
       "left": 30,
-      "top": 1370,
+      "top": 167,
       "style": {
         "fontSize": "14px",
         "color": "#007bff",
@@ -97,7 +97,7 @@
       "widthUnit": "px",
       "heightUnit": "px",
       "left": 30,
-      "top": 1410,
+      "top": 311,
       "style": {
         "fontSize": "14px",
         "color": "#28a745",
@@ -114,8 +114,8 @@
       "height": 30,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 30,
-      "top": 1450,
+      "left": 40,
+      "top": 395,
       "style": {
         "fontSize": "14px",
         "color": "#dc3545",
@@ -132,8 +132,8 @@
       "height": 30,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 30,
-      "top": 1490,
+      "left": 80,
+      "top": 459,
       "style": {
         "fontSize": "13px",
         "color": "#666666",
@@ -151,8 +151,8 @@
       "height": 40,
       "widthUnit": "px",
       "heightUnit": "px",
-      "left": 30,
-      "top": 1530,
+      "left": 620,
+      "top": 73,
       "style": {
         "display": "inline-flex",
         "alignItems": "center",
@@ -166,7 +166,8 @@
       },
       "customProperties": {},
       "text": "1111Отправить657 форму (onSubmit)",
-      "visible": true
+      "visible": true,
+      "events": {}
     },
     {
       "id": "prim-1787228533224-76cik9ahe",
