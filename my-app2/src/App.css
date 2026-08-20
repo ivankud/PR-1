@@ -631,6 +631,41 @@ body {
   border-radius: 3px;
 }
 
+/* Кнопка-глаз видимости примитива в слоях */
+.layer-eye-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.layer-eye-btn:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.layer-eye-btn.hidden {
+  color: #bbb;
+}
+
+.layer-eye-btn.hidden:hover {
+  color: #666;
+}
+
+.layer-item.hidden .layer-name,
+.layer-item.hidden .layer-type {
+  opacity: 0.5;
+}
+
 .layers-empty {
   color: #888;
   text-align: center;

@@ -408,19 +408,21 @@ function Canvas() {
             </div>
           </div>
 
-          {/* Примитивы */}
-          {form.children && form.children.map(primitive => (
-            <CanvasPrimitive
-              key={primitive.id}
-              primitive={primitive}
-              primitives={primitives}
-              context={context}
-              selectedIds={selectedIds}
-              onSelect={(id, additive) => dispatch({ type: 'SELECT', id, additive })}
-              onMouseDown={handlePrimitiveMouseDown}
-              onResizeStart={handleResizeStart}
-            />
-          ))}
+          {/* Примитивы (скрытые через visible=false не отображаются на холсте) */}
+          {form.children && form.children
+            .filter(primitive => primitive.visible !== false)
+            .map(primitive => (
+              <CanvasPrimitive
+                key={primitive.id}
+                primitive={primitive}
+                primitives={primitives}
+                context={context}
+                selectedIds={selectedIds}
+                onSelect={(id, additive) => dispatch({ type: 'SELECT', id, additive })}
+                onMouseDown={handlePrimitiveMouseDown}
+                onResizeStart={handleResizeStart}
+              />
+            ))}
         </div>
       </div>
 

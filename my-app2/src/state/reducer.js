@@ -888,6 +888,18 @@ export function editorReducer(state, action) {
       return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
     }
 
+    // ===== Видимость примитива на холсте =====
+    case 'TOGGLE_VISIBLE': {
+      if (!state.form) return state;
+      const { id } = action;
+      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => ({
+        ...node,
+        visible: node.visible === false
+      }));
+
+      return pushHistory({ ...state, form: newForm, isDirty: true }, newForm);
+    }
+
     default:
       return state;
   }

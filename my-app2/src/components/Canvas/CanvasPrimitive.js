@@ -66,21 +66,23 @@ function CanvasPrimitive({
     >
       {rendered}
 
-      {/* Дочерние примитивы (для контейнеров) */}
+      {/* Дочерние примитивы (для контейнеров); скрытые через visible=false не отображаются */}
       {primitive.children && primitive.children.length > 0 && (
         <div className="canvas-primitive-children" style={childrenStyle}>
-          {primitive.children.map(child => (
-            <CanvasPrimitive
-              key={child.id}
-              primitive={child}
-              primitives={primitives}
-              context={context}
-              selectedIds={selectedIds}
-              onSelect={onSelect}
-              onMouseDown={onMouseDown}
-              onResizeStart={onResizeStart}
-            />
-          ))}
+          {primitive.children
+            .filter(child => child.visible !== false)
+            .map(child => (
+              <CanvasPrimitive
+                key={child.id}
+                primitive={child}
+                primitives={primitives}
+                context={context}
+                selectedIds={selectedIds}
+                onSelect={onSelect}
+                onMouseDown={onMouseDown}
+                onResizeStart={onResizeStart}
+              />
+            ))}
         </div>
       )}
 
