@@ -605,24 +605,24 @@
       "id": "prim-1787117307848-vn1u0hivu",
       "type": "text",
       "name": "label42",
-      "width": 200,
+      "width": 320,
       "height": 30,
       "widthUnit": "px",
       "heightUnit": "px",
       "left": 1180,
-      "top": 95,
+      "top": 100,
       "style": {
         "fontSize": "14px",
         "color": "#333333",
         "fontFamily": "Arial, sans-serif"
       },
       "customProperties": {},
-      "text": "Пример"
+      "text": "Пример одна кнопка скрывает другую"
     },
     {
       "id": "prim-1787117392064-uz61qe4dq",
       "type": "button",
-      "name": "Button1",
+      "name": "Button42",
       "width": 120,
       "height": 40,
       "widthUnit": "px",
@@ -798,11 +798,73 @@
         "fontSize": {
           "default": "14px",
           "conditions": [
-            { "when": "{{rowT1.id}} === 2", "value": "20px" },
-            { "when": "{{rowT1.id}} === 3", "value": "40px" }
+            {
+              "when": "{{rowT1.id}} === 2",
+              "value": "20px"
+            },
+            {
+              "when": "{{rowT1.id}} === 3",
+              "value": "40px"
+            }
           ]
         }
       }
+    },
+    {
+      "id": "prim-1787221772309-9y9rokypq",
+      "type": "text",
+      "name": "label43",
+      "width": 490,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 1180,
+      "top": 180,
+      "style": {
+        "fontSize": "14px",
+        "color": "#333333",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "customProperties": {},
+      "text": "Меняется отображение кнопки в зависимости от условия по Таблице 1"
+    },
+    {
+      "id": "prim-1787221882708-gg973e6bx",
+      "type": "button",
+      "name": "ButtonCHC",
+      "width": 120,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 1180,
+      "top": 210,
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#007bff",
+        "color": "#ffffff",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {
+        "display": {
+          "default": "inline-flex",
+          "conditions": [
+            {
+              "when": "{{rowT1.id}}===1",
+              "value": "inline-flex"
+            },
+            {
+              "when": "{{rowT1.id}}===2",
+              "value": "none"
+            }
+          ]
+        }
+      },
+      "text": "ButtonCHC"
     }
   ]
 }
