@@ -63,7 +63,7 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
   // Создаем обработчики событий с callback для обновления контекста
   const handlers = useMemo(() => {
     if (!fns || !primitive?.events) return {};
-    
+
     // Клонируем контекст для каждого обработчика
     const ctxClone = JSON.parse(JSON.stringify(context));
     return buildEventHandlersWithUpdate(primitive, fns, ctxClone, onUpdateContext);
@@ -171,10 +171,26 @@ function FormPreview({ onBack }) {
         setContextData({});
       }
 
-      // Вызов функции onOpen после загрузки контекста
+      // Вызов функции onOpen после загрузки контекста.
+      // Если функция вернула обновлённый контекст — применяем его.
       const openFn = form.events?.onOpen;
       if (openFn && data) {
-        callFunction(fns, openFn, data);
+        const openResult = callFunction(fns, openFn, data);
+        if (openResult && typeof openResult === 'object') {
+          data = { ...data, ...openResult };
+          setContextData(data);
+        }
+      }
+
+      // Вызов функции onLoad после onOpen (событие загрузки формы).
+      // Если функция вернула обновлённый контекст — применяем его.
+      const loadFn = form.events?.onLoad;
+      if (loadFn && data) {
+        const loadResult = callFunction(fns, loadFn, data);
+        if (loadResult && typeof loadResult === 'object') {
+          data = { ...data, ...loadResult };
+          setContextData(data);
+        }
       }
     };
 
@@ -239,7 +255,11 @@ function FormPreview({ onBack }) {
             e.preventDefault();
             const submitFn = form?.events?.onSubmit;
             if (submitFn) {
-              callFunction(fns, submitFn, contextData);
+              const submitResult = callFunction(fns, submitFn, contextData);
+              // Если функция вернула обновлённый контекст — применяем его
+              if (submitResult && typeof submitResult === 'object') {
+                handleContextUpdate(submitResult);
+              }
             }
           }}
         >

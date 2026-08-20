@@ -1,0 +1,193 @@
+{
+  "id": "Итоговый пример2",
+  "name": "Итоговый пример c элементами для реестра2",
+  "context": {
+    "source": "inline",
+    "inline": {
+      "row1": null,
+      "field1": {
+        "value": "Иван Петров"
+      },
+      "field2": {
+        "value": "ivan@example.com"
+      },
+      "field3": {
+        "value": "Москва"
+      }
+    }
+  },
+  "functions": [
+    {
+      "id": "fn-on-open",
+      "name": "onOpenHandler",
+      "description": "Иллюстрация события onOpen: выполняется при открытии формы, добавляет метку в контекст",
+      "code": "console.log('Событие onOpen: форма открыта');\ncontext.eventLog = (context.eventLog || '') + 'onOpen; ';\ncontext.onOpenMessage = 'Событие onOpen выполнено при открытии формы';\nreturn context;"
+    },
+    {
+      "id": "fn-on-load",
+      "name": "onLoadHandler",
+      "description": "Иллюстрация события onLoad: выполняется после загрузки контекста, добавляет метку в контекст",
+      "code": "console.log('Событие onLoad: контекст загружен');\ncontext.eventLog = (context.eventLog || '') + 'onLoad; ';\ncontext.onLoadMessage = 'Событие onLoad выполнено после загрузки контекста';\nreturn context;"
+    },
+    {
+      "id": "fn-on-submit",
+      "name": "onSubmitHandler",
+      "description": "Иллюстрация события onSubmit: выполняется при отправке формы, добавляет метку в контекст",
+      "code": "console.log('Событие onSubmit: форма отправлена');\ncontext.eventLog = (context.eventLog || '') + 'onSubmit; ';\ncontext.onSubmitMessage = 'Событие onSubmit выполнено при отправке формы';\nreturn context;"
+    }
+  ],
+  "events": {
+    "onOpen": "onOpenHandler",
+    "onLoad": "onLoadHandler",
+    "onSubmit": "onSubmitHandler"
+  },
+  "canvas": {
+    "width": 100,
+    "height": 100,
+    "widthUnit": "%",
+    "heightUnit": "%",
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "children": [
+    {
+      "id": "prim-events-title",
+      "type": "text",
+      "name": "Заголовок событий",
+      "width": 500,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 30,
+      "top": 1330,
+      "style": {
+        "fontSize": "16px",
+        "color": "#1a1a2e",
+        "fontFamily": "Arial, sans-serif",
+        "fontWeight": "bold"
+      },
+      "customProperties": {},
+      "text": "Иллюстрация событий формы: onOpen, onLoad, onSubmit"
+    },
+    {
+      "id": "prim-events-onopen",
+      "type": "text",
+      "name": "Результат onOpen",
+      "width": 500,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 30,
+      "top": 1370,
+      "style": {
+        "fontSize": "14px",
+        "color": "#007bff",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "customProperties": {},
+      "text": "{{onOpenMessage}}"
+    },
+    {
+      "id": "prim-events-onload",
+      "type": "text",
+      "name": "Результат onLoad",
+      "width": 500,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 30,
+      "top": 1410,
+      "style": {
+        "fontSize": "14px",
+        "color": "#28a745",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "customProperties": {},
+      "text": "{{onLoadMessage}}"
+    },
+    {
+      "id": "prim-events-onsubmit",
+      "type": "text",
+      "name": "Результат onSubmit",
+      "width": 500,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 30,
+      "top": 1450,
+      "style": {
+        "fontSize": "14px",
+        "color": "#dc3545",
+        "fontFamily": "Arial, sans-serif"
+      },
+      "customProperties": {},
+      "text": "{{onSubmitMessage}}"
+    },
+    {
+      "id": "prim-events-log",
+      "type": "text",
+      "name": "Журнал событий",
+      "width": 500,
+      "height": 30,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 30,
+      "top": 1490,
+      "style": {
+        "fontSize": "13px",
+        "color": "#666666",
+        "fontFamily": "Consolas, monospace"
+      },
+      "customProperties": {},
+      "text": "Журнал: {{eventLog}}",
+      "visible": true
+    },
+    {
+      "id": "prim-events-submit-btn",
+      "type": "button",
+      "name": "Отправить форму",
+      "width": 200,
+      "height": 40,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 30,
+      "top": 1530,
+      "style": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "justifyContent": "center",
+        "backgroundColor": "#28a745",
+        "color": "#fffff3",
+        "border": "none",
+        "borderRadius": "4px",
+        "fontSize": "14px",
+        "cursor": "pointer"
+      },
+      "customProperties": {},
+      "text": "1111Отправить657 форму (onSubmit)",
+      "visible": true
+    },
+    {
+      "id": "prim-1787228533224-76cik9ahe",
+      "type": "textarea",
+      "name": "Многострочный текст",
+      "visible": true,
+      "width": 1330,
+      "height": 450,
+      "widthUnit": "px",
+      "heightUnit": "px",
+      "left": 80,
+      "top": 580,
+      "style": {
+        "border": "1px solid #cccccc",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "14px",
+        "resize": "none"
+      },
+      "customProperties": {},
+      "value": "{{.}}"
+    }
+  ]
+}
