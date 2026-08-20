@@ -1,38 +1,72 @@
 .App {
-  text-align: center;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* React Flow custom styles */
+.react-flow__node-custom {
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  background: white;
+  padding: 10px;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.react-flow__edge-path {
+  stroke: '#34495e';
+  stroke-width: 2;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.react-flow__edge.animated .react-flow__edge-path {
+  stroke: '#3498db';
 }
 
-.App-link {
-  color: #61dafb;
+/* Toolbox item hover effect */
+.toolbox-item {
+  transition: all 0.15s ease;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.toolbox-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  transform: translateY(-1px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Code preview panel */
+.code-preview {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Node connection handles */
+.react-flow__handle {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* Minimap custom styles */
+.react-flow__minimap {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
 }
