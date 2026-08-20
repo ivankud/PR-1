@@ -5,10 +5,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+// React.StrictMode в dev-режиме принудительно монтирует→размонтирует→перемонтирует
+// компоненты и дважды вызывает useEffect. Это приводило к двукратному срабатыванию
+// событий onOpen/onLoad при открытии формы в предпросмотре. StrictMode отключен.
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <App />
 );
 
 // If you want to start measuring performance in your app, pass a function

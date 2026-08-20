@@ -80,17 +80,6 @@ export function buildEventHandlers(primitive, fns, context, onUpdateContext) {
   return handlers;
 }
 
-// Применение событий формы при открытии
-export function buildFormOpenHandler(fns, context) {
-  return (event) => {
-    const eventContext = {
-      ...context,
-      event: { type: 'open' }
-    };
-    callFunction(fns, 'onOpen', eventContext);
-  };
-}
-
 // Получение контекста для выполнения функций
 export function getFunctionContext(form, baseContext = {}) {
   return {

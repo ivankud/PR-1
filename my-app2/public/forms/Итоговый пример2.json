@@ -33,7 +33,7 @@
       "id": "fn-on-submit",
       "name": "onSubmitHandler",
       "description": "Иллюстрация события onSubmit: выполняется при отправке формы, добавляет метку в контекст",
-      "code": "console.log('Событие onSubmit: форма отправлена');\ncontext.eventLog = (context.eventLog || '') + 'onSubmit; ';\ncontext.onSubmitMessage = 'Событие onSubmit выполнено при отправке формы';\nreturn context;"
+      "code": "console.log('Событие onSubmit: форма отправлена');\ncontext.eventLog = (context.eventLog || '') + 'onSubmit; ';\ncontext.onSubmitMessage = 'Событие onSubmit выполнено при отправке формы';\nalert('onSubmitHandler');\nreturn context;"
     }
   ],
   "events": {
