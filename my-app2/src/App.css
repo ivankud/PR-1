@@ -772,6 +772,131 @@ body {
   pointer-events: auto;
 }
 
+/* ===== Подсветка зон размещения при перетаскивании ===== */
+.canvas-primitive.drop-left,
+.canvas-primitive.drop-right,
+.canvas-primitive.drop-top,
+.canvas-primitive.drop-bottom,
+.canvas-primitive.drop-inside,
+.canvas-primitive.drop-before,
+.canvas-primitive.drop-between,
+.canvas-primitive.drop-after {
+  outline: 2px solid #007bff;
+  outline-offset: -1px;
+}
+
+/* Краевые зоны (слева/справа/сверху/снизу) */
+.canvas-primitive.drop-left::before,
+.canvas-primitive.drop-right::before,
+.canvas-primitive.drop-top::before,
+.canvas-primitive.drop-bottom::before,
+.canvas-primitive.drop-inside::before {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  background: rgba(0, 123, 255, 0.25);
+  border: 2px dashed #007bff;
+  z-index: 10;
+}
+
+.canvas-primitive.drop-left::before {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 25%;
+  border-right: none;
+}
+
+.canvas-primitive.drop-right::before {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 25%;
+  border-left: none;
+}
+
+.canvas-primitive.drop-top::before {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 25%;
+  border-bottom: none;
+}
+
+.canvas-primitive.drop-bottom::before {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 25%;
+  border-top: none;
+}
+
+.canvas-primitive.drop-inside::before {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 123, 255, 0.15);
+}
+
+/* Индикаторы flex-зон (before/between/after) — линия вдоль главной оси */
+.canvas-primitive.drop-before::before,
+.canvas-primitive.drop-after::before,
+.canvas-primitive.drop-between::before {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  background: #007bff;
+  z-index: 10;
+}
+
+/* Горизонтальная линия (flexDirection: row) */
+.canvas-primitive.drop-before::before,
+.canvas-primitive.drop-after::before,
+.canvas-primitive.drop-between::before {
+  top: 0;
+  bottom: 0;
+  width: 3px;
+}
+
+.canvas-primitive.drop-before::before {
+  left: 0;
+}
+
+.canvas-primitive.drop-after::before {
+  right: 0;
+}
+
+.canvas-primitive.drop-between::before {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Вертикальная линия (flexDirection: column) — переопределяется через inline-стиль
+   в CanvasPrimitive, если контейнер column. Здесь задаём базовые стили. */
+.canvas-primitive.drop-before.drop-column::before,
+.canvas-primitive.drop-after.drop-column::before,
+.canvas-primitive.drop-between.drop-column::before {
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 3px;
+  transform: none;
+}
+
+.canvas-primitive.drop-before.drop-column::before {
+  top: 0;
+}
+
+.canvas-primitive.drop-after.drop-column::before {
+  bottom: 0;
+}
+
+.canvas-primitive.drop-between.drop-column::before {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 /* Рамка выделения */
 .selection-box {
   position: absolute;

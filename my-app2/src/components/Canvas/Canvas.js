@@ -11,42 +11,8 @@ const snapToGrid = (value, gridSize) => {
   return Math.round(value / gridSize) * gridSize;
 };
 
-// Поиск самого глубокого контейнера, в который попадает точка
-// point: { x, y } — координаты относительно холста (формы)
-// node: примитив, проверяемый рекурсивно
-// offset: { left, top } — смещение текущего примитива относительно холста
-// Возвращает самый глубокий контейнер, чья область содержит точку, либо null
-function findContainerAtPoint(node, point, offset = { left: 0, top: 0 }) {
-  if (!node) return null;
-
-  // Абсолютные координаты текущего примитива на холсте
-  const absLeft = offset.left + (node.left || 0);
-  const absTop = offset.top + (node.top || 0);
-  const absRight = absLeft + (node.width || 0);
-  const absBottom = absTop + (node.height || 0);
-
-  // Сначала проверяем детей (самый глубокий приоритетнее)
-  let deepestChild = null;
-  if (node.children) {
-    for (const child of node.children) {
-      const found = findContainerAtPoint(child, point, { left: absLeft, top: absTop });
-      if (found) deepestChild = found;
-    }
-  }
-
-  // Если в детях нашли контейнер — возвращаем его (самый глубокий)
-  if (deepestChild) return deepestChild;
-
-  // Проверяем, является ли текущий примитив контейнером и попадает ли точка в его область
-  const isContainer = node.children !== undefined || node.type === 'container';
-  if (isContainer &&
-      point.x >= absLeft && point.x <= absRight &&
-      point.y >= absTop && point.y <= absBottom) {
-    return node;
-  }
-
-  return null;
-}
+// Отступ между примитивами при добавлении слева/справа/сверху/снизу
+const GAP = 10;
 
 // Получение абсолютной позиции (смещение относительно холста) целевого примитива.
 // Используется для вычисления координат точки относительно целевого контейнера.
@@ -74,6 +40,115 @@ function getOffsetToNode(root, targetId) {
   return offset;
 }
 
+// Определение зоны размещения примитива при перетаскивании.
+// point: { x, y } — координаты относительно холста (формы)
+// node: примитив, проверяемый рекурсивно
+// offset: { left, top } — смещение текущего примитива относительно холста
+// Возвращает { targetId, zone, index } — самый глубокий примитив и зону, либо null.
+// Зоны:
+//   - left/right/top/bottom — краевые полосы (добавление в родителя целевого)
+//   - inside — центральная зона контейнера (добавление внутрь)
+//   - before/between/after — зоны flex-контейнера вдоль главной оси (вставка в children)
+function findDropZone(node, point, offset = { left: 0, top: 0 }) {
+  if (!node) return null;
+
+  // Абсолютные координаты текущего примитива на холсте
+  const absLeft = offset.left + (node.left || 0);
+  const absTop = offset.top + (node.top || 0);
+  const absRight = absLeft + (node.width || 0);
+  const absBottom = absTop + (node.height || 0);
+
+  // Точка вне области примитива — не обрабатываем
+  if (point.x < absLeft || point.x > absRight || point.y < absTop || point.y > absBottom) {
+    return null;
+  }
+
+  // Сначала проверяем детей (самый глубокий приоритетнее)
+  let deepestChild = null;
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findDropZone(child, point, { left: absLeft, top: absTop });
+      if (found) deepestChild = found;
+    }
+  }
+
+  // Если в детях нашли зону — возвращаем её (самый глубокий)
+  if (deepestChild) return deepestChild;
+
+  const width = node.width || 0;
+  const height = node.height || 0;
+  const relX = point.x - absLeft;
+  const relY = point.y - absTop;
+
+  // Flex-контейнер: зоны вдоль главной оси (before/between/after)
+  const isFlex = node.style?.display === 'flex';
+  if (isFlex && node.children && node.children.length > 0) {
+    const flexDirection = node.style.flexDirection || 'row';
+    const isRow = flexDirection === 'row' || flexDirection === 'row-reverse';
+    const isReverse = flexDirection === 'row-reverse' || flexDirection === 'column-reverse';
+
+    // Сортируем детей вдоль главной оси
+    const children = [...node.children].filter(c => c.visible !== false);
+    const sorted = children
+      .map(child => ({
+        child,
+        start: isRow ? (child.left || 0) : (child.top || 0),
+        end: isRow ? (child.left || 0) + (child.width || 0) : (child.top || 0) + (child.height || 0)
+      }))
+      .sort((a, b) => a.start - b.start);
+
+    // Позиция точки вдоль главной оси (относительно контейнера)
+    const pos = isRow ? relX : relY;
+
+    // Определяем индекс вставки
+    let index = 0;
+    let zone = 'before';
+    for (let i = 0; i < sorted.length; i++) {
+      const { start, end } = sorted[i];
+      if (pos < start) {
+        index = i;
+        zone = 'before';
+        break;
+      } else if (pos <= end) {
+        // Точка внутри ребёнка — вставляем после него (или до, если reverse)
+        index = isReverse ? i : i + 1;
+        zone = 'between';
+        break;
+      } else {
+        index = i + 1;
+        zone = 'after';
+      }
+    }
+
+    return { targetId: node.id, zone, index };
+  }
+
+  // Краевые полосы (25% от каждого края)
+  const edgeX = width * 0.25;
+  const edgeY = height * 0.25;
+
+  if (relX < edgeX) {
+    return { targetId: node.id, zone: 'left' };
+  }
+  if (relX > width - edgeX) {
+    return { targetId: node.id, zone: 'right' };
+  }
+  if (relY < edgeY) {
+    return { targetId: node.id, zone: 'top' };
+  }
+  if (relY > height - edgeY) {
+    return { targetId: node.id, zone: 'bottom' };
+  }
+
+  // Центральная зона — внутрь контейнера
+  const isContainer = node.children !== undefined || node.type === 'container';
+  if (isContainer) {
+    return { targetId: node.id, zone: 'inside' };
+  }
+
+  return null;
+}
+
 function Canvas() {
   const { state, dispatch } = useEditor();
   const { form, primitives, selectedIds, zoom } = state;
@@ -82,6 +157,7 @@ function Canvas() {
   const [pan] = useState({ x: 0, y: 0 });
   const [dragState, setDragState] = useState(null); // { type: 'move'|'resize', startX, startY, origLeft, origTop, origWidth, origHeight, handle, id }
   const [dragOver, setDragOver] = useState(false);
+  const [dropZone, setDropZone] = useState(null); // { targetId, zone, index } — зона размещения при перетаскивании
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 });
   const dragRef = useRef({ lastX: 0, lastY: 0 }); // последние координаты мыши при drag
 
@@ -273,47 +349,135 @@ function Canvas() {
     });
   };
 
+  // Получение координат точки относительно холста из события
+  const getCanvasPoint = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) / zoom - pan.x,
+      y: (e.clientY - rect.top) / zoom - pan.y
+    };
+  };
+
   // Drag & drop из палитры
   const handleDragOver = (e) => {
     e.preventDefault();
     setDragOver(true);
+
+    // Определяем зону размещения под курсором
+    if (form) {
+      const point = getCanvasPoint(e);
+      const zone = findDropZone(form, point);
+      setDropZone(zone);
+    }
   };
 
   const handleDragLeave = (e) => {
     setDragOver(false);
+    setDropZone(null);
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setDragOver(false);
+    setDropZone(null);
     const primitiveType = e.dataTransfer.getData('application/primitivetype');
     if (!primitiveType) return;
 
-    const rect = canvasRef.current.getBoundingClientRect();
-    // Координаты точки сброса относительно холста (canvas-viewport, без учёта панорамирования)
-    const x = (e.clientX - rect.left) / zoom - pan.x;
-    const y = (e.clientY - rect.top) / zoom - pan.y;
-
+    const point = getCanvasPoint(e);
     const template = primitives.find(p => p.type === primitiveType);
     const width = template?.defaults?.width || 100;
     const height = template?.defaults?.height || 40;
 
-    // Определяем контейнер, в область которого попадает точка сброса
-    const targetContainer = findContainerAtPoint(form, { x, y });
-    const parentId = targetContainer ? targetContainer.id : null;
+    // Определяем зону размещения
+    const zone = findDropZone(form, point);
 
-    // Координаты точки относительно родителя (контейнера или корня)
-    let localX = x;
-    let localY = y;
-    if (targetContainer) {
-      const offset = getOffsetToNode(form, targetContainer.id);
-      localX = x - offset.left;
-      localY = y - offset.top;
+    // Если зона не определена — добавляем в свободную область (корень формы)
+    if (!zone) {
+      const snappedX = snapToGrid(Math.round(point.x - width / 2), gridSize);
+      const snappedY = snapToGrid(Math.round(point.y - height / 2), gridSize);
+      dispatch({
+        type: 'ADD_PRIMITIVE',
+        primitiveType,
+        left: snappedX,
+        top: snappedY
+      });
+      return;
     }
 
-    // Примагничивание позиции нового элемента к узлам сетки
-    const snappedX = snapToGrid(Math.round(localX - width / 2), gridSize);
-    const snappedY = snapToGrid(Math.round(localY - height / 2), gridSize);
+    const target = findPrimitive(form, zone.targetId);
+    if (!target) return;
+
+    // Flex-контейнер: вставка в children на индекс, без position/left/top
+    if (zone.zone === 'before' || zone.zone === 'between' || zone.zone === 'after') {
+      dispatch({
+        type: 'ADD_PRIMITIVE',
+        primitiveType,
+        parentId: target.id,
+        index: zone.index,
+        noPosition: true
+      });
+      return;
+    }
+
+    // Внутрь контейнера (блочный)
+    if (zone.zone === 'inside') {
+      dispatch({
+        type: 'ADD_PRIMITIVE',
+        primitiveType,
+        parentId: target.id
+      });
+      return;
+    }
+
+    // Краевые зоны: добавляем в родителя целевого примитива
+    // Определяем родителя целевого примитива
+    const parentInfo = findParentOf(form, target.id);
+    const parentId = parentInfo ? parentInfo.id : null;
+
+    // Абсолютная позиция целевого примитива
+    const targetOffset = getOffsetToNode(form, target.id);
+    const targetAbsLeft = targetOffset.left;
+    const targetAbsTop = targetOffset.top;
+
+    // Абсолютная позиция родителя (для пересчёта в локальные координаты)
+    let parentAbsLeft = 0;
+    let parentAbsTop = 0;
+    if (parentId) {
+      const parentOffset = getOffsetToNode(form, parentId);
+      parentAbsLeft = parentOffset.left;
+      parentAbsTop = parentOffset.top;
+    }
+
+    let newLeft = targetAbsLeft;
+    let newTop = targetAbsTop;
+
+    switch (zone.zone) {
+      case 'left':
+        newLeft = targetAbsLeft - width - GAP;
+        newTop = targetAbsTop;
+        break;
+      case 'right':
+        newLeft = targetAbsLeft + (target.width || 0) + GAP;
+        newTop = targetAbsTop;
+        break;
+      case 'top':
+        newLeft = targetAbsLeft;
+        newTop = targetAbsTop - height - GAP;
+        break;
+      case 'bottom':
+        newLeft = targetAbsLeft;
+        newTop = targetAbsTop + (target.height || 0) + GAP;
+        break;
+      default:
+        break;
+    }
+
+    // Пересчитываем в локальные координаты родителя
+    const localLeft = newLeft - parentAbsLeft;
+    const localTop = newTop - parentAbsTop;
+
+    const snappedX = snapToGrid(Math.round(localLeft), gridSize);
+    const snappedY = snapToGrid(Math.round(localTop), gridSize);
 
     dispatch({
       type: 'ADD_PRIMITIVE',
@@ -322,6 +486,19 @@ function Canvas() {
       top: snappedY,
       parentId
     });
+  };
+
+  // Поиск родителя примитива в дереве
+  const findParentOf = (node, id, parent = null) => {
+    if (!node) return null;
+    if (node.children) {
+      for (const child of node.children) {
+        if (child.id === id) return parent || node;
+        const found = findParentOf(child, id, node);
+        if (found) return found;
+      }
+    }
+    return null;
   };
 
   if (!form) {
@@ -418,6 +595,7 @@ function Canvas() {
                 primitives={primitives}
                 context={context}
                 selectedIds={selectedIds}
+                dropZone={dropZone}
                 onSelect={(id, additive) => dispatch({ type: 'SELECT', id, additive })}
                 onMouseDown={handlePrimitiveMouseDown}
                 onResizeStart={handleResizeStart}

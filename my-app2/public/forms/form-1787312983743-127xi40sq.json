@@ -1,0 +1,47 @@
+{
+  "id": "form-1787312983743-127xi40sq",
+  "type": "form",
+  "name": "Новая форма",
+  "canvas": {
+    "width": 800,
+    "height": 600,
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "context": {
+    "source": "inline",
+    "url": "",
+    "inline": {}
+  },
+  "onOpen": {
+    "type": "loadContext",
+    "params": {}
+  },
+  "functions": [],
+  "events": {},
+  "children": [
+    {
+      "id": "prim-1787313038416-2hmsbnvtl",
+      "type": "container",
+      "name": "Контейнер",
+      "visible": true,
+      "position": "",
+      "width": 100,
+      "height": 100,
+      "widthUnit": "%",
+      "heightUnit": "%",
+      "left": 0,
+      "top": 0,
+      "style": {
+        "border": "1px dashed #999999",
+        "backgroundColor": "#f9f9f9",
+        "borderRadius": "4px",
+        "display": "flex",
+        "flexDirection": "row"
+      },
+      "customProperties": {},
+      "children": []
+    }
+  ]
+}

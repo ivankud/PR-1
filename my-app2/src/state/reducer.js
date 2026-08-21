@@ -176,7 +176,12 @@ export function editorReducer(state, action) {
       }
 
       // Позиционирование нового примитива
-      if (action.left !== undefined && action.top !== undefined) {
+      if (action.noPosition) {
+        // Flex-контейнер: не задаём position/left/top — примитив размещается по правилам flex
+        delete newPrimitive.position;
+        delete newPrimitive.left;
+        delete newPrimitive.top;
+      } else if (action.left !== undefined && action.top !== undefined) {
         // Позиция передана явно (например, из drag&drop) — уже в координатах родителя
         newPrimitive.left = action.left;
         newPrimitive.top = action.top;
@@ -194,11 +199,16 @@ export function editorReducer(state, action) {
 
       let newForm;
       if (parent) {
-        // Добавляем примитив внутрь контейнера
-        newForm = updatePrimitiveInTree(deepClone(state.form), parent.id, (node) => ({
-          ...node,
-          children: [...(node.children || []), newPrimitive]
-        }));
+        // Добавляем примитив внутрь контейнера (на указанную позицию, если задана)
+        newForm = updatePrimitiveInTree(deepClone(state.form), parent.id, (node) => {
+          const children = node.children || [];
+          const index = action.index !== undefined
+            ? Math.max(0, Math.min(action.index, children.length))
+            : children.length;
+          const newChildren = [...children];
+          newChildren.splice(index, 0, newPrimitive);
+          return { ...node, children: newChildren };
+        });
       } else {
         // Добавляем в корень формы
         newForm = {

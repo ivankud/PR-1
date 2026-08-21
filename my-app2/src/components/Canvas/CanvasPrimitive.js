@@ -8,6 +8,7 @@ function CanvasPrimitive({
   primitives,
   context,
   selectedIds,
+  dropZone,
   onSelect,
   onMouseDown,
   onResizeStart
@@ -17,6 +18,14 @@ function CanvasPrimitive({
   const isMultiSelected = selectedIds
     ? selectedIds.length > 1 && selectedIds.includes(primitive.id)
     : false;
+
+  // Определяем, является ли текущий примитив целевым для зоны размещения
+  const isDropTarget = dropZone && dropZone.targetId === primitive.id;
+  const isFlexColumn = primitive.style?.display === 'flex' &&
+    (primitive.style?.flexDirection === 'column' || primitive.style?.flexDirection === 'column-reverse');
+  const dropZoneClass = isDropTarget
+    ? `drop-${dropZone.zone}${isFlexColumn ? ' drop-column' : ''}`
+    : '';
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -78,7 +87,7 @@ function CanvasPrimitive({
 
   return (
     <div
-      className={`canvas-primitive ${isSelected ? 'selected' : ''} ${isMultiSelected ? 'multi-selected' : ''}`}
+      className={`canvas-primitive ${isSelected ? 'selected' : ''} ${isMultiSelected ? 'multi-selected' : ''} ${dropZoneClass}`}
       style={style}
       onClick={handleClick}
       onMouseDown={handleMouseDown}
@@ -99,6 +108,7 @@ function CanvasPrimitive({
                 primitives={primitives}
                 context={context}
                 selectedIds={selectedIds}
+                dropZone={dropZone}
                 onSelect={onSelect}
                 onMouseDown={onMouseDown}
                 onResizeStart={onResizeStart}
