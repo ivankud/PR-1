@@ -113,25 +113,20 @@ function findDropZone(node, point, offset = { left: 0, top: 0 }, isRoot = false)
     return { targetId: node.id, zone, index };
   }
 
-  // Сначала проверяем детей-контейнеров (самый глубокий приоритетнее).
-  // В детей-не-контейнеры не спускаемся: если точка попадает в такой ребёнок,
-  // зона определяется относительно его родителя (контейнера) — "inside".
-  let deepestChild = null;
-  if (node.children) {
-    for (const child of node.children) {
-      const isChildContainer = child.children !== undefined || child.type === 'container';
-      if (isChildContainer) {
+  // Для корня: спускаемся в детей, чтобы найти контейнеры/примитивы.
+  // Для не-корня: НЕ спускаемся в детей — зоны определяются относительно
+  // самого узла (внешние зоны контейнера, даже если в нём есть вложенные примитивы).
+  if (isRoot) {
+    let deepestChild = null;
+    if (node.children) {
+      for (const child of node.children) {
         const found = findDropZone(child, point, { left: absLeft, top: absTop });
         if (found) deepestChild = found;
       }
     }
+    if (deepestChild) return deepestChild;
+    return null;
   }
-
-  // Если в детях нашли зону — возвращаем её (самый глубокий)
-  if (deepestChild) return deepestChild;
-
-  // Для корня не определяем зоны — только дети
-  if (isRoot) return null;
 
   const relX = point.x - absLeft;
   const relY = point.y - absTop;

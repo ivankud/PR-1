@@ -52,8 +52,6 @@
           "height": 40,
           "widthUnit": "px",
           "heightUnit": "px",
-          "left": 10,
-          "top": 10,
           "style": {
             "display": "inline-flex",
             "alignItems": "center",
@@ -67,6 +65,31 @@
           },
           "customProperties": {},
           "text": "Кнопка1"
+        },
+        {
+          "id": "prim-1787315189121-r8mfniu3z",
+          "type": "button",
+          "name": "Кнопка3",
+          "visible": true,
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "style": {
+            "display": "inline-flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "backgroundColor": "#007bff",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer"
+          },
+          "customProperties": {},
+          "left": -140,
+          "top": 0,
+          "text": "Кнопка3"
         },
         {
           "id": "prim-1787314918593-86pfwqo4p",
