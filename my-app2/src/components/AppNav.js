@@ -52,8 +52,8 @@ function AppNav() {
   return (
     <nav className="app-nav">
       <div className="app-nav-brand">
-        <span className="app-nav-logo">📋</span>
-        <span className="app-nav-title">Конструктор веб-форм</span>
+        {/* <span className="app-nav-logo">📋</span> */}
+        <span className="app-nav-title">Конструктор 🛁</span>
       </div>
 
       <div className="app-nav-links">
