@@ -878,6 +878,30 @@ body {
   margin-bottom: 8px;
 }
 
+/* Кнопка удаления свойства */
+.property-delete-btn {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #ccc;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.property-delete-btn:hover {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
 .property-row:last-child {
   margin-bottom: 0;
 }

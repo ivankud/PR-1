@@ -22,6 +22,32 @@ function PropertiesForm({ primitive }) {
     dispatch({ type: 'UPDATE_STYLE', id: primitive.id, style: { [styleProp]: value } });
   };
 
+  // Удаление свойства примитива из JSON
+  const handleDeleteProperty = (property) => {
+    dispatch({ type: 'DELETE_PROPERTY', id: primitive.id, property });
+  };
+
+  // Удаление стиля примитива из JSON
+  const handleDeleteStyle = (styleProp) => {
+    dispatch({ type: 'DELETE_STYLE', id: primitive.id, styleProp });
+  };
+
+  // Кнопка удаления свойства (слева от поля)
+  const renderDeleteButton = (property, title) => {
+    // Критические свойства нельзя удалять
+    if (property === 'id' || property === 'type') return null;
+    return (
+      <button
+        type="button"
+        className="property-delete-btn"
+        onClick={() => handleDeleteProperty(property)}
+        title={title || `Удалить свойство "${property}"`}
+      >
+        ✕
+      </button>
+    );
+  };
+
   // Базовые свойства (всегда доступны)
   const baseProperties = [
     { name: 'name', label: 'Имя', type: 'string' },
@@ -38,6 +64,7 @@ function PropertiesForm({ primitive }) {
 
     return (
       <div className="property-row">
+        {renderDeleteButton(dimension)}
         <label className="property-label">{label}</label>
         <input
           type="number"
@@ -169,6 +196,7 @@ function PropertiesForm({ primitive }) {
           if (prop.name === 'height') return renderSizeInput('height', 'Высота');
           return (
             <div key={prop.name} className="property-row">
+              {renderDeleteButton(prop.name)}
               <label className="property-label">{prop.label || prop.name}</label>
               {renderInput(prop)}
             </div>
@@ -191,6 +219,14 @@ function PropertiesForm({ primitive }) {
         <div className="properties-section-title">Стиль</div>
         {primitive.style && Object.entries(primitive.style).map(([key, value]) => (
           <div key={key} className="property-row">
+            <button
+              type="button"
+              className="property-delete-btn"
+              onClick={() => handleDeleteStyle(key)}
+              title={`Удалить стиль "${key}"`}
+            >
+              ✕
+            </button>
             <label className="property-label">{key}</label>
             <input
               type="text"

@@ -355,6 +355,23 @@ export function editorReducer(state, action) {
       }, newForm);
     }
 
+    // Удаление свойства примитива из JSON
+    case 'DELETE_PROPERTY': {
+      if (!state.form) return state;
+      const { id, property } = action;
+      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => {
+        const updated = { ...node };
+        delete updated[property];
+        return updated;
+      });
+
+      return pushHistory({
+        ...state,
+        form: newForm,
+        isDirty: true
+      }, newForm);
+    }
+
     case 'UPDATE_STYLE': {
       if (!state.form) return state;
       const { id, style } = action;
@@ -362,6 +379,24 @@ export function editorReducer(state, action) {
         ...node,
         style: { ...(node.style || {}), ...style }
       }));
+
+      return pushHistory({
+        ...state,
+        form: newForm,
+        isDirty: true
+      }, newForm);
+    }
+
+    // Удаление стиля примитива из JSON
+    case 'DELETE_STYLE': {
+      if (!state.form) return state;
+      const { id, styleProp } = action;
+      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => {
+        if (!node.style) return node;
+        const style = { ...node.style };
+        delete style[styleProp];
+        return { ...node, style };
+      });
 
       return pushHistory({
         ...state,

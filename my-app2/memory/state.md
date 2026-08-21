@@ -41,7 +41,9 @@ button, text, input, textarea, container, image, checkbox, radio, select, table,
 | CLEAR_SELECTION | Сброс выделения | Нет |
 | DELETE_SELECTED | Удаление выделенных | pushHistory |
 | UPDATE_PROPERTY | Обновление свойства | pushHistory |
+| DELETE_PROPERTY | Удаление свойства примитива из JSON | pushHistory |
 | UPDATE_STYLE | Обновление стилей | pushHistory |
+| DELETE_STYLE | Удаление стиля примитива из JSON | pushHistory |
 | UPDATE_JSON | Обновление JSON примитива | pushHistory |
 | UPDATE_FORM | Обновление формы | pushHistory |
 | GROUP | Группировка | pushHistory |

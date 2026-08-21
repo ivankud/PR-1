@@ -1,0 +1,256 @@
+{
+  "id": "ПримерРеестр",
+  "name": "Пример реестра",
+  "context": {
+    "source": "inline",
+    "inline": {
+      "row1": null,
+      "field1": {
+        "value": "Иван Петров"
+      },
+      "field2": {
+        "value": "ivan@example.com"
+      },
+      "field3": {
+        "value": "Москва"
+      }
+    }
+  },
+  "functions": [
+    {
+      "id": "fn-update-field1",
+      "name": "updateField1",
+      "description": "Обновление первой переменной контекста при вводе",
+      "code": "if (context.event && context.event.value !== undefined) {\n  context.field1.value = context.event.value;\n  console.log('Контекст обновлен:', context);\n}\nreturn context;"
+    },
+    {
+      "id": "fn-show-context",
+      "name": "showContext",
+      "description": "Показ контекста формы в всплывающем окне",
+      "code": "const { event, primitiveId, primitiveName, ...data } = context;\nconsole.log(event);\nconsole.log(primitiveId);\nconsole.log(primitiveName);\nconsole.log(JSON.stringify(data, null, 2));\nalert(JSON.stringify(data, null, 2));"
+    },
+    {
+      "id": "fn-1787048133987-m6exp3n14",
+      "name": "exampleFunction",
+      "description": "Меняет переменную контекста и возвращает обновлённый контекст",
+      "code": "console.log('var1:', context.var1);\nconsole.log('var2:', context.var2);\nconsole.log('var3:', context.var3);\n\n// Меняем значение переменной контекста\ncontext.var1 = 'новое значение var1';\ncontext.var2 = 'новое значение var2';\n\n// Возвращаем обновлённый контекст, чтобы он применился ко всей форме\nreturn context;"
+    },
+    {
+      "id": "fn-log-row-click",
+      "name": "logRowClick",
+      "description": "Выводит в консоль строку, по которой произошёл клик",
+      "code": "let vrow = context.event?.data;\nconsole.log('Клик по строке:', vrow);\ncontext.row1 = vrow;\nreturn context;"
+    },
+    {
+      "id": "fn-show-hello",
+      "name": "showHello",
+      "description": "Показывает alert Hello",
+      "code": "alert('Hello');"
+    },
+    {
+      "id": "fn-show-hello2",
+      "name": "showHello2",
+      "description": "Показывает alert Hello 2",
+      "code": "alert('Hello 2');"
+    },
+    {
+      "id": "fn-hide-button2",
+      "name": "hideButton2",
+      "description": "Скрывает кнопку Button2",
+      "code": "const btn2 = getElementByName('Button2');\nif (btn2) btn2.style.display = 'none';"
+    },
+    {
+      "id": "fn-1787119205505-n9ryo7u79",
+      "name": "hideHideTable1",
+      "description": "Скрывает кнопку Таблицу1",
+      "code": "const tbl1 = getElementByName('AGTable1');\nif (tbl1) tbl1.style.display = 'none';"
+    },
+    {
+      "id": "fn-1787119292833-xdtvegvtg",
+      "name": "hideHideTable2",
+      "description": "Скрывает кнопку Таблицу2",
+      "code": "const tbl2 = getElementByName('AGTable2');\nif (tbl2) tbl2.style.display = 'none';"
+    },
+    {
+      "id": "fn-1787119329313-mcja26w6b",
+      "name": "hideHideTable3",
+      "description": "Скрывает кнопку Таблицу3",
+      "code": "const tbl3 = getElementByName('AGTable3');\nif (tbl3) tbl3.style.display = 'none';"
+    },
+    {
+      "id": "fn-1787146420019-muglqpac8",
+      "name": "logRowClickT1",
+      "description": "Выводит в консоль строку, по которой произошёл клик",
+      "code": "let vrow = context.event?.data;\nconsole.log('Клик по строке:', vrow);\ncontext.rowT1 = vrow;\nreturn context;"
+    },
+    {
+      "id": "fn-on-open",
+      "name": "onOpenHandler",
+      "description": "Иллюстрация события onOpen: выполняется при открытии формы, добавляет метку в контекст",
+      "code": "console.log('Событие onOpen: форма открыта');\ncontext.eventLog = (context.eventLog || '') + 'onOpen; ';\ncontext.onOpenMessage = 'Событие onOpen выполнено при открытии формы';\nalert('onOpenHandler');\nreturn context;"
+    },
+    {
+      "id": "fn-on-load",
+      "name": "onLoadHandler",
+      "description": "Иллюстрация события onLoad: выполняется после загрузки контекста, добавляет метку в контекст",
+      "code": "console.log('Событие onLoad: контекст загружен');\ncontext.eventLog = (context.eventLog || '') + 'onLoad; ';\ncontext.onLoadMessage = 'Событие onLoad выполнено после загрузки контекста';\nreturn context;"
+    },
+    {
+      "id": "fn-on-submit",
+      "name": "onSubmitHandler",
+      "description": "Иллюстрация события onSubmit: выполняется при отправке формы, добавляет метку в контекст",
+      "code": "console.log('Событие onSubmit: форма отправлена');\ncontext.eventLog = (context.eventLog || '') + 'onSubmit; ';\ncontext.onSubmitMessage = 'Событие onSubmit выполнено при отправке формы';\nreturn context;"
+    }
+  ],
+  "events": {},
+  "canvas": {
+    "width": 100,
+    "height": 100,
+    "widthUnit": "%",
+    "heightUnit": "%",
+    "backgroundColor": "#ffffff",
+    "gridSize": 10,
+    "showGrid": true
+  },
+  "children": [
+    {
+      "id": "group-1787290858057-9it5uc2t1",
+      "type": "container",
+      "name": "Группа",
+      "width": 100,
+      "height": 100,
+      "style": {
+        "border": "1px dashed #999999",
+        "backgroundColor": "rgba(0, 123, 255, 0.05)",
+        "borderRadius": "4px",
+        "display": "flex",
+        "flexDirection": "column"
+      },
+      "customProperties": {},
+      "children": [
+        {
+          "id": "prim-1786961305657-8hz2kz75l",
+          "type": "container",
+          "name": "Контейнер",
+          "width": 50,
+          "height": 50,
+          "widthUnit": "%",
+          "heightUnit": "px",
+          "style": {
+            "border": "1px solid #ccc",
+            "backgroundColor": "#f9f9f9",
+            "borderRadius": "14px",
+            "display": "flex",
+            "flexDirection": "row",
+            "gap": "20px",
+            "justifyContent": "center",
+            "alignItems": "center",
+            "padding": "20px"
+          },
+          "customProperties": {},
+          "children": [
+            {
+              "id": "prim-1786963788167-l7sefqwis",
+              "type": "button",
+              "name": "Кнопка1",
+              "width": 120,
+              "height": 40,
+              "widthUnit": "px",
+              "heightUnit": "px",
+              "style": {
+                "backgroundColor": "#007bff",
+                "color": "#ffffff",
+                "border": "none",
+                "borderRadius": "4px",
+                "fontSize": "14px",
+                "cursor": "pointer",
+                "position": "static",
+                "display": "inline-flex",
+                "alignItems": "center"
+              },
+              "customProperties": {},
+              "text": "новый контекст",
+              "left": 0,
+              "top": 0,
+              "events": {
+                "click": "exampleFunction"
+              },
+              "icon": "home"
+            },
+            {
+              "id": "prim-1786963803409-3hldh350h",
+              "type": "button",
+              "name": "Кнопка2",
+              "width": 120,
+              "height": 40,
+              "widthUnit": "px",
+              "heightUnit": "px",
+              "left": 270,
+              "top": 100,
+              "style": {
+                "backgroundColor": "#007bff",
+                "color": "#ffffff",
+                "border": "none",
+                "borderRadius": "4px",
+                "fontSize": "14px",
+                "cursor": "pointer",
+                "position": "static"
+              },
+              "customProperties": {},
+              "text": "Кнопка2"
+            },
+            {
+              "id": "prim-1786965629978-4vfz51td1",
+              "type": "button",
+              "name": "Кнопка3",
+              "width": 120,
+              "height": 40,
+              "widthUnit": "px",
+              "heightUnit": "px",
+              "left": 130,
+              "top": 140,
+              "style": {
+                "backgroundColor": "#007bff",
+                "color": "#ffffff",
+                "border": "none",
+                "borderRadius": "4px",
+                "fontSize": "14px",
+                "cursor": "pointer",
+                "position": "static"
+              },
+              "customProperties": {},
+              "text": "Кнопка3"
+            }
+          ]
+        },
+        {
+          "id": "prim-1787295871933-gmmx2047r",
+          "type": "button",
+          "name": "Кнопка",
+          "visible": true,
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "style": {
+            "display": "inline-flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "backgroundColor": "#007bff",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer"
+          },
+          "customProperties": {}
+        }
+      ],
+      "widthUnit": "%",
+      "heightUnit": "%",
+      "left": 0,
+      "top": 0,
+      "visible": true
+    }
+  ]
+}
