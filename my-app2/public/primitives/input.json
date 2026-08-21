@@ -3,6 +3,7 @@
   "name": "Поле ввода",
   "icon": "📝",
   "defaults": {
+    "position": "absolute",
     "width": 200,
     "height": 35,
     "left": 0,
@@ -16,6 +17,7 @@
     }
   },
   "properties": [
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
     { "name": "inputType", "label": "Тип значения", "type": "select", "options": ["text", "number", "date", "time"], "default": "text" },
     { "name": "placeholder", "label": "Подсказка", "type": "string", "default": "Введите текст..." },
     { "name": "value", "label": "Значение", "type": "string", "default": "" },

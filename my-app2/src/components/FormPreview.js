@@ -18,12 +18,21 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
   const isVisible = resolveCondition(visibilityCondition, context);
 
   const style = {
-    position: 'absolute',
     left: primitive.left || 0,
     top: primitive.top || 0,
     ...getSizeStyle(primitive),
     ...(primitive.style || {})
   };
+
+  // Свойство position задаётся только если оно указано (не пустое)
+  if (primitive.position) {
+    style.position = primitive.position;
+  }
+  // Если position не задан и нет в стилях — не определяем position,
+  // чтобы использовался стандартный поток документа (static)
+  if (!style.position) {
+    delete style.position;
+  }
 
   // Условные стили из настраиваемых свойств (customProperties).
   // Если ключ совпадает с CSS-свойством (например fontSize) и значение —

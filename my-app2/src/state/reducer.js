@@ -343,10 +343,21 @@ export function editorReducer(state, action) {
     case 'UPDATE_PROPERTY': {
       if (!state.form) return state;
       const { id, property, value } = action;
-      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => ({
-        ...node,
-        [property]: value
-      }));
+      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => {
+        const updated = { ...node, [property]: value };
+        // Свойство position связано со стилем position.
+        // Если значение пустое — удаляем position из стиля (не задаём).
+        if (property === 'position') {
+          const style = { ...(node.style || {}) };
+          if (value) {
+            style.position = value;
+          } else {
+            delete style.position;
+          }
+          updated.style = style;
+        }
+        return updated;
+      });
 
       return pushHistory({
         ...state,
@@ -375,10 +386,17 @@ export function editorReducer(state, action) {
     case 'UPDATE_STYLE': {
       if (!state.form) return state;
       const { id, style } = action;
-      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => ({
-        ...node,
-        style: { ...(node.style || {}), ...style }
-      }));
+      const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => {
+        const updated = {
+          ...node,
+          style: { ...(node.style || {}), ...style }
+        };
+        // Стиль position связан со свойством position
+        if (style.position !== undefined) {
+          updated.position = style.position;
+        }
+        return updated;
+      });
 
       return pushHistory({
         ...state,
@@ -439,6 +457,7 @@ export function editorReducer(state, action) {
         id: generateId('group'),
         type: 'container',
         name: 'Группа',
+        position: 'absolute',
         width: 0,
         height: 0,
         left: Infinity,

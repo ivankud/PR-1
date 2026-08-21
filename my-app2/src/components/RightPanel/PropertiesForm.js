@@ -51,6 +51,7 @@ function PropertiesForm({ primitive }) {
   // Базовые свойства (всегда доступны)
   const baseProperties = [
     { name: 'name', label: 'Имя', type: 'string' },
+    { name: 'position', label: 'Позиция', type: 'select', options: ['', 'absolute', 'relative', 'static', 'fixed', 'sticky'], default: 'absolute' },
     { name: 'width', label: 'Ширина', type: 'number' },
     { name: 'height', label: 'Высота', type: 'number' },
     { name: 'left', label: 'X (left)', type: 'number' },
@@ -124,7 +125,7 @@ function PropertiesForm({ primitive }) {
             onChange={(e) => handleChange(prop.name, e.target.value)}
           >
             {(prop.options || []).map(opt => (
-              <option key={opt} value={opt}>{opt}</option>
+              <option key={opt} value={opt}>{opt === '' ? 'Не задано' : opt}</option>
             ))}
           </select>
         );

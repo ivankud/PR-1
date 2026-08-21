@@ -3,6 +3,7 @@
   "name": "Выпадающий список",
   "icon": "📋",
   "defaults": {
+    "position": "absolute",
     "width": 200,
     "height": 35,
     "left": 0,
@@ -15,6 +16,7 @@
     }
   },
   "properties": [
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
     { "name": "name", "label": "Имя поля", "type": "string", "default": "select" },
     { "name": "options", "label": "Варианты (через запятую)", "type": "string", "default": "Вариант 1, Вариант 2, Вариант 3" },
     { "name": "width", "label": "Ширина", "type": "number" },

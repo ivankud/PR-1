@@ -3,6 +3,7 @@
   "name": "Таблица",
   "icon": "📊",
   "defaults": {
+    "position": "absolute",
     "width": 400,
     "height": 150,
     "left": 0,
@@ -13,6 +14,7 @@
     }
   },
   "properties": [
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
     { "name": "rows", "label": "Строки", "type": "number", "default": 3 },
     { "name": "cols", "label": "Колонки", "type": "number", "default": 3 },
     { "name": "width", "label": "Ширина", "type": "number" },

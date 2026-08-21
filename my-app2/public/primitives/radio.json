@@ -3,6 +3,7 @@
   "name": "Радиокнопка",
   "icon": "🔘",
   "defaults": {
+    "position": "absolute",
     "width": 150,
     "height": 25,
     "left": 0,
@@ -13,6 +14,7 @@
     }
   },
   "properties": [
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
     { "name": "label", "label": "Подпись", "type": "string", "default": "Вариант" },
     { "name": "name", "label": "Имя группы", "type": "string", "default": "radio-group" },
     { "name": "value", "label": "Значение", "type": "string", "default": "option" },

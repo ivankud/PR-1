@@ -3,6 +3,7 @@
   "name": "Контейнер",
   "icon": "📦",
   "defaults": {
+    "position": "absolute",
     "width": 300,
     "height": 200,
     "left": 0,
@@ -14,6 +15,7 @@
     }
   },
   "properties": [
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
     { "name": "width", "label": "Ширина", "type": "number" },
     { "name": "height", "label": "Высота", "type": "number" },
     { "name": "left", "label": "X (left)", "type": "number" },

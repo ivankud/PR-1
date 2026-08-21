@@ -3,6 +3,7 @@
   "name": "Многострочный текст",
   "icon": "📄",
   "defaults": {
+    "position": "absolute",
     "width": 250,
     "height": 80,
     "left": 0,
@@ -16,6 +17,7 @@
     }
   },
   "properties": [
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
     { "name": "placeholder", "label": "Подсказка", "type": "string", "default": "Введите текст..." },
     { "name": "value", "label": "Значение", "type": "string", "default": "" },
     { "name": "name", "label": "Имя поля", "type": "string", "default": "textarea" },

@@ -185,6 +185,7 @@ export function createPrimitiveFromTemplate(template, id) {
     type: template.type,
     name: template.name,
     visible: true, // видимость примитива на холсте (true — показывать, false — скрыть)
+    position: defaults.position || 'absolute',
     width: defaults.width || 100,
     height: defaults.height || 40,
     widthUnit: 'px',

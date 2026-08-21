@@ -3,6 +3,7 @@
   "name": "Текст (label)",
   "icon": "🔤",
   "defaults": {
+    "position": "absolute",
     "width": 200,
     "height": 30,
     "left": 0,
@@ -15,6 +16,7 @@
   },
   "properties": [
     { "name": "text", "label": "Текст", "type": "string", "default": "Текст" },
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
     { "name": "width", "label": "Ширина", "type": "number" },
     { "name": "height", "label": "Высота", "type": "number" },
     { "name": "left", "label": "X (left)", "type": "number" },

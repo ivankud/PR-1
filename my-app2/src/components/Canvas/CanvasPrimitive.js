@@ -30,12 +30,21 @@ function CanvasPrimitive({
   };
 
   const style = {
-    position: 'absolute',
     left: primitive.left || 0,
     top: primitive.top || 0,
     ...getSizeStyle(primitive),
     ...(primitive.style || {})
   };
+
+  // Свойство position задаётся только если оно указано (не пустое)
+  if (primitive.position) {
+    style.position = primitive.position;
+  }
+  // Если position не задан и нет в стилях — не определяем position,
+  // чтобы использовался стандартный поток документа (static)
+  if (!style.position) {
+    delete style.position;
+  }
 
   // Для контейнеров добавляем overflow visible
   if (primitive.children && primitive.children.length > 0) {
