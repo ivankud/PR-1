@@ -113,12 +113,17 @@ function findDropZone(node, point, offset = { left: 0, top: 0 }, isRoot = false)
     return { targetId: node.id, zone, index };
   }
 
-  // Сначала проверяем детей (самый глубокий приоритетнее)
+  // Сначала проверяем детей-контейнеров (самый глубокий приоритетнее).
+  // В детей-не-контейнеры не спускаемся: если точка попадает в такой ребёнок,
+  // зона определяется относительно его родителя (контейнера) — "inside".
   let deepestChild = null;
   if (node.children) {
     for (const child of node.children) {
-      const found = findDropZone(child, point, { left: absLeft, top: absTop });
-      if (found) deepestChild = found;
+      const isChildContainer = child.children !== undefined || child.type === 'container';
+      if (isChildContainer) {
+        const found = findDropZone(child, point, { left: absLeft, top: absTop });
+        if (found) deepestChild = found;
+      }
     }
   }
 

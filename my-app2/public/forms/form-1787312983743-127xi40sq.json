@@ -41,7 +41,57 @@
         "flexDirection": "row"
       },
       "customProperties": {},
-      "children": []
+      "children": [
+        {
+          "id": "prim-1787314343202-ypcm9z4he",
+          "type": "button",
+          "name": "Кнопка1",
+          "visible": true,
+          "position": "",
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "left": 10,
+          "top": 10,
+          "style": {
+            "display": "inline-flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "backgroundColor": "#bbbbbb",
+            "color": "#aaaaaa",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer"
+          },
+          "customProperties": {},
+          "text": "Кнопка1"
+        },
+        {
+          "id": "prim-1787314918593-86pfwqo4p",
+          "type": "button",
+          "name": "Кнопка2",
+          "visible": true,
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "style": {
+            "display": "inline-flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "backgroundColor": "#599",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer"
+          },
+          "customProperties": {},
+          "text": "Кнопка2"
+        }
+      ]
     }
   ]
 }
