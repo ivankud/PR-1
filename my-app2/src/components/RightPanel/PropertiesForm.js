@@ -107,7 +107,7 @@ function PropertiesForm({ primitive }) {
           <input
             type="number"
             value={value}
-            onChange={(e) => handleChange(prop.name, parseFloat(e.target.value) || 0)}
+            onChange={(e) => handleChange(prop.name, e.target.value === '' ? '' : parseFloat(e.target.value))}
           />
         );
       case 'boolean':

@@ -344,7 +344,13 @@ export function editorReducer(state, action) {
       if (!state.form) return state;
       const { id, property, value } = action;
       const newForm = updatePrimitiveInTree(deepClone(state.form), id, (node) => {
-        const updated = { ...node, [property]: value };
+        const updated = { ...node };
+        // Пустое значение — удаляем свойство примитива
+        if (value === '' || value === undefined) {
+          delete updated[property];
+        } else {
+          updated[property] = value;
+        }
         // Свойство position связано со стилем position.
         // Если значение пустое — удаляем position из стиля (не задаём).
         if (property === 'position') {

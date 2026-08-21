@@ -114,145 +114,59 @@
   },
   "children": [
     {
-      "id": "group-1787290858057-9it5uc2t1",
+      "id": "prim-1787298814006-gqb2dwr5p",
       "type": "container",
-      "name": "Группа",
+      "name": "Контейнер",
+      "visible": true,
+      "position": "absolute",
       "width": 100,
       "height": 100,
-      "style": {
-        "border": "1px dashed #999999",
-        "backgroundColor": "rgba(0, 123, 255, 0.05)",
-        "borderRadius": "4px",
-        "display": "flex",
-        "flexDirection": "column"
-      },
-      "customProperties": {},
-      "children": [
-        {
-          "id": "prim-1786961305657-8hz2kz75l",
-          "type": "container",
-          "name": "Контейнер",
-          "width": 100,
-          "height": 50,
-          "widthUnit": "%",
-          "heightUnit": "px",
-          "style": {
-            "border": "1px solid #ccc",
-            "backgroundColor": "#f9f9f9",
-            "borderRadius": "14px",
-            "display": "flex",
-            "flexDirection": "row",
-            "gap": "20px",
-            "justifyContent": "center",
-            "alignItems": "center",
-            "padding": "20px"
-          },
-          "customProperties": {},
-          "children": [
-            {
-              "id": "prim-1786963788167-l7sefqwis",
-              "type": "button",
-              "name": "Кнопка1",
-              "width": 120,
-              "height": 40,
-              "widthUnit": "px",
-              "heightUnit": "px",
-              "style": {
-                "backgroundColor": "#007bff",
-                "color": "#ffffff",
-                "border": "none",
-                "borderRadius": "4px",
-                "fontSize": "14px",
-                "cursor": "pointer",
-                "position": "static",
-                "display": "inline-flex",
-                "alignItems": "center"
-              },
-              "customProperties": {},
-              "text": "новый контекст",
-              "left": 0,
-              "top": 0,
-              "events": {
-                "click": "exampleFunction"
-              },
-              "icon": "home"
-            },
-            {
-              "id": "prim-1786963803409-3hldh350h",
-              "type": "button",
-              "name": "Кнопка2",
-              "width": 120,
-              "height": 40,
-              "widthUnit": "px",
-              "heightUnit": "px",
-              "left": 270,
-              "top": 100,
-              "style": {
-                "backgroundColor": "#007bff",
-                "color": "#ffffff",
-                "border": "none",
-                "borderRadius": "4px",
-                "fontSize": "14px",
-                "cursor": "pointer",
-                "position": "static"
-              },
-              "customProperties": {},
-              "text": "Кнопка2"
-            },
-            {
-              "id": "prim-1786965629978-4vfz51td1",
-              "type": "button",
-              "name": "Кнопка3",
-              "width": 120,
-              "height": 40,
-              "widthUnit": "px",
-              "heightUnit": "px",
-              "left": 130,
-              "top": 140,
-              "style": {
-                "backgroundColor": "#007bff",
-                "color": "#ffffff",
-                "border": "none",
-                "borderRadius": "4px",
-                "fontSize": "14px",
-                "cursor": "pointer",
-                "position": "static"
-              },
-              "customProperties": {},
-              "text": "Кнопка3"
-            }
-          ]
-        },
-        {
-          "id": "prim-1787295871933-gmmx2047r",
-          "type": "button",
-          "name": "Кнопка",
-          "visible": true,
-          "width": 120,
-          "height": 40,
-          "widthUnit": "px",
-          "heightUnit": "px",
-          "style": {
-            "display": "inline-flex",
-            "alignItems": "center",
-            "justifyContent": "center",
-            "backgroundColor": "#007bff",
-            "color": "#ffffff",
-            "border": "none",
-            "borderRadius": "4px",
-            "fontSize": "14px",
-            "cursor": "pointer"
-          },
-          "customProperties": {},
-          "position": "",
-          "text": "Кнопка1"
-        }
-      ],
       "widthUnit": "%",
       "heightUnit": "%",
       "left": 0,
       "top": 0,
-      "visible": true
+      "style": {
+        "border": "1px dashed #999999",
+        "backgroundColor": "#f9ddf9",
+        "borderRadius": "4px"
+      },
+      "customProperties": {},
+      "children": [
+        {
+          "id": "prim-1787298858846-nsdo5uupp",
+          "type": "container",
+          "name": "Контейнер",
+          "visible": true,
+          "width": 300,
+          "height": 200,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "style": {
+            "border": "1px dashed #999999",
+            "backgroundColor": "#fdda9",
+            "borderRadius": "4px"
+          },
+          "customProperties": {},
+          "children": []
+        },
+        {
+          "id": "prim-1787298941079-406xjgnhp",
+          "type": "container",
+          "name": "Контейнер2",
+          "visible": true,
+          "width": 300,
+          "height": 200,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "style": {
+            "border": "1px dashed #999999",
+            "backgroundColor": "#f9faa9",
+            "borderRadius": "4px"
+          },
+          "customProperties": {},
+          "children": []
+        }
+      ]
     }
   ]
 }

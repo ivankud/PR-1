@@ -18,8 +18,6 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
   const isVisible = resolveCondition(visibilityCondition, context);
 
   const style = {
-    left: primitive.left || 0,
-    top: primitive.top || 0,
     ...getSizeStyle(primitive),
     ...(primitive.style || {})
   };
@@ -32,6 +30,21 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
   // чтобы использовался стандартный поток документа (static)
   if (!style.position) {
     delete style.position;
+  }
+
+  // Свойства left/top задаются только если они указаны (не пустые)
+  if (primitive.left !== undefined && primitive.left !== null && primitive.left !== '') {
+    style.left = primitive.left;
+  }
+  if (primitive.top !== undefined && primitive.top !== null && primitive.top !== '') {
+    style.top = primitive.top;
+  }
+  // Если left/top не заданы и нет в стилях — удаляем, чтобы использовать поток документа
+  if (style.left === undefined || style.left === '') {
+    delete style.left;
+  }
+  if (style.top === undefined || style.top === '') {
+    delete style.top;
   }
 
   // Условные стили из настраиваемых свойств (customProperties).
