@@ -22,13 +22,12 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
     ...(primitive.style || {})
   };
 
-  // Свойство position задаётся только если оно указано (не пустое)
+  // Свойство position задаётся только если оно указано (не пустое).
+  // Если position пустой/не задан — удаляем из стиля, чтобы использовался
+  // стандартный поток документа (static).
   if (primitive.position) {
     style.position = primitive.position;
-  }
-  // Если position не задан и нет в стилях — не определяем position,
-  // чтобы использовался стандартный поток документа (static)
-  if (!style.position) {
+  } else {
     delete style.position;
   }
 

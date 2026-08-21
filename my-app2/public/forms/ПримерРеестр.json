@@ -128,7 +128,9 @@
       "style": {
         "border": "1px dashed #999999",
         "backgroundColor": "#f9ddf9",
-        "borderRadius": "4px"
+        "borderRadius": "4px",
+        "display": "flex",
+        "flexDirection": "row"
       },
       "customProperties": {},
       "children": [
@@ -143,7 +145,7 @@
           "heightUnit": "px",
           "style": {
             "border": "1px dashed #999999",
-            "backgroundColor": "#fdda9",
+            "backgroundColor": "#fdaccc",
             "borderRadius": "4px"
           },
           "customProperties": {},

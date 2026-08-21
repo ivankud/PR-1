@@ -347,7 +347,13 @@ export function editorReducer(state, action) {
         const updated = { ...node };
         // Пустое значение — удаляем свойство примитива
         if (value === '' || value === undefined) {
-          delete updated[property];
+          // Для position «Не задано» храним пустую строку, чтобы отличать
+          // от отсутствия свойства (совместимость со старыми формами)
+          if (property === 'position') {
+            updated.position = '';
+          } else {
+            delete updated[property];
+          }
         } else {
           updated[property] = value;
         }

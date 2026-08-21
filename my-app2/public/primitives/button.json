@@ -24,7 +24,7 @@
     { "name": "text", "label": "Текст", "type": "string", "default": "Кнопка" },
     { "name": "icon", "label": "Иконка", "type": "icon", "default": "" },
     { "name": "iconSize", "label": "Размер иконки", "type": "number", "default": 16 },
-    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"] },
     { "name": "width", "label": "Ширина", "type": "number" },
     { "name": "height", "label": "Высота", "type": "number" },
     { "name": "left", "label": "X (left)", "type": "number" },

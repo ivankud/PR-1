@@ -14,7 +14,7 @@
     }
   },
   "properties": [
-    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"] },
     { "name": "title", "label": "Заголовок", "type": "string", "default": "Таблица" },
     { "name": "dataSource", "label": "Источник данных", "type": "string", "default": "manual" },
     { "name": "apiUrl", "label": "URL API", "type": "string", "default": "" },

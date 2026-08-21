@@ -51,7 +51,7 @@ function PropertiesForm({ primitive }) {
   // Базовые свойства (всегда доступны)
   const baseProperties = [
     { name: 'name', label: 'Имя', type: 'string' },
-    { name: 'position', label: 'Позиция', type: 'select', options: ['', 'absolute', 'relative', 'static', 'fixed', 'sticky'], default: 'absolute' },
+    { name: 'position', label: 'Позиция', type: 'select', options: ['', 'absolute', 'relative', 'static', 'fixed', 'sticky'] },
     { name: 'width', label: 'Ширина', type: 'number' },
     { name: 'height', label: 'Высота', type: 'number' },
     { name: 'left', label: 'X (left)', type: 'number' },

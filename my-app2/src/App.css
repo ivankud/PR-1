@@ -742,9 +742,10 @@ body {
   pointer-events: none;
 }
 
-/* Примитивы на холсте */
+/* Примитивы на холсте.
+   position задаётся через inline-стиль (JS) на основе свойства примитива.
+   Если position не задан — примитив в потоке документа (static). */
 .canvas-primitive {
-  position: absolute;
   cursor: move;
   user-select: none;
 }

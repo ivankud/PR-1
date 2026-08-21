@@ -16,7 +16,7 @@
   },
   "properties": [
     { "name": "text", "label": "Текст", "type": "string", "default": "Текст" },
-    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"], "default": "absolute" },
+    { "name": "position", "label": "Позиция", "type": "select", "options": ["", "absolute", "relative", "static", "fixed", "sticky"] },
     { "name": "width", "label": "Ширина", "type": "number" },
     { "name": "height", "label": "Высота", "type": "number" },
     { "name": "left", "label": "X (left)", "type": "number" },
