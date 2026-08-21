@@ -783,6 +783,9 @@ body {
 .canvas-primitive.drop-after {
   outline: 2px solid #007bff;
   outline-offset: -1px;
+  /* Обеспечиваем позиционирование псевдоэлемента зоны относительно примитива,
+     даже если position примитива не задан (static) */
+  position: relative;
 }
 
 /* Краевые зоны (слева/справа/сверху/снизу) */

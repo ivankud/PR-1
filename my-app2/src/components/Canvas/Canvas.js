@@ -44,45 +44,33 @@ function getOffsetToNode(root, targetId) {
 // point: { x, y } — координаты относительно холста (формы)
 // node: примитив, проверяемый рекурсивно
 // offset: { left, top } — смещение текущего примитива относительно холста
+// isRoot: true — корневой элемент формы (размеры берутся из node.canvas)
 // Возвращает { targetId, zone, index } — самый глубокий примитив и зону, либо null.
 // Зоны:
 //   - left/right/top/bottom — краевые полосы (добавление в родителя целевого)
 //   - inside — центральная зона контейнера (добавление внутрь)
 //   - before/between/after — зоны flex-контейнера вдоль главной оси (вставка в children)
-function findDropZone(node, point, offset = { left: 0, top: 0 }) {
+function findDropZone(node, point, offset = { left: 0, top: 0 }, isRoot = false) {
   if (!node) return null;
 
-  // Абсолютные координаты текущего примитива на холсте
-  const absLeft = offset.left + (node.left || 0);
-  const absTop = offset.top + (node.top || 0);
-  const absRight = absLeft + (node.width || 0);
-  const absBottom = absTop + (node.height || 0);
+  // Для корневого элемента формы используем размеры canvas
+  const width = isRoot ? (node.canvas?.width || 800) : (node.width || 0);
+  const height = isRoot ? (node.canvas?.height || 600) : (node.height || 0);
+  const absLeft = offset.left + (isRoot ? 0 : (node.left || 0));
+  const absTop = offset.top + (isRoot ? 0 : (node.top || 0));
+  const absRight = absLeft + width;
+  const absBottom = absTop + height;
 
-  // Точка вне области примитива — не обрабатываем
-  if (point.x < absLeft || point.x > absRight || point.y < absTop || point.y > absBottom) {
+  // Точка вне области примитива — не обрабатываем (для корня пропускаем,
+  // т.к. форма всегда содержит точку внутри своих границ)
+  if (!isRoot && (point.x < absLeft || point.x > absRight || point.y < absTop || point.y > absBottom)) {
     return null;
   }
 
-  // Сначала проверяем детей (самый глубокий приоритетнее)
-  let deepestChild = null;
-  if (node.children) {
-    for (const child of node.children) {
-      const found = findDropZone(child, point, { left: absLeft, top: absTop });
-      if (found) deepestChild = found;
-    }
-  }
-
-  // Если в детях нашли зону — возвращаем её (самый глубокий)
-  if (deepestChild) return deepestChild;
-
-  const width = node.width || 0;
-  const height = node.height || 0;
-  const relX = point.x - absLeft;
-  const relY = point.y - absTop;
-
-  // Flex-контейнер: зоны вдоль главной оси (before/between/after)
+  // Для flex-контейнера определяем зоны вдоль главной оси ДО проверки детей,
+  // чтобы вставка происходила между элементами контейнера, а не внутрь детей
   const isFlex = node.style?.display === 'flex';
-  if (isFlex && node.children && node.children.length > 0) {
+  if (!isRoot && isFlex && node.children && node.children.length > 0) {
     const flexDirection = node.style.flexDirection || 'row';
     const isRow = flexDirection === 'row' || flexDirection === 'row-reverse';
     const isReverse = flexDirection === 'row-reverse' || flexDirection === 'column-reverse';
@@ -98,6 +86,8 @@ function findDropZone(node, point, offset = { left: 0, top: 0 }) {
       .sort((a, b) => a.start - b.start);
 
     // Позиция точки вдоль главной оси (относительно контейнера)
+    const relX = point.x - absLeft;
+    const relY = point.y - absTop;
     const pos = isRow ? relX : relY;
 
     // Определяем индекс вставки
@@ -123,30 +113,63 @@ function findDropZone(node, point, offset = { left: 0, top: 0 }) {
     return { targetId: node.id, zone, index };
   }
 
+  // Сначала проверяем детей (самый глубокий приоритетнее)
+  let deepestChild = null;
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findDropZone(child, point, { left: absLeft, top: absTop });
+      if (found) deepestChild = found;
+    }
+  }
+
+  // Если в детях нашли зону — возвращаем её (самый глубокий)
+  if (deepestChild) return deepestChild;
+
+  // Для корня не определяем зоны — только дети
+  if (isRoot) return null;
+
+  const relX = point.x - absLeft;
+  const relY = point.y - absTop;
+
   // Краевые полосы (25% от каждого края)
   const edgeX = width * 0.25;
   const edgeY = height * 0.25;
 
+  // Определяем, какая зона активна:
+  //   left — точка в левой полосе (0..25%)
+  //   right — точка в правой полосе (75%..100%)
+  //   top — точка в верхней полосе (0..25%)
+  //   bottom — точка в нижней полосе (75%..100%)
+  //   иначе — центральная зона
+  let zone = null;
   if (relX < edgeX) {
-    return { targetId: node.id, zone: 'left' };
-  }
-  if (relX > width - edgeX) {
-    return { targetId: node.id, zone: 'right' };
-  }
-  if (relY < edgeY) {
-    return { targetId: node.id, zone: 'top' };
-  }
-  if (relY > height - edgeY) {
-    return { targetId: node.id, zone: 'bottom' };
+    zone = 'left';
+  } else if (relX > width - edgeX) {
+    zone = 'right';
+  } else if (relY < edgeY) {
+    zone = 'top';
+  } else if (relY > height - edgeY) {
+    zone = 'bottom';
   }
 
-  // Центральная зона — внутрь контейнера
-  const isContainer = node.children !== undefined || node.type === 'container';
-  if (isContainer) {
-    return { targetId: node.id, zone: 'inside' };
+  // Центральная зона
+  if (!zone) {
+    const isContainer = node.children !== undefined || node.type === 'container';
+    if (isContainer) {
+      // Контейнер — добавление внутрь
+      return { targetId: node.id, zone: 'inside' };
+    }
+    // Не-контейнер — определяем ближайший край, чтобы зона отображалась всегда
+    const nearestX = Math.min(relX, width - relX);
+    const nearestY = Math.min(relY, height - relY);
+    if (nearestX <= nearestY) {
+      zone = relX <= width / 2 ? 'left' : 'right';
+    } else {
+      zone = relY <= height / 2 ? 'top' : 'bottom';
+    }
   }
 
-  return null;
+  return { targetId: node.id, zone };
 }
 
 function Canvas() {
@@ -366,7 +389,7 @@ function Canvas() {
     // Определяем зону размещения под курсором
     if (form) {
       const point = getCanvasPoint(e);
-      const zone = findDropZone(form, point);
+      const zone = findDropZone(form, point, { left: 0, top: 0 }, true);
       setDropZone(zone);
     }
   };
@@ -389,7 +412,7 @@ function Canvas() {
     const height = template?.defaults?.height || 40;
 
     // Определяем зону размещения
-    const zone = findDropZone(form, point);
+    const zone = findDropZone(form, point, { left: 0, top: 0 }, true);
 
     // Если зона не определена — добавляем в свободную область (корень формы)
     if (!zone) {
