@@ -5,7 +5,7 @@ import AGTable from '../components/AGTable';
 import { getIconById, IconSvg } from './iconLibrary';
 
 // Рендер примитива по шаблону
-export function renderPrimitive(primitive, template, context) {
+export function renderPrimitive(primitive, template, context, fns) {
   if (!template || !template.render) return null;
 
   const render = template.render;
@@ -15,7 +15,8 @@ export function renderPrimitive(primitive, template, context) {
   // Специальный рендер для AGTable
   if (template.type === 'agtable') {
     // Стили передаём через primitive.style (уже применяются обёрткой)
-    return React.createElement(AGTable, { primitive, context, key: primitive.id });
+    // fns передаются в режиме предпросмотра (для источника данных "function")
+    return React.createElement(AGTable, { primitive, context, fns, key: primitive.id });
   }
 
   // Резолвим атрибуты

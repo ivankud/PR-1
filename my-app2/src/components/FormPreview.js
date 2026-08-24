@@ -118,7 +118,8 @@ function PreviewPrimitive({ primitive, primitives, context, fns, onUpdateContext
   }, [primitive?.id, primitive?.events, primitive?.name, context, fns, onUpdateContext]);
 
   // Рендерим примитив и прикрепляем обработчики событий напрямую к элементу
-  const rendered = renderPrimitive(primitive, template, context);
+  // fns передаём для источников данных типа "function" (например, AGTable)
+  const rendered = renderPrimitive(primitive, template, context, fns);
   const renderedWithHandlers = rendered && (Object.keys(handlers).length > 0 || handleCellEvent)
     ? React.cloneElement(rendered, { ...handlers, onCellEvent: handleCellEvent })
     : rendered;

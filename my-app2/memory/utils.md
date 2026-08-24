@@ -36,7 +36,7 @@
 
 | Функция | Назначение |
 |---------|-----------|
-| `renderPrimitive(primitive, template, context)` | Рендер примитива по шаблону. Спец-обработка: AGTable, input/textarea, select, table |
+| `renderPrimitive(primitive, template, context, fns)` | Рендер примитива по шаблону. Спец-обработка: AGTable, input/textarea, select, table. `fns` (необязательно) — компилированные функции для источника данных AGTable "function" |
 | `getPrimitiveTemplate(primitives, type)` | Получение шаблона по типу |
 | `createPrimitiveFromTemplate(template, id)` | Создание примитива из шаблона |
 
@@ -62,6 +62,10 @@
 
 ### Преобразование имён событий
 `click` → `onClick`, `mouseenter` → `onMouseEnter` (через `toReactEventName`)
+
+### Глобальные хелперы (доступны в функциях через `new Function`)
+- `getElementByName(name)` — поиск DOM-элемента примитива по `data-primitive-name`
+- `fetchWithAuth(url, options)` — `async` fetch с Basic Auth из localStorage (для запросов к защищённому серверу из функций)
 
 ## formLoader.js
 

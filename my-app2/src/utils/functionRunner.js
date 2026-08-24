@@ -1,5 +1,6 @@
 // Утилиты для работы с пользовательскими функциями форм
 import { getFormContext } from './anchors';
+import { withAuthHeaders } from './auth';
 
 // Глобальная функция поиска примитива по имени.
 // Доступна во всех пользовательских функциях форм (компилируются через new Function,
@@ -7,6 +8,25 @@ import { getFormContext } from './anchors';
 if (typeof window !== 'undefined' && !window.getElementByName) {
   window.getElementByName = function (name) {
     return document.querySelector('[data-primitive-name="' + name + '"]');
+  };
+}
+
+// Глобальный helper для fetch с авторизацией (Basic Auth из localStorage).
+// Доступен в пользовательских функциях форм для запросов к защищённому серверу.
+// Пример: const res = await getWithAuth(url);
+if (typeof window !== 'undefined' && !window.fetchWithAuth) {
+  window.fetchWithAuth = async function (url, options = {}) {
+    const headers = withAuthHeaders(
+      { ...(options.headers || {}) },
+      options.useAuth !== undefined ? options.useAuth : true
+    );
+    const method = options.method || 'GET';
+    const init = { ...options, method, headers };
+    const response = await fetch(url, init);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.json();
   };
 }
 

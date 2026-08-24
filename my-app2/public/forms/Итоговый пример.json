@@ -100,13 +100,15 @@
       "name": "onSubmitHandler",
       "description": "Иллюстрация события onSubmit: выполняется при отправке формы, добавляет метку в контекст",
       "code": "console.log('Событие onSubmit: форма отправлена');\ncontext.eventLog = (context.eventLog || '') + 'onSubmit; ';\ncontext.onSubmitMessage = 'Событие onSubmit выполнено при отправке формы';\nreturn context;"
+    },
+    {
+      "id": "fn-fetch-filtered-data",
+      "name": "fetchFilteredData",
+      "description": "Источник данных AGTable: выполняет GET к серверу с использованием контекста формы и активных фильтров примитива",
+      "code": "async function fetchData() {\n  const baseUrl = context.apiUrl || context.filters?.apiUrl\n    ? (context.apiUrl || context.filters.apiUrl)\n    : 'http://172.16.50.42:9977/app/api/1.0/auditprograms';\n\n  // Собираем параметры запроса из активных фильтров\n  let url = baseUrl;\n  const filters = context.filters || [];\n  const urlParams = [];\n  for (const f of filters) {\n    if (f && f.name && f.value !== undefined && f.value !== '') {\n      urlParams.push(`${encodeURIComponent(f.name)}=${encodeURIComponent(String(f.value))}`);\n    }\n  }\n  if (urlParams.length > 0) {\n    url += (url.includes('?') ? '&' : '?') + urlParams.join('&');\n  }\n\n  // GET к серверу (Basic Auth берётся из настроек авторизации)\n  const payload = await fetchWithAuth(url);\n\nconsole.log('dddddddddddd');\n  // Данные могут прийти в обёртке: content / data / rows / items\n  return payload.content || payload.data || payload.rows || payload.items || payload.result || payload;\n}\n\nconsole.log('nenenenenenee');\n\n// Возвращаем Promise — AGTable ожидает его через await\nreturn fetchData();"
     }
   ],
-  "events": {
-    "onOpen": "onOpenHandler",
-    "onLoad": "onLoadHandler",
-    "onSubmit": "onSubmitHandler"
-  },
+  "events": {},
   "canvas": {
     "width": 100,
     "height": 100,
@@ -494,8 +496,8 @@
         "borderRadius": "4px"
       },
       "customProperties": {},
-      "dataSource": "api",
-      "apiUrl": "http://172.16.50.42:9977/app/api/1.0/auditprograms",
+      "dataSource": "function",
+      "functionName": "fetchFilteredData",
       "rowData": "",
       "columnDefs": "[\n\t{\n        \"field\": \"id\",\n        \"headerName\": \"ID\"\n    },\n\t{\n        \"field\": \"smnemocode\",\n        \"headerName\": \"Код\",\n        \"width\": 500, \n        \"notFiltered\": true,\n        \"notSorted\": true\n    },\n\t{\n        \"field\": \"scaption\",\n        \"headerName\": \"Наименование\"\n    },\n\t{\n        \"field\": \"action\",\n        \"headerName\": \"123\",\n        \"width\": 100,\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"button\",\n        \"buttonText\": \"Hello\"\n    },\n\t{\n        \"field\": \"actions\",\n        \"headerName\": \"Действия\",\n        \"resizable\": false,\n        \"notFiltered\": true,\n        \"notSorted\": true,\n        \"cellRenderer\": \"custom\",\n        \"cellContent\": [\n            {\n                \"type\": \"text\",\n                \"text\": \"Операции:\",\n                \"style\": {\n                    \"fontWeight\": \"bold\",\n                    \"marginRight\": \"4px\"\n                }\n            },\n            {\n                \"type\": \"button\",\n                \"text\": \"Кн1\",\n                \"event\": \"cellButtonClick\",\n                \"style\": {\n                    \"backgroundColor\": \"#007bff\",\n                    \"color\": \"#ffffff\",\n                    \"border\": \"none\",\n                    \"borderRadius\": \"4px\"\n                }\n            },\n            {\n                \"type\": \"button\",\n                \"text\": \"Кн2\",\n                \"event\": \"cellButtonClick2\",\n                \"style\": {\n                    \"backgroundColor\": \"#28a745\",\n                    \"color\": \"#ffffff\",\n                    \"border\": \"none\",\n                    \"borderRadius\": \"4px\"\n                }\n            }\n        ]\n    },\n\t{\n        \"field\": \"nactive\",\n        \"headerName\": \"Используется\"\n    }\n]",
       "useAuth": true,

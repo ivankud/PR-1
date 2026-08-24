@@ -10,6 +10,7 @@ import {
   buildFilterParams,
   appendFilterParamsToUrl
 } from '../utils/filterUtils';
+import { callFunction } from '../utils/functionRunner';
 
 // Утилита для безопасного парсинга JSON5 (поддерживает комментарии, одинарные кавычки и т.д.)
 function safeParse(json, fallback) {
@@ -157,7 +158,7 @@ function buildApiUrl(baseUrl, { page, size, sortField, sortOrder }) {
   return `${baseUrl}${separator}${params.join('&')}`;
 }
 
-function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEvent, ...restProps }) {
+function AGTable({ primitive, context, fns, onRowClicked, onCellButtonClick, onCellEvent, ...restProps }) {
   const gridRef = useRef(null);
 
   // Свойства примитива (с подстановкой из контекста)
@@ -183,6 +184,8 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEv
   // Серверная пагинация
   const serverPagination = resolveValue('serverPagination', false);
   const apiDataPath = resolveValue('apiDataPath', '');
+  // Имя пользовательской функции — источника данных (dataSource = 'function')
+  const functionName = resolveValue('functionName', '');
   const columnDefsRaw = resolveValue('columnDefs', "[\n  // Первичный ключ\n  { field: 'id', headerName: 'ID', width: 80 },\n  // Основное имя\n  { field: 'name', headerName: 'Имя' }\n]");
   const rowDataRaw = resolveValue('rowData', "[\n  { id: 1, name: 'Иван' },\n  { id: 2, name: 'Пётр' }\n]");
   const clientPagination = resolveValue('pagination', true);
@@ -395,6 +398,55 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEv
         } finally {
           if (!cancelled) setLoading(false);
         }
+      } else if (dataSource === 'function' && functionName) {
+        // Источник данных — пользовательская функция формы.
+        // Функция получает контекст формы и фильтры примитива, сама выполняет
+        // запрос к серверу (GET) и возвращает строки данных (массив или { data: [...] }).
+        setLoading(true);
+        try {
+          // Формируем параметры фильтрации для передачи функции
+          const filterParams = buildFilterParams(filterModel, activeFilters);
+          // Дополняем контекст фильтрами и настройками примитива
+          const fnContext = {
+            ...JSON.parse(JSON.stringify(context || {})),
+            filters: filterParams,
+            filterModel,
+            activeFilters,
+            // Настройки примитива, доступные функции (напр., базовый URL для GET)
+            apiUrl: apiUrlRaw,
+            apiMethod,
+            apiDataPath,
+            useAuth
+          };
+          const fnResult = fns ? callFunction(fns, functionName, fnContext) : null;
+          if (cancelled) return;
+
+          // Функция может быть async и возвращать Promise — ожидаем его
+          const result = (fnResult && typeof fnResult.then === 'function')
+            ? await fnResult
+            : fnResult;
+
+          // Обрабатываем результат функции
+          let rows = Array.isArray(result) ? result : null;
+          if (!rows && result && typeof result === 'object') {
+            rows = result.data || result.rows || result.items || result.records || result.content || null;
+            if (!rows && Array.isArray(result.result)) rows = result.result;
+            // Если функция вернула пагинированный ответ — определяем общее количество
+            const total = result?.total || result?.totalElements || result?.count || result?.totalCount;
+            if (serverPagination && total !== undefined) {
+              setTotalRecords(total);
+            }
+          }
+          setRowData(Array.isArray(rows) ? rows : []);
+        } catch (e) {
+          if (!cancelled) {
+            console.error('AGTable: ошибка выполнения функции данных:', e);
+            setError('Ошибка выполнения функции данных: ' + e.message);
+            setRowData([]);
+          }
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
       } else {
         // Ручной ввод данных
         const data = safeParse(rowDataRaw, []);
@@ -404,7 +456,7 @@ function AGTable({ primitive, context, onRowClicked, onCellButtonClick, onCellEv
 
     loadData();
     return () => { cancelled = true; };
-  }, [dataSource, builtApiUrl, apiMethod, apiHeaders, useAuth, apiDataPath, rowDataRaw, serverPagination]);
+  }, [dataSource, builtApiUrl, apiMethod, apiHeaders, useAuth, apiDataPath, rowDataRaw, serverPagination, functionName, filterModel, activeFilters, fns, context, apiUrlRaw]);
 
   // Обработчик клика по заголовку колонки
   // При API-источнике: перезапрашиваем данные с сервера с сортировкой по полю.
