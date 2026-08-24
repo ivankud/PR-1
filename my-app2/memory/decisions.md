@@ -105,3 +105,4 @@
 - Фильтры передаются функции как `context.filters`, `context.filterModel`, `context.activeFilters`
 - Функция возвращает массив строк или объект с обёрткой (`data`/`rows`/`items`/`records`/`content`)
 - Глобальный хелпер `fetchWithAuth` добавляет Basic Auth из localStorage к запросам функций
+- **Пагинация:** при `serverPagination: true` AGTable передаёт функции `context.currentPage`/`context.page` и `context.pageSize`/`context.size` (и `context.serverPagination`), а изменение страницы/размера перезапускает вызов функции. Функция должна сама добавить параметры `page`/`size` к своему GET и, для корректной блокировки «Вперёд», вернуть объект с `total` (массив строк при обёртке — в `content`)

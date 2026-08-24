@@ -416,7 +416,16 @@ function AGTable({ primitive, context, fns, onRowClicked, onCellButtonClick, onC
             apiUrl: apiUrlRaw,
             apiMethod,
             apiDataPath,
-            useAuth
+            useAuth,
+            // Параметры серверной пагинации (доступны функции для построения запроса:
+            // функцию данных вызывают заново при смене страницы/размера, и она должна
+            // сама добавить параметры page/size в свой GET-запрос)
+            currentPage,
+            page: currentPage,
+            pageSize,
+            size: pageSize,
+            serverPagination,
+            server: serverPagination
           };
           const fnResult = fns ? callFunction(fns, functionName, fnContext) : null;
           if (cancelled) return;
@@ -456,7 +465,7 @@ function AGTable({ primitive, context, fns, onRowClicked, onCellButtonClick, onC
 
     loadData();
     return () => { cancelled = true; };
-  }, [dataSource, builtApiUrl, apiMethod, apiHeaders, useAuth, apiDataPath, rowDataRaw, serverPagination, functionName, filterModel, activeFilters, fns, context, apiUrlRaw]);
+  }, [dataSource, builtApiUrl, apiMethod, apiHeaders, useAuth, apiDataPath, rowDataRaw, serverPagination, currentPage, pageSize, functionName, filterModel, activeFilters, fns, context, apiUrlRaw]);
 
   // Обработчик клика по заголовку колонки
   // При API-источнике: перезапрашиваем данные с сервера с сортировкой по полю.
