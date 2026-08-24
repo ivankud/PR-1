@@ -74,6 +74,21 @@
 | `loadFormById(formId)` | Загрузка формы по ID |
 | `loadFormsWithData()` | Загрузка всех форм с данными (для меню) |
 
+## functionStore.js
+
+Работа с хранилищем функций (`public/functions/`).
+
+| Функция | Назначение |
+|---------|-----------|
+| `loadStoredFunctionList()` | Загрузка манифеста `/functions/index.json` (формат `{ functions: [...] }`) |
+| `loadStoredFunctions()` | Загрузка всех функций из хранилища (по имени из манифеста) |
+| `downloadFunctionToStore(func)` | Скачивание функции как JSON-файла `{ name, description, code }` для помещения в `public/functions/` |
+
+### Формат файла функции
+```json
+{ "name": "...", "description": "...", "code": "..." }
+```
+
 ## sizeUtils.js
 
 Работа с размерами.

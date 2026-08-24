@@ -1,0 +1,5 @@
+{
+  "name": "onOpenHandler",
+  "description": "Иллюстрация события onOpen: выполняется при открытии формы, добавляет метку в контекст",
+  "code": "console.log('Событие onOpen: форма открыта');\ncontext.eventLog = (context.eventLog || '') + 'onOpen; ';\ncontext.onOpenMessage = 'Событие onOpen выполнено при открытии формы';\nalert('onOpenHandler');\nreturn context;"
+}

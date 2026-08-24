@@ -25,6 +25,7 @@ src/
 │   ├── primitiveRenderer.js  # Рендер примитивов (содержит JSX)
 │   ├── functionRunner.js     # Компиляция/вызов пользовательских функций
 │   ├── formLoader.js         # Загрузка форм
+│   ├── functionStore.js      # Загрузка/скачивание функций из public/functions/
 │   ├── sizeUtils.js          # Работа с размерами и единицами измерения
 │   └── auth.js               # Basic Auth
 └── components/               # UI-компоненты
@@ -49,3 +50,5 @@ src/
 - `public/forms/index.json` — манифест форм
 - `public/forms/*.json` — JSON-файлы форм
 - `public/primitives/*.json` — шаблоны примитивов (button, text, input, textarea, container, image, checkbox, radio, select, table, agtable)
+- `public/functions/index.json` — манифест хранилища функций (`{ functions: [...] }`)
+- `public/functions/*.json` — файлы функций `{ name, description, code }`

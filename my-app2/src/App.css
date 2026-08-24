@@ -1589,6 +1589,146 @@ body {
   margin-top: 4px;
 }
 
+/* Кнопки «Добавить функцию» и «Импорт» в верхней части вкладки */
+.functions-tab-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ===== Импорт функций (public/functions/) ===== */
+.function-import-dialog {
+  position: fixed;
+  z-index: 1060;
+  width: 520px;
+  max-width: 92vw;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.function-import-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.function-import-dialog-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+}
+
+.function-import-dialog-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.function-import-dialog-close:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.function-import-dialog-body {
+  padding: 14px 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.function-import-loading {
+  color: #666;
+  font-size: 13px;
+}
+
+.function-import-error {
+  color: #dc3545;
+  font-size: 13px;
+}
+
+.function-import-empty {
+  color: #666;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.function-import-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.function-import-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #fff;
+}
+
+.function-import-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.function-import-item-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.function-import-item-desc {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.function-import-item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.function-import-item-existing {
+  font-size: 12px;
+  color: #28a745;
+  white-space: nowrap;
+}
+
+.function-import-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid #e0e0e0;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
 /* ===== События (правая панель) ===== */
 .events-tab {
   display: flex;

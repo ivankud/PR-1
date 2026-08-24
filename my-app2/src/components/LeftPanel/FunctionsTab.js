@@ -1,8 +1,31 @@
 // Вкладка с пользовательскими функциями формы
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useEditor } from '../../state/EditorContext';
 import { generateId } from '../../utils/jsonUtils';
 import { getIconById, IconSvg } from '../../utils/iconLibrary';
+import {
+  loadStoredFunctions,
+  downloadFunctionToStore
+} from '../../utils/functionStore';
+
+// Разрешение конфликта имени при импорте: если имя уже занято в форме,
+// добавляем суффиксы (-import, -copy, затем числовой).
+function resolveImportName(baseName, existingNames) {
+  const taken = new Set(existingNames);
+  if (!taken.has(baseName)) return baseName;
+
+  const candidates = [`${baseName}-import`, `${baseName}-copy`];
+  for (const candidate of candidates) {
+    if (!taken.has(candidate)) return candidate;
+  }
+
+  let index = 1;
+  while (true) {
+    const candidate = `${baseName}-import-${index}`;
+    if (!taken.has(candidate)) return candidate;
+    index += 1;
+  }
+}
 
 // Передвигаемое немодальное диалоговое окно редактирования функции.
 // Не блокирует остальной интерфейс, можно перетаскивать за заголовок.
@@ -108,6 +131,114 @@ function FunctionDialog({ func, isNew, onSave, onClose, onDelete }) {
   );
 }
 
+// Немодальное диалоговое окно импорта функций из хранилища (public/functions/).
+// По стилю повторяет FunctionDialog: передвигается за заголовок, не блокирует интерфейс.
+function FunctionImportDialog({ onClose, onImport, existingNames }) {
+  const [stored, setStored] = useState(null); // null — загружается, [] — загружено (пусто)
+  const [error, setError] = useState('');
+  const [position, setPosition] = useState({ left: 340, top: 160 });
+  const dragRef = useRef(null);
+
+  const loadList = () => {
+    setError('');
+    setStored(null);
+    loadStoredFunctions()
+      .then((list) => setStored(list))
+      .catch((e) => {
+        setStored([]);
+        setError(`Не удалось загрузить список функций: ${e.message}`);
+      });
+  };
+
+  // Загрузка при первом открытии окна (через useEffect)
+  useEffect(() => {
+    loadList();
+    // eslint-disable-next-line
+  }, []);
+
+  const handleHeaderMouseDown = (e) => {
+    if (e.button !== 0) return;
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      origLeft: position.left,
+      origTop: position.top
+    };
+    const handleMove = (ev) => {
+      if (!dragRef.current) return;
+      setPosition({
+        left: dragRef.current.origLeft + (ev.clientX - dragRef.current.startX),
+        top: dragRef.current.origTop + (ev.clientY - dragRef.current.startY)
+      });
+    };
+    const handleUp = () => {
+      dragRef.current = null;
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+    };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+  };
+
+  return (
+    <div className="function-import-dialog" style={{ left: position.left, top: position.top }}>
+      <div
+        className="function-import-dialog-header"
+        onMouseDown={handleHeaderMouseDown}
+        title="Перетащите, чтобы переместить"
+      >
+        <span className="function-import-dialog-title">📂 Импорт функций</span>
+        <button className="function-import-dialog-close" onClick={onClose} title="Закрыть">✕</button>
+      </div>
+      <div className="function-import-dialog-body">
+        {error && <div className="function-import-error">{error}</div>}
+        {stored === null ? (
+          <div className="function-import-loading">Загрузка…</div>
+        ) : stored.length === 0 ? (
+          <div className="function-import-empty">
+            В хранилище <code>public/functions/</code> нет функций.
+            <br />
+            Скачайте функцию через «📥 В библиотеку», чтобы положить её туда.
+          </div>
+        ) : (
+          <div className="function-import-list">
+            {stored.map((func) => {
+              const isImported = existingNames.includes(func.name);
+              return (
+                <div key={func.name} className="function-import-item">
+                  <div className="function-import-item-info">
+                    <div className="function-import-item-name">⚙️ {func.name}</div>
+                    {func.description && (
+                      <div className="function-import-item-desc">{func.description}</div>
+                    )}
+                  </div>
+                  <div className="function-import-item-actions">
+                    {isImported ? (
+                      <span className="function-import-item-existing" title="Уже есть в форме">Импортировано</span>
+                    ) : (
+                      <button
+                        className="btn btn-sm btn-primary"
+                        onClick={() => onImport(func)}
+                        title="Импортировать в форму"
+                      >
+                        Импортировать
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      <div className="function-import-dialog-footer">
+        <button className="btn btn-secondary" onClick={() => loadList()}>🔄 Обновить</button>
+        <button className="btn btn-primary" onClick={onClose}>Закрыть</button>
+      </div>
+    </div>
+  );
+}
+
 function FunctionsTab() {
   const { state, dispatch } = useEditor();
   const { form } = state;
@@ -115,6 +246,8 @@ function FunctionsTab() {
   const [editingFunc, setEditingFunc] = useState(null);
   // id раскрытой функции (для показа описания и кода)
   const [expandedId, setExpandedId] = useState(null);
+  // Открыто ли окно импорта функций из хранилища
+  const [importVisible, setImportVisible] = useState(false);
 
   const functions = form?.functions || [];
 
@@ -156,6 +289,26 @@ function FunctionsTab() {
     dispatch({ type: 'COPY_FUNCTION', id: func.id });
   };
 
+  // Скачивание функции как JSON-файла для ручного помещения в public/functions/
+  const handleDownloadToStore = (func) => {
+    downloadFunctionToStore(func);
+  };
+
+  // Импорт функции из хранилища: создаёт независимую копию (новый id, суффикс при конфликте имён)
+  const handleImport = (storedFunc) => {
+    const existingNames = functions.map(fn => fn.name);
+    const name = resolveImportName(storedFunc.name || 'imported', existingNames);
+    dispatch({
+      type: 'ADD_FUNCTION',
+      func: {
+        id: generateId('fn'),
+        name,
+        description: storedFunc.description || '',
+        code: storedFunc.code || ''
+      }
+    });
+  };
+
   const toggleExpand = (id) => {
     setExpandedId(prev => (prev === id ? null : id));
   };
@@ -170,10 +323,15 @@ function FunctionsTab() {
         Определите свои функции. Они доступны из контекста формы и могут привязываться к событиям.
       </div>
 
-      {/* Кнопка добавления */}
-      <button className="btn btn-primary btn-block" onClick={handleAdd}>
-        ➕ Добавить функцию
-      </button>
+      {/* Кнопки добавления и импорта */}
+      <div className="functions-tab-actions">
+        <button className="btn btn-primary btn-block" onClick={handleAdd}>
+          ➕ Добавить функцию
+        </button>
+        <button className="btn btn-secondary btn-block" onClick={() => setImportVisible(true)}>
+          📂 Импорт
+        </button>
+      </div>
 
       {/* Список функций */}
       {functions.length === 0 && (
@@ -195,6 +353,13 @@ function FunctionsTab() {
                   <span className="function-item-name">⚙️ {func.name}</span>
                 </button>
                 <div className="function-item-actions">
+                  <button
+                    className="btn btn-sm"
+                    onClick={() => handleDownloadToStore(func)}
+                    title="Скачать функцию в библиотеку (public/functions/)"
+                  >
+                    <IconSvg icon={getIconById('download')} size={14} />
+                  </button>
                   <button
                     className="btn btn-sm"
                     onClick={() => handleEdit(func.id)}
@@ -240,6 +405,15 @@ function FunctionsTab() {
           onSave={handleSave}
           onClose={handleClose}
           onDelete={handleDelete}
+        />
+      )}
+
+      {/* Окно импорта функций из хранилища */}
+      {importVisible && (
+        <FunctionImportDialog
+          onClose={() => setImportVisible(false)}
+          onImport={handleImport}
+          existingNames={functions.map(fn => fn.name)}
         />
       )}
     </div>

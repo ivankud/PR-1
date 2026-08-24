@@ -1,0 +1,5 @@
+{
+  "name": "onLoadHandler",
+  "description": "Иллюстрация события onLoad: выполняется после загрузки контекста, добавляет метку в контекст",
+  "code": "console.log('Событие onLoad: контекст загружен');\ncontext.eventLog = (context.eventLog || '') + 'onLoad; ';\ncontext.onLoadMessage = 'Событие onLoad выполнено после загрузки контекста';\nreturn context;"
+}
