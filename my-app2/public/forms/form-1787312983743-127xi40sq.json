@@ -18,7 +18,26 @@
     "type": "loadContext",
     "params": {}
   },
-  "functions": [],
+  "functions": [
+    {
+      "id": "fn-1787563847474-uo353qynl",
+      "name": "onLoadHandler",
+      "description": "Иллюстрация события onLoad: выполняется после загрузки контекста, добавляет метку в контекст",
+      "code": "console.log('Событие onLoad: контекст загружен');\ncontext.eventLog = (context.eventLog || '') + 'onLoad; ';\ncontext.onLoadMessage = 'Событие onLoad выполнено после загрузки контекста';\nreturn context;"
+    },
+    {
+      "id": "fn-1787563848465-o3mu4ryhf",
+      "name": "onOpenHandler",
+      "description": "Иллюстрация события onOpen: выполняется при открытии формы, добавляет метку в контекст",
+      "code": "console.log('Событие onOpen: форма открыта');\ncontext.eventLog = (context.eventLog || '') + 'onOpen; ';\ncontext.onOpenMessage = 'Событие onOpen выполнено при открытии формы';\nalert('onOpenHandler');\nreturn context;"
+    },
+    {
+      "id": "fn-1787563849186-yenhhje6e",
+      "name": "onSubmitHandler",
+      "description": "Иллюстрация события onSubmit: выполняется при отправке формы, добавляет метку в контекст",
+      "code": "console.log('Событие onSubmit: форма отправлена');\ncontext.eventLog = (context.eventLog || '') + 'onSubmit; ';\ncontext.onSubmitMessage = 'Событие onSubmit выполнено при отправке формы';\nreturn context;"
+    }
+  ],
   "events": {},
   "children": [
     {
@@ -113,6 +132,29 @@
           },
           "customProperties": {},
           "text": "Кнопка2"
+        },
+        {
+          "id": "prim-1787563808332-77i54omwn",
+          "type": "button",
+          "name": "Кнопка",
+          "visible": true,
+          "width": 120,
+          "height": 40,
+          "widthUnit": "px",
+          "heightUnit": "px",
+          "style": {
+            "display": "inline-flex",
+            "alignItems": "center",
+            "justifyContent": "center",
+            "backgroundColor": "#007bff",
+            "color": "#ffffff",
+            "border": "none",
+            "borderRadius": "4px",
+            "fontSize": "14px",
+            "cursor": "pointer"
+          },
+          "customProperties": {},
+          "text": "Кнопка23"
         }
       ]
     }
