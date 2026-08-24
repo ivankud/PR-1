@@ -180,7 +180,8 @@ export function getPrimitiveTemplate(primitives, type) {
 export function createPrimitiveFromTemplate(template, id) {
   if (!template) return null;
   const defaults = template.defaults || {};
-  return {
+
+  const primitive = {
     id,
     type: template.type,
     name: template.name,
@@ -197,4 +198,20 @@ export function createPrimitiveFromTemplate(template, id) {
     children: template.isContainer ? [] : undefined,
     ...defaults
   };
+
+  // Инициализируем свойства примитива значениями по умолчанию из шаблона
+  // (например, текст кнопки/label, вариант select, подпись checkbox).
+  // Без этого {{text}} и т.п. резолвятся в пустую строку, и содержимое
+  // не отображается, пока пользователь не отредактирует свойство.
+  if (Array.isArray(template.properties)) {
+    for (const prop of template.properties) {
+      if (!prop || prop.default === undefined) continue;
+      // Не перезаписываем значения, уже установленные из defaults
+      if (primitive[prop.name] === undefined) {
+        primitive[prop.name] = prop.default;
+      }
+    }
+  }
+
+  return primitive;
 }
