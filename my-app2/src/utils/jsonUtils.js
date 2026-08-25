@@ -57,10 +57,9 @@ export async function loadJson(url) {
   return await response.json();
 }
 
-// Скачивание JSON как файла
-export function downloadJson(data, filename) {
-  const json = JSON.stringify(data, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+// Скачивание текста (или любого контента) как файла
+export function downloadTextFile(content, filename, type = 'text/plain') {
+  const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -69,6 +68,11 @@ export function downloadJson(data, filename) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// Скачивание JSON как файла
+export function downloadJson(data, filename) {
+  downloadTextFile(JSON.stringify(data, null, 2), filename, 'application/json');
 }
 
 // Получение значения по пути (например "user.name")

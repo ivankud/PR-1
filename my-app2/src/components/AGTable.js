@@ -436,15 +436,32 @@ function AGTable({ primitive, context, fns, onRowClicked, onCellButtonClick, onC
             : fnResult;
 
           // Обрабатываем результат функции
-          let rows = Array.isArray(result) ? result : null;
-          if (!rows && result && typeof result === 'object') {
-            rows = result.data || result.rows || result.items || result.records || result.content || null;
-            if (!rows && Array.isArray(result.result)) rows = result.result;
-            // Если функция вернула пагинированный ответ — определяем общее количество
-            const total = result?.total || result?.totalElements || result?.count || result?.totalCount;
-            if (serverPagination && total !== undefined) {
-              setTotalRecords(total);
+          if (serverPagination) {
+            console.warn('AGTable[function] страница', currentPage,
+              '→ результат:', Array.isArray(result) ? `массив(${result.length})` : typeof result,
+              '| total:', result?.total, '| totalElements:', result?.totalElements,
+              '| content:', Array.isArray(result) ? null : (result?.content || null)?.length,
+              '| text:', result && typeof result === 'object' ? (result.text || '') : '');
+          }
+          let rows = null;
+          if (apiDataPath && result && typeof result === 'object') {
+            // Если путь к данным задан — извлекаем строки по нему (как в API-источнике)
+            rows = getValueByPath(result, apiDataPath);
+          }
+          if (!rows) {
+            if (Array.isArray(result)) {
+              rows = result;
+            } else if (result && typeof result === 'object') {
+              rows = result.data || result.rows || result.items || result.records || result.content || null;
+              if (!rows && Array.isArray(result.result)) rows = result.result;
             }
+          }
+          // Общее количество записей (Spring Data: total / totalElements / page.totalElements)
+          const total = (result && result.total !== undefined && result.total !== null)
+            ? result.total
+            : (result?.totalElements ?? result?.count ?? result?.totalCount ?? result?.page?.totalElements);
+          if (serverPagination && total !== undefined && total !== null) {
+            setTotalRecords(Number(total) || 0);
           }
           setRowData(Array.isArray(rows) ? rows : []);
         } catch (e) {
@@ -511,8 +528,17 @@ function AGTable({ primitive, context, fns, onRowClicked, onCellButtonClick, onC
   };
 
   const handleNextPage = () => {
-    const maxPage = Math.max(1, Math.ceil(totalRecords / (pageSize || 1)));
-    setCurrentPage(prev => Math.min(maxPage, prev + 1));
+    console.warn('AGTable handleNextPage, currentPage:', currentPage,
+      'totalRecords:', totalRecords, 'totalPages:', totalPages, 'rowData:', rowData.length);
+    // Если известно общее количество записей — ограничиваем число страниц.
+    // Если totalRecords ещё не установлено (равно 0), листаем вперёд без ограничения,
+    // чтобы серверная пагинация не «застревала» на первой странице.
+    if (totalRecords > 0) {
+      const maxPage = Math.max(1, Math.ceil(totalRecords / (pageSize || 1)));
+      setCurrentPage(prev => Math.min(maxPage, prev + 1));
+    } else {
+      setCurrentPage(prev => prev + 1);
+    }
   };
 
   const handlePageSizeChange = (e) => {
@@ -656,6 +682,7 @@ function AGTable({ primitive, context, fns, onRowClicked, onCellButtonClick, onC
           {serverPagination && (
             <div className="agtable-pagination-nav">
               <button
+                type="button"
                 className="btn btn-sm"
                 onClick={handlePrevPage}
                 disabled={currentPage <= 1 || loading}
@@ -664,9 +691,16 @@ function AGTable({ primitive, context, fns, onRowClicked, onCellButtonClick, onC
               </button>
               <span className="agtable-page-number">{currentPage}</span>
               <button
+                type="button"
                 className="btn btn-sm"
                 onClick={handleNextPage}
-                disabled={(totalPages > 0 && currentPage >= totalPages) || loading}
+                disabled={
+                  loading ||
+                  (totalPages > 0 && currentPage >= totalPages) ||
+                  // Общее число записей неизвестно: считаем себя на последней
+                  // странице, если уже ушли вперёд и на текущей странице пусто
+                  (totalPages === 0 && currentPage > 1 && Array.isArray(rowData) && rowData.length === 0)
+                }
               >
                 Вперёд →
               </button>
