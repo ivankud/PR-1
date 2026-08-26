@@ -125,3 +125,23 @@ Basic Auth.
 | `hasCredentials()` | Проверка наличия |
 | `getBasicAuthHeader()` | Заголовок `Authorization: Basic ...` |
 | `withAuthHeaders(headers, enabled)` | Добавление заголовка (не перезаписывает существующий) |
+
+## baker.js
+
+Запекание формы в пару самодостаточных исходных файлов (утилита без JSX).
+
+| Функция | Назначение |
+|---------|-----------|
+| `bakeForm(form, options)` | Преобразует JSON-форму в `{ file1, file2, name, runtimeName }` |
+
+- **Файл №1** (`BakedForm.jsx`) — компонент формы, где всё выписано явно:
+  - пользовательские функции как `function name(context){ ... }` (код из `fn.code`);
+  - каждый примитив — конкретный JSX-элемент со всеми свойствами (без `map`);
+  - `INITIAL_CONTEXT` и `useEffect` загрузки контекста (inline/fetch) в этом же файле.
+- **Файл №2** (`bakedRuntime.js`) — рантайм-пакет: `AGTable`, `FilterSelect`, `IconSvg`,
+  хелперы `resolveTemplate`/`resolveCondition`/`resolveConditionalValue`, `withAuthHeaders`.
+  Для переноса в другой проект рядом копируются AGTable.js/FilterSelect.js/iconLibrary.js
+  и устанавливаются пакеты `ag-grid`/`json5`.
+- **Якоря** `{{path}}`: статика → литерал; одиночный контекст-якорь → `context.a.b` (живой);
+  многопроходные/в примитиве → `resolveTemplate(...)`. `{{.}}` → `JSON.stringify(context)`.
+- Точка вызова — кнопка «🥖 Запечь» в `ActionBar.js` (скачивает оба файла через `downloadTextFile`).

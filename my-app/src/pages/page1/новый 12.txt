@@ -1,0 +1,6 @@
+ALTER TABLE public.edip_parameter DROP COLUMN nrespond;
+
+ALTER TABLE public.edip_resourcetypeparameter ADD naccuracy numeric NULL;
+COMMENT ON COLUMN public.edip_resourcetypeparameter.naccuracy IS '[Точность]';
+
+ALTER TABLE public.edip_resourcetypeparameter RENAME COLUMN nstndardvalue TO nstandardvalue;

@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import BuilderPage from './pages/BuilderPage';
-import BakedForm from './pages/page1/Form_Итоговый_пример_c_элементами_для_реестра333333'
+import BakedForm from './pages/page1/Itogovyy_primer_c_elementami_dlya_reestra333333'
 import './App.css';
 
 function App() {

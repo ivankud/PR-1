@@ -1,7 +1,8 @@
 // Панель действий с примитивами
 import React from 'react';
 import { useEditor } from '../state/EditorContext';
-import { downloadJson, findPrimitive } from '../utils/jsonUtils';
+import { downloadJson, downloadTextFile, findPrimitive } from '../utils/jsonUtils';
+import { bakeForm } from '../utils/baker';
 
 function ActionBar({ onBack, onPreview }) {
   const { state, dispatch } = useEditor();
@@ -45,6 +46,19 @@ function ActionBar({ onBack, onPreview }) {
     const filename = `${form.id || 'form'}.json`;
     downloadJson(form, filename);
     dispatch({ type: 'SET_DIRTY', isDirty: false });
+  };
+
+  // Запекание формы в пару исходных файлов (BakedForm + рантайм)
+  const handleBake = () => {
+    if (!form) return;
+    try {
+      const baked = bakeForm(form, { primitives });
+      downloadTextFile(baked.file1, `${baked.name}.jsx`, 'text/javascript');
+      downloadTextFile(baked.file2, `${baked.runtimeName}.js`, 'text/javascript');
+    } catch (e) {
+      console.error('Ошибка запекания формы:', e);
+      alert('Не удалось «запечь» форму: ' + e.message);
+    }
   };
 
   const handleGroup = () => {
@@ -177,6 +191,14 @@ function ActionBar({ onBack, onPreview }) {
           title="Открыть форму как отдельную страницу"
         >
           👁 Предпросмотр
+        </button>
+        <button
+          className="btn btn-secondary"
+          onClick={handleBake}
+          disabled={!form}
+          title="Сгенерировать пару исходных файлов (компонент формы + рантайм)"
+        >
+          🥖 Запечь
         </button>
         <button
           className="btn btn-danger"
