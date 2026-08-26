@@ -9,6 +9,7 @@ import FormEditorRoute from './components/FormEditorRoute';
 import FormPreviewRoute from './components/FormPreviewRoute';
 import LoginPage from './components/LoginPage';
 import IconsPage from './components/IconsPage';
+import BakedForm from './newFolder/Itogovyy_primer_c_elementami_dlya_reestra2';
 
 // Общий макет с постоянным навигационным меню
 function AppLayout() {
@@ -46,6 +47,10 @@ function App() {
 
             {/* Все остальные маршруты → главная */}
             <Route path="*" element={<Navigate to="/" replace />} />
+
+            
+            <Route path="/backedform" element={<BakedForm />} />
+
           </Route>
         </Routes>
       </BrowserRouter>
