@@ -122,8 +122,20 @@ function primLiteral(prim) {
   return JSON.stringify(copy);
 }
 
+// «Системные» свойства примитива (из primLiteral + position). Одиночный якорь
+// на такое свойство ({{placeholder}}, {{name}}, {{inputType}}...) — это НЕ ссылка
+// на данные контекста, а подстановка значения самого примитива.
+const PRIM_SYS_PROPS = new Set([
+  'id','type','name','width','height','widthUnit','heightUnit','left','top','position',
+  'style','customProperties','visible','text','value','placeholder','label','defaultValue',
+  'inputType','readOnly','icon','iconSize','src','alt','checked','options','rows','cols',
+  'title','dataSource','functionName','apiUrl','apiMethod','apiHeaders','useAuth',
+  'serverPagination','apiDataPath','columnDefs','rowData','filterModel','pagination',
+  'paginationPageSize','sortable','filterable','resizable','selectable','autoHeight'
+]);
+
 // Превращает строку из JSON-формы в JS-выражение для вставки в JSX.
-// Возвращает ТЕКСТ кода (без обёрток {}) — напр. '"Кнопка"' | 'context.field1.value'
+// Возвращает ТЕКСТ кода (без обёрток {}) — напр. "Кнопка" | 'context.field1.value'
 function exprFor(str, prim) {
   if (typeof str !== 'string') return jsLiteral(str);
 
@@ -140,6 +152,14 @@ function exprFor(str, prim) {
       if (typeof v === 'string' && hasAnchor(v)) return exprFor(v, prim);
       return jsLiteral(v);
     }
+    // Псевдо-якорь на системное свойство примитива ({{placeholder}}, {{inputType}}...),
+    // которого нет в конкретном примитиве. В редакторе/рантайме resolveTemplate такое
+    // свойство, отсутствующее и в контексте, резолвится в ПУСТУЮ строку (''), а не в
+    // «живой» context.path. Чтобы запечённый код вёл себя так же — отдаём пустую строку.
+    if (firstKey && path.indexOf('.') === -1 && PRIM_SYS_PROPS.has(firstKey)) {
+      return '""';
+    }
+    // Иначе — одиночный контекст-якорь остаётся «живым»: context.path
     return ctxPathExpr(path);
   }
 
@@ -595,20 +615,27 @@ function buildFormFile(form, primitives, options) {
 // ----------------------------------------------------------------------------
 // Генератор Файла №2 — рантайм-пакет (AGTable, FilterSelect, хелперы, иконки)
 // ----------------------------------------------------------------------------
-function buildRuntimeFile(usedIcons) {
+// Пути импортов зависят от места сохранения запечённых файлов и задаются опциями
+// componentsDir / utilsDir (объяснение в bakeForm). По умолчанию считается, что
+// оба файла (BakedForm.jsx и bakedRuntime.js) лежат в дочерней папке src/
+// (напр. src/newFolder), поэтому общие каталоги проекта поднимаются на уровень выше.
+function buildRuntimeFile(usedIcons, componentsDir, utilsDir) {
+  const cBase = componentsDir || '../components';
+  const uBase = utilsDir || '../utils';
   return [
     '// ==========================================================================',
     '// Файл №2 — рантайм-пакет для запечённой формы (BakedForm).',
     '// Содержит AGTable, FilterSelect, resolve-хелперы, иконки и авторизацию.',
+    `// Пути импортов: components и utils резолвятся из "${cBase}" / "${uBase}".`,
     '// Для переноса в другой проект рядом скопируйте AGTable.js, FilterSelect.js,',
     '// filterUtils.js, iconLibrary.js, auth.js и установите пакеты ag-grid/json5.',
     '// ==========================================================================',
     `import React from 'react';`,
-    `import AGTable from '../components/AGTable';`,
-    `import FilterSelect from '../components/FilterSelect';`,
-    `import { resolveTemplate, resolveCondition, resolveConditionalValue } from './anchors';`,
-    `import { withAuthHeaders } from './auth';`,
-    `import { IconSvg, getIconById } from './iconLibrary';`,
+    `import AGTable from '${cBase}/AGTable';`,
+    `import FilterSelect from '${cBase}/FilterSelect';`,
+    `import { resolveTemplate, resolveCondition, resolveConditionalValue } from '${uBase}/anchors';`,
+    `import { withAuthHeaders } from '${uBase}/auth';`,
+    `import { IconSvg, getIconById } from '${uBase}/iconLibrary';`,
     `export { AGTable, FilterSelect, IconSvg, getIconById, resolveTemplate, resolveCondition, resolveConditionalValue, withAuthHeaders };`,
     ''
   ].join('\n');
@@ -632,6 +659,12 @@ function collectCssVars(children) {
 // ----------------------------------------------------------------------------
 export function bakeForm(form, options) {
   const prims = (options && options.primitives) || [];
+  // Каталоги, из которых запечённый рантайм импортирует компоненты и утилиты.
+  // По умолчанию запечённые файлы кладутся в дочернюю папку src/ (напр. src/newFolder),
+  // поэтому общие каталоги — на уровень выше: '../components' и '../utils'.
+  // При другом месте сохранения передайте options.componentsDir / options.utilsDir.
+  const componentsDir = (options && options.componentsDir) || '../components';
+  const utilsDir = (options && options.utilsDir) || '../utils';
 
   // Голова Файла №1 (шапка, функции, контекст, состояние)
   const head = buildFormFile(form, prims, options);
@@ -647,22 +680,28 @@ export function bakeForm(form, options) {
   const fx = [];
   fx.push('  // Загрузка контекста (inline / url) и события onOpen/onLoad');
   fx.push('  useEffect(() => {');
-  fx.push(`    const src = ${JSON.stringify(ctx.source)};`);
+  if (ctx.source === 'url') {
+    // url/source: подключаем fetch загрузку контекста
+    fx.push(`    const src = ${JSON.stringify(ctx.source)};`);
+  }
   fx.push('    let cancelled = false;');
   fx.push('    (async () => {');
   fx.push('      let data = INITIAL_CONTEXT;');
-  fx.push('      if (src === \'url\' && CONTEXT_URL) {');
-  fx.push('        setLoading(true); setError(null);');
-  fx.push('        try {');
-  fx.push('          const res = await fetch(CONTEXT_URL);');
-  fx.push('          if (!res.ok) throw new Error(\'HTTP \' + res.status);');
-  fx.push('          const json = await res.json();');
-  fx.push('          if (!cancelled) { data = json; setContext(json); }');
-  fx.push('        } catch (e) {');
-  fx.push('          if (!cancelled) setError(\'Ошибка загрузки контекста: \' + e.message);');
-  fx.push('        } finally { if (!cancelled) setLoading(false); }');
-  fx.push('      }');
-  fx.push('');
+  if (ctx.source === 'url') {
+    // Источник url: CONTEXT_URL объявлена в buildContextInit, поэтому обращение безопасно
+    fx.push('      if (src === \'url\' && CONTEXT_URL) {');
+    fx.push('        setLoading(true); setError(null);');
+    fx.push('        try {');
+    fx.push('          const res = await fetch(CONTEXT_URL);');
+    fx.push('          if (!res.ok) throw new Error(\'HTTP \' + res.status);');
+    fx.push('          const json = await res.json();');
+    fx.push('          if (!cancelled) { data = json; setContext(json); }');
+    fx.push('        } catch (e) {');
+    fx.push('          if (!cancelled) setError(\'Ошибка загрузки контекста: \' + e.message);');
+    fx.push('        } finally { if (!cancelled) setLoading(false); }');
+    fx.push('      }');
+    fx.push('');
+  }
   if (openFn) {
     fx.push(`      // onOpen`);
     fx.push(`      if (typeof fns[${JSON.stringify(openFn)}] === 'function') {`);
@@ -728,7 +767,11 @@ export function bakeForm(form, options) {
     .concat(jsx)
     .join('\n');
 
-  const file2 = buildRuntimeFile(Array.from((typeof USED_ICONS !== 'undefined' ? USED_ICONS : new Set())));
+  const file2 = buildRuntimeFile(
+    Array.from((typeof USED_ICONS !== 'undefined' ? USED_ICONS : new Set())),
+    componentsDir,
+    utilsDir
+  );
 
   return {
     file1,

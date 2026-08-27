@@ -70,22 +70,9 @@ export default function BakedForm() {
 
   // Загрузка контекста (inline / url) и события onOpen/onLoad
   useEffect(() => {
-    const src = "inline";
     let cancelled = false;
     (async () => {
       let data = INITIAL_CONTEXT;
-      if (src === 'url' && CONTEXT_URL) {
-        setLoading(true); setError(null);
-        try {
-          const res = await fetch(CONTEXT_URL);
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          const json = await res.json();
-          if (!cancelled) { data = json; setContext(json); }
-        } catch (e) {
-          if (!cancelled) setError('Ошибка загрузки контекста: ' + e.message);
-        } finally { if (!cancelled) setLoading(false); }
-      }
-
       // onOpen
       if (typeof fns["onOpenHandler"] === 'function') {
         const r = fns["onOpenHandler"](data);
@@ -248,7 +235,7 @@ export default function BakedForm() {
     data-primitive-name={"Многострочный текст"}
   >
       <textarea
-        placeholder={context.placeholder}
+        placeholder={""}
         name={"Многострочный текст"}
         style={{ width: '100%', height: '100%', boxSizing: 'border-box' }}
       >
