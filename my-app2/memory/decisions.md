@@ -116,3 +116,32 @@
 - **Контекст и функции живут там же, где и ключевая функция** (пп. 1–3 задачи): `INITIAL_CONTEXT`, функции и JSX — в одном файле
 - **Динамические якоря**: `{{path}}` остаются «живыми» — одиночный контекст-якорь раскрывается как `context.a.b`, сложные случаи уходят в `resolveTemplate`. Статика — литерале
 - **Рантайм отделён** (Файл №2): AGTable/FilterSelect/иконки/хелперы auth/resolve — переиспользуемы между несколькими запечёнными формами
+
+## 14. Генерация страниц в каталог src/baked/{n}/ + раздел «Мои формы»
+
+**Решение:** Генерация исходного кода страницы (React-компонент в компонентном стиле) выполняется утилитой `src/utils/pageGenerator.js` (`generatePageSource`) на базе `bakeForm`. Результат — каталог:
+
+```
+src/baked/
+├── imports.js          # агрегатор импортов: AGTable, FilterSelect, IconSvg, anchors, auth + theme.css
+├── theme.css           # общие CSS-классы страниц (.form-preview, .preview-form, .baked-page)
+├── pagesRegistry.js    # реестр страниц (webpack require.context, lazy import)
+└── {n}/
+    ├── index.jsx       # компонент страницы (default export) — ВСЯ логика и JSX
+    ├── page.js         # метаданные: { id, name, generatedAt } для списка
+    ├── imports.js      # единая точка импортов страницы: реэкспорт '../imports' + './index'
+    └── page.css        # CSS-классы страницы
+```
+
+Точки входа:
+- **ActionBar → «⚙️ Сгенерировать страницу»**: генерирует каталог и скачивает его zip-архивом (`zipUtils.createZip`, без зависимостей); архив распаковывается в `src/baked/`.
+- **Маршруты**: `/pages` (`GeneratedPagesList` — список + предпросмотр), `/pages/:pageFolder` (`BakedPageRoute` — просмотр страницы).
+- **Меню «🗂️ Мои формы»** (`AppNav`): исходные формы (`/forms/*.json`) + сгенерированные страницы (`src/baked`, через `listBakedPages`).
+- **`npm run verify:pages`** (`scripts/verify-pages.js`): проверка каталога страниц (обязательные файлы, компиляция JSX, резолвинг импортов, метаданные).
+
+**Причины / особенности:**
+- Страница зависит только от собственных файлов: шаблоны примитивов вшиваются в `primitive.template`, поэтому генерация работает без `state.primitives` (для тестов/Node)
+- Импорт рантайма в странице — `./imports` (файл лежит рядом) — короткий путь, не зависящий от номера каталога
+- Глобальные хелперы `getElementByName` / `fetchWithAuth` объявляются в странице как `/* global ... */` (регистрирует `imports.js` через `utils/functionRunner`)
+- Реестр использует `require.context` с `mode: 'lazy'`; в Jest (без webpack) `require.context` отсутствует — реестр возвращает пустой список
+- `npm run build` = `node scripts/build.js` (свежий процесс node для react-scripts: устраняет устаревший resolve-кэш при вызове через npx)

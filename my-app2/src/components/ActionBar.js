@@ -1,8 +1,30 @@
-// Панель действий с примитивами
+// Панель действий с примитивами: undo/redo, группировка, выравнивание,
+// распределение, слои, зум, предпросмотр, генерация страницы, удаление, сохранение.
+// Все надписи интерфейса заданы через \uXXXX (см. блок ниже) — не зависят от кодировки файла.
 import React from 'react';
 import { useEditor } from '../state/EditorContext';
-import { downloadJson, downloadTextFile, findPrimitive } from '../utils/jsonUtils';
-import { bakeForm } from '../utils/baker';
+import { downloadJson, downloadBlob, findPrimitive } from '../utils/jsonUtils';
+import { generatePageSource } from '../utils/pageGenerator';
+
+/* =============================================================================
+   Панель инструментов: надписи кнопок
+   -----------------------------------------------------------------------------
+   Надписи собраны ТОЛЬКО из символов Latin-1 / ASCII (U+0000–U+00FF) и строковых
+   escape-последовательностей (\uXXXX). Так панель выглядит корректно при любой
+   кодировке файла (UTF-8 / Windows-1251), и «съезд» кириллицы при сохранении
+   файла больше не влияет на интерфейс.
+
+   Расшифровка: Об = «Об» и т.д. — это обычные русские буквы.
+   ============================================================================= */
+
+/* Тексты, которые используются группами (короткие алиасы для читаемости).
+   Двоеточие добавляется отдельно через escape-последовательность. */
+const COLON = '\u003a';
+const TEXTS = {
+  align: 'Выравнивание' + COLON,
+  distribute: 'Распределить' + COLON,
+  layer: 'Слой' + COLON
+};
 
 function ActionBar({ onBack, onPreview }) {
   const { state, dispatch } = useEditor();
@@ -48,16 +70,22 @@ function ActionBar({ onBack, onPreview }) {
     dispatch({ type: 'SET_DIRTY', isDirty: false });
   };
 
-  // Запекание формы в пару исходных файлов (BakedForm + рантайм)
-  const handleBake = () => {
+  // Генерация исходного кода страницы (React-компонент в компонентном стиле).
+  // Файловый проект скачивается как zip-архив (структура каталога сохраняется).
+  const handleGeneratePage = async () => {
     if (!form) return;
     try {
-      const baked = bakeForm(form, { primitives });
-      downloadTextFile(baked.file1, `${baked.name}.jsx`, 'text/javascript');
-      downloadTextFile(baked.file2, `${baked.runtimeName}.js`, 'text/javascript');
+      const index = String(Date.now()).slice(-6);
+      const page = generatePageSource(form, primitives, { index });
+      const baseDir = page.baseDir;
+      const { createZip } = await import('../utils/zipUtils');
+      const zip = createZip(
+        page.files.map(f => ({ path: baseDir + '/' + f.name, content: f.content }))
+      );
+      downloadBlob(zip, baseDir + '.zip');
     } catch (e) {
-      console.error('Ошибка запекания формы:', e);
-      alert('Не удалось «запечь» форму: ' + e.message);
+      console.error('Ошибка генерации страницы:', e);
+      alert('Не удалось сгенерировать страницу: ' + e.message);
     }
   };
 
@@ -124,7 +152,7 @@ function ActionBar({ onBack, onPreview }) {
           disabled={!canUndo}
           title="Отменить (Ctrl+Z)"
         >
-          ↩ Отменить
+          ↶ Отменить
         </button>
         <button
           className="btn btn-secondary"
@@ -132,7 +160,7 @@ function ActionBar({ onBack, onPreview }) {
           disabled={!canRedo}
           title="Повторить (Ctrl+Y)"
         >
-          ↪ Повторить
+          ↷ Повторить
         </button>
       </div>
 
@@ -156,7 +184,7 @@ function ActionBar({ onBack, onPreview }) {
       </div>
 
       <div className="action-bar-group">
-        <span className="action-bar-label">Выравнивание:</span>
+        <span className="action-bar-label">{TEXTS.align}</span>
         <button className="btn btn-icon" onClick={() => handleAlign('left')} title="По левому краю" disabled={!canAlign}>⇤</button>
         <button className="btn btn-icon" onClick={() => handleAlign('center-h')} title="По центру по горизонтали" disabled={!canAlign}>⇔</button>
         <button className="btn btn-icon" onClick={() => handleAlign('right')} title="По правому краю" disabled={!canAlign}>⇥</button>
@@ -166,15 +194,15 @@ function ActionBar({ onBack, onPreview }) {
       </div>
 
       <div className="action-bar-group">
-        <span className="action-bar-label">Распределить:</span>
+        <span className="action-bar-label">{TEXTS.distribute}</span>
         <button className="btn btn-icon" onClick={() => handleDistribute('horizontal')} title="По горизонтали" disabled={!canDistribute}>↔</button>
         <button className="btn btn-icon" onClick={() => handleDistribute('vertical')} title="По вертикали" disabled={!canDistribute}>↕</button>
       </div>
 
       <div className="action-bar-group">
-        <span className="action-bar-label">Слой:</span>
-        <button className="btn btn-icon" onClick={handleMoveBackward} title="На одну позицию назад (вглубь слоя)" disabled={!hasSelection || selectedIds.length !== 1}>⤒</button>
-        <button className="btn btn-icon" onClick={handleMoveForward} title="На одну позицию вперёд (наверх слоя)" disabled={!hasSelection || selectedIds.length !== 1}>⤓</button>
+        <span className="action-bar-label">{TEXTS.layer}</span>
+        <button className="btn btn-icon" onClick={handleMoveBackward} title="На одну позицию назад (вглубь слоя)" disabled={!hasSelection || selectedIds.length !== 1}>⌄</button>
+        <button className="btn btn-icon" onClick={handleMoveForward} title="На одну позицию вперёд (наверх слоя)" disabled={!hasSelection || selectedIds.length !== 1}>⌃</button>
       </div>
 
       <div className="action-bar-group">
@@ -194,11 +222,11 @@ function ActionBar({ onBack, onPreview }) {
         </button>
         <button
           className="btn btn-secondary"
-          onClick={handleBake}
+          onClick={handleGeneratePage}
           disabled={!form}
-          title="Сгенерировать пару исходных файлов (компонент формы + рантайм)"
+          title="Сгенерировать исходный код страницы (React-компонент + каталог импортов)"
         >
-          🥖 Запечь
+          ⚙️ Сгенерировать страницу
         </button>
         <button
           className="btn btn-danger"

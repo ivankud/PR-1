@@ -2532,3 +2532,47 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
+/* ==========================================================================
+   Список сгенерированных страниц и просмотр страницы (src/baked/{n}/)
+   ========================================================================== */
+
+.pages-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.baked-page-route,
+.pages-preview {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.baked-page-container {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.baked-page-folder {
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  color: #666;
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.nav-dropdown-header-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nav-dropdown-header-link:hover {
+  text-decoration: underline;
+}

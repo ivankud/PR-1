@@ -1,11 +1,21 @@
 // Постоянное навигационное меню приложения
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useEditor } from '../state/EditorContext';
 import { loadFormsWithData, normalizeFormId } from '../utils/formLoader';
+import { listBakedPages } from '../baked/pagesRegistry';
 
 function AppNav() {
   const [forms, setForms] = useState([]);
+  // Сгенерированные страницы (src/baked) — синхронный реестр из каталога
+  const [bakedPages] = useState(() => {
+    try {
+      return listBakedPages();
+    } catch (e) {
+      console.warn('Не удалось получить список сгенерированных страниц:', e.message);
+      return [];
+    }
+  });
   const [expanded, setExpanded] = useState(false);
   const { loadForm } = useEditor();
   const navigate = useNavigate();
@@ -65,20 +75,21 @@ function AppNav() {
           ✏️ Редактор форм
         </NavLink>
 
+        {/* Раздел «Мои формы»: исходные формы + сгенерированные страницы */}
         <div className="nav-dropdown" ref={dropdownRef}>
           <button
             className="nav-link nav-dropdown-toggle"
             onClick={() => setExpanded(!expanded)}
-            title="Открыть спроектированные веб-формы"
+            title="Мои формы: исходные формы и сгенерированные страницы"
           >
-            🗂️ Веб-формы
+            🗂️ Мои формы
             <span className="nav-dropdown-caret">▾</span>
           </button>
 
           {expanded && (
             <div className="nav-dropdown-menu">
               <div className="nav-dropdown-header">
-                Спроектированные веб-формы
+                Исходные формы
               </div>
               <div className="nav-dropdown-list">
                 {forms.length === 0 && (
@@ -104,6 +115,35 @@ function AppNav() {
                       >
                         ✏️
                       </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Сгенерированные страницы (src/baked/{n}/) */}
+              <div className="nav-dropdown-header">
+                <Link to="/pages" className="nav-dropdown-header-link" onClick={() => setExpanded(false)}>
+                  Сгенерированные страницы →
+                </Link>
+              </div>
+              <div className="nav-dropdown-list">
+                {bakedPages.length === 0 && (
+                  <div className="nav-dropdown-empty">Нет сгенерированных страниц</div>
+                )}
+                {bakedPages.map(page => (
+                  <div key={page.folder} className="nav-dropdown-item">
+                    <span className="nav-dropdown-name" title={`src/baked/${page.folder}/`}>
+                      📦 {page.name}
+                    </span>
+                    <div className="nav-dropdown-actions">
+                      <Link
+                        to={`/pages/${encodeURIComponent(page.folder)}`}
+                        className="btn btn-sm"
+                        onClick={() => setExpanded(false)}
+                        title={`Открыть сгенерированную страницу «${page.name}»`}
+                      >
+                        Открыть
+                      </Link>
                     </div>
                   </div>
                 ))}

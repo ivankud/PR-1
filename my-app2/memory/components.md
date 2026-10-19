@@ -3,12 +3,20 @@
 ## Корневые компоненты
 
 ### App.js
-- Роутинг: `/` (HomePage), `/editor`, `/editor/:formId`, `/forms/:formId`, `/login`
+- Роутинг: `/` (HomePage), `/editor`, `/editor/:formId`, `/forms/:formId`, `/pages`, `/pages/:pageFolder`, `/login`, `/icons`
 - Обёрнут в `EditorProvider`
 - `AppLayout` — общий макет с постоянным `AppNav`
 
 ### AppNav.js
-- Постоянное навигационное меню
+- Постоянное навигационное меню; раздел «🗂️ Мои формы»: исходные формы (`/forms/*.json`)
+  и сгенерированные страницы (`src/baked`, `listBakedPages()`), ссылка на `/pages`
+
+### GeneratedPagesList.js (маршрут `/pages`)
+- Список сгенерированных страниц (`src/baked/{n}/`): имя, каталог, дата генерации
+- Кнопки «Открыть» (маршрут `/pages/{n}`) и «👁 Предпросмотр» (рендер в списке)
+
+### BakedPageRoute.js (маршрут `/pages/:pageFolder`)
+- Ленивая загрузка компонента страницы через `loadBakedPage` и его рендер
 
 ### HomePage.js
 - Список форм (главная страница)

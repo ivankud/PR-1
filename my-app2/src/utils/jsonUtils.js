@@ -70,6 +70,21 @@ export function downloadTextFile(content, filename, type = 'text/plain') {
   URL.revokeObjectURL(url);
 }
 
+// Скачивание бинарного содержимого (Blob / ArrayBuffer) как файла
+export function downloadBlob(content, filename) {
+  const blob = content instanceof Blob
+    ? content
+    : new Blob([content], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 // Скачивание JSON как файла
 export function downloadJson(data, filename) {
   downloadTextFile(JSON.stringify(data, null, 2), filename, 'application/json');

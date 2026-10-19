@@ -18,6 +18,10 @@
 //
 // Генерация ничем не обязана редактору: bakeForm работает с чистыми данными
 // формы и шаблоном примитива и возвращает текст двух файлов.
+//
+// Дополнительно bakeForm строит «страницу» для каталога сгенерированных
+// страниц (src/baked/{n}/): тот же компонент с импортом './imports'
+// (см. pageFile/pageMeta/runtimeFile и utils/pageGenerator.js).
 // ============================================================================
 
 // ----------------------------------------------------------------------------
@@ -134,8 +138,25 @@ const PRIM_SYS_PROPS = new Set([
   'paginationPageSize','sortable','filterable','resizable','selectable','autoHeight'
 ]);
 
+// Значение свойства примитива с учётом умолчаний шаблона (template.defaults / properties)
+function resolveDefaultValue(name, prim) {
+  if (!prim) return undefined;
+  if (prim[name] !== undefined) return prim[name];
+  const tpl = prim.template;
+  if (tpl) {
+    if (tpl.defaults && tpl.defaults[name] !== undefined) return tpl.defaults[name];
+    const props = Array.isArray(tpl.properties) ? tpl.properties : [];
+    const meta = props.find(p => p && p.name === name);
+    if (meta && meta.default !== undefined) return meta.default;
+  }
+  if (name === 'readOnly') return false;
+  return undefined;
+}
+
 // Превращает строку из JSON-формы в JS-выражение для вставки в JSX.
 // Возвращает ТЕКСТ кода (без обёрток {}) — напр. "Кнопка" | 'context.field1.value'
+// Учитывается шаблон примитива (prim.template): атрибуты шаблона берут своё
+// значение из СВОЙСТВА примитива, иначе — как context-якорь.
 function exprFor(str, prim) {
   if (typeof str !== 'string') return jsLiteral(str);
 
@@ -146,11 +167,11 @@ function exprFor(str, prim) {
     if (!path || path === '.') return 'JSON.stringify(context)';
     const firstKey = path.split('.')[0];
     // Если это свойство примитива ({{text}}, {{value}}, {{inputType}}...) —
-    // разворачиваем фактическое значение примитива
-    if (prim && prim[firstKey] !== undefined) {
-      const v = prim[firstKey];
-      if (typeof v === 'string' && hasAnchor(v)) return exprFor(v, prim);
-      return jsLiteral(v);
+    // разворачиваем фактическое значение примитива (с умолчаниями шаблона)
+    const own = resolveDefaultValue(firstKey, prim);
+    if (own !== undefined) {
+      if (typeof own === 'string' && hasAnchor(own)) return exprFor(own, prim);
+      return jsLiteral(own);
     }
     // Псевдо-якорь на системное свойство примитива ({{placeholder}}, {{inputType}}...),
     // которого нет в конкретном примитиве. В редакторе/рантайме resolveTemplate такое
@@ -306,8 +327,17 @@ ${depthTxt}}}`);
 // Возвращает JSX-код примитива целиком с обёрткой <div ...>.
 // Идеология: без map — каждый примитив и его свойства выписаны явно.
 
-function getTemplate(primitives, type) {
+function getTemplate(primitives, prim) {
   if (!primitives) return null;
+  // templates — Map (type → шаблон) или массив шаблонов
+  if (primitives instanceof Map) {
+    const type = typeof prim === 'string' ? prim : (prim && prim.type);
+    if (type && primitives.has(type)) return primitives.get(type);
+    if (prim && prim.template && prim.template.type) return prim.template;
+    return null;
+  }
+  const type = typeof prim === 'string' ? prim : (prim && prim.type);
+  if (!Array.isArray(primitives)) return null;
   return primitives.find(p => p && p.type === type) || null;
 }
 
@@ -331,11 +361,11 @@ function buildStyleBlock(prim) {
 }
 
 // Визуализация примитива целиком (обёртка + внутренность)
-function renderPrimitive(prim, primitives, depth) {
+function renderPrimitive(prim, templates, depth) {
   const st = buildStyleBlock(prim);
   const pad = ind(depth);
   const pad1 = ind(depth + 1);
-  const inner = buildInnerElement(prim, primitives, depth + 1);
+  const inner = buildInnerElement(prim, templates, depth + 1);
   const cssVars = st.cssVars.concat(inner.cssVars || []);
 
   return {
@@ -345,8 +375,16 @@ function renderPrimitive(prim, primitives, depth) {
 }
 
 // Построение содержимого примитива: внутренний элемент + его свойства
-function buildInnerElement(prim, primitives, depth) {
-  const template = getTemplate(primitives, prim.type);
+function buildInnerElement(prim, templates, depth) {
+  // templates — { templates: Map(type → шаблон), children }
+  const registry = templates && templates.templates ? templates.templates : templates;
+  let template = getTemplate(registry, prim);
+  // Шаблон отсутствует (например, генератор вызван без state.primitives):
+  // берём копию, вшитую в примитив при генерации (self-contained страница)
+  if (!template && prim.template && prim.template.render) template = prim.template;
+  // Резерв: неизвестный тип рендерится обычным контейнером с детьми
+  if (!template) template = { type: prim.type, render: { tag: 'div', attributes: {} } };
+  if (prim.type === 'agtable') template = { ...template, type: 'agtable' };
   const render = template && template.render ? template.render : {};
   const tag = render.tag || 'div';
   const pad1 = ind(depth + 1);
@@ -413,9 +451,13 @@ function buildInnerElement(prim, primitives, depth) {
   }
 
   // ===== Текст =====
+  // Значение текста: из шаблона (render.text) или из свойства примитива (text/label/value)
   const textLine = [];
-  if (render.text !== undefined) {
-    textLine.push(`{${valueExpr(render.text, prim)}}`);
+  const textTpl = render.text !== undefined
+    ? render.text
+    : (prim.text !== undefined ? '{{text}}' : (prim.label !== undefined ? '{{label}}' : undefined));
+  if (textTpl !== undefined) {
+    textLine.push(`{${valueExpr(textTpl, prim)}}`);
   }
 
   const VOID = ['input', 'img', 'br', 'hr', 'meta', 'link', 'source', 'col', 'area', 'base', 'embed'];
@@ -473,7 +515,7 @@ function buildInnerElement(prim, primitives, depth) {
   // ===== Вложенные примитивы-дети (контейнеры) =====
   if (prim.children && prim.children.length > 0) {
     for (const ch of prim.children) {
-      const rc = renderPrimitive(ch, primitives, depth);
+      const rc = renderPrimitive(ch, templates, depth);
       content.push(rc.code);
       cssVars.push(...rc.cssVars);
     }
@@ -576,7 +618,7 @@ function buildContextInit(form) {
 // ----------------------------------------------------------------------------
 // Генератор Файла №1 — компонент формы BakedForm (Правило 1, 2, 3)
 // ----------------------------------------------------------------------------
-function buildFormFile(form, primitives, options) {
+function buildFormFile(form, templates, options) {
   const funcs = buildFunctionsBlock(form);
   const ctx = buildContextInit(form);
 
@@ -587,13 +629,15 @@ function buildFormFile(form, primitives, options) {
   L.push('// Для запуска нужен Файл №2 (bakedRuntime) — импорт ниже.');
   L.push('// ===========================================================================');
   L.push(`import React, { useState, useEffect } from 'react';`);
-  L.push(`import {`);
-  L.push(`  AGTable,`);
-  L.push(`  IconSvg,`);
-  L.push(`  resolveTemplate,`);
-  L.push(`  resolveCondition,`);
-  L.push(`  resolveConditionalValue`);
-  L.push(`} from './bakedRuntime';`);
+  // Компактная форма импорта: страница (трёхфайловый режим) — однострочная,
+  // путь заменяется в bakeForm (patchRuntimeImport).
+  L.push(`import { AGTable, IconSvg, resolveTemplate, resolveCondition, resolveConditionalValue } from './bakedRuntime';`);
+  L.push('');
+  // Глобальные хелперы пользовательских функций формы: window.getElementByName
+  // и window.fetchWithAuth (регистрируются utils/functionRunner.js при импорте
+  // страницы). Объявляем их как глобальные, иначе ESLint выдаёт no-undef.
+  L.push('/* global getElementByName, fetchWithAuth */');
+  L.push('/* eslint-disable no-unused-vars */');
   L.push('');
   L.push(funcs.code);
   L.push('');
@@ -655,16 +699,26 @@ function collectCssVars(children) {
 }
 
 // ----------------------------------------------------------------------------
-// Точка входа: bakeForm(form, options) → { file1, file2, name }
+// Точка входа: bakeForm(form, options) → { file1, file2, name, pageFile, ... }
+// ----------------------------------------------------------------------------
+// options.primitives  — шаблоны примитивов (state.primitives); иначе берутся
+//                       form.primitives / primitive.template (self-contained)
+// options.pageIndex   — номер каталога страницы (src/baked/{n})
+// Возвращает:
+//   file1/file2 — двухфайловый режим (компонент + рантайм, импорт './bakedRuntime')
+//   pageFile    — компонент страницы (импорт './imports'), pageMeta, runtimeFile,
+//                 runtimeDir ('./baked') — трёхфайловый режим (см. pageGenerator.js)
 // ----------------------------------------------------------------------------
 export function bakeForm(form, options) {
-  const prims = (options && options.primitives) || [];
+  const prims = getTemplatesForBake(form, options);
   // Каталоги, из которых запечённый рантайм импортирует компоненты и утилиты.
-  // По умолчанию запечённые файлы кладутся в дочернюю папку src/ (напр. src/newFolder),
-  // поэтому общие каталоги — на уровень выше: '../components' и '../utils'.
+  // Трёхфайловый режим: каталог сгенерированных страниц (src/baked/{n}) импортирует
+  // общие каталоги на два уровня выше — '../../components' и '../../utils'.
+  // Двухфайловый режим (прежний формат): запечённые файлы кладутся в дочернюю папку
+  // src/ (напр. src/newFolder) — '../components' и '../utils'.
   // При другом месте сохранения передайте options.componentsDir / options.utilsDir.
-  const componentsDir = (options && options.componentsDir) || '../components';
-  const utilsDir = (options && options.utilsDir) || '../utils';
+  const componentsDir = (options && options.componentsDir) || '../../components';
+  const utilsDir = (options && options.utilsDir) || '../../utils';
 
   // Голова Файла №1 (шапка, функции, контекст, состояние)
   const head = buildFormFile(form, prims, options);
@@ -760,23 +814,142 @@ export function bakeForm(form, options) {
   jsx.push('}');
   jsx.push('');
 
-  // Склейка Файла №1
+  // Общие фрагменты (используются и для пары файлов, и для «страницы»)
+  const name = safeIdent(form.name || form.id || 'form', 'form');
+  const runtimeName = 'bakedRuntime';
+  // Каталог страницы — src/baked (страницы нумеруются подкаталогами n/)
+  // и путь импорта модуля импортов страницы (./imports — файл рядом с компонентом)
+  const runtimeImport = buildRuntimeImport();
+  const runtimeDir = PAGE_IMPORT_PREFIX;
+  const iconNames = Array.from((typeof USED_ICONS !== 'undefined' ? USED_ICONS : new Set()));
+
+  // Склейка Файла №1 (двухфайловый режим: импорт из './bakedRuntime')
   const file1 = head
     .concat(fx)
     .concat(cssVars.length ? ['', ...cssVars.map(v => '  ' + v)] : [])
     .concat(jsx)
     .join('\n');
 
-  const file2 = buildRuntimeFile(
-    Array.from((typeof USED_ICONS !== 'undefined' ? USED_ICONS : new Set())),
-    componentsDir,
-    utilsDir
-  );
+  const file2 = buildRuntimeFile(iconNames, componentsDir, utilsDir);
+
+  // Страница (трёхфайловый режим): те же части, но импорт идёт из модуля
+  // импортов страницы (src/baked/{n}/imports.js).
+  const pageFile = patchRuntimeImport(file1, runtimeImport);
+  // Модуль импортов страницы: реэкспорт общего рантайма (src/baked/imports.js)
+  const pageRuntime = `export {\n  AGTable,\n  FilterSelect,\n  IconSvg,\n  getIconById,\n  resolveTemplate,\n  resolveCondition,\n  resolveConditionalValue,\n  withAuthHeaders\n} from '../imports';\n\nexport { default } from './index';\n`;
 
   return {
+    // Двухфайловый режим (прежний формат)
     file1,
     file2,
-    name: safeIdent(form.name || form.id || 'form', 'form'),
-    runtimeName: 'bakedRuntime'
+    name,
+    runtimeName,
+    // Трёхфайловый режим — «страница» в каталоге сгенерированных страниц:
+    //   ../../baked/{n}/{name}.jsx      — компонент страницы
+    //   ../../baked/{n}/page.js        — метаданные страницы (для списка страниц)
+    //   src/baked/{n}/imports.js — модуль импортов (рантайм + иконки + стили)
+    pageFile,
+    pageMeta: buildPageMetaFile(form, name),
+    runtimeFile: pageRuntime,
+    runtimeDir,
+    runtimeImport
+  };
+}
+
+// Каталог сгенерированных страниц (относительно корня src).
+// Префикс используется для страниц, экспортируемых в дерево проекта.
+export const PAGE_IMPORT_PREFIX = './baked';
+
+// ----------------------------------------------------------------------------
+// Трёхфайловый режим «страница + импорты» (дерево проекта, список страниц)
+// ----------------------------------------------------------------------------
+// Каждая сгенерированная страница — каталог src/baked/{n}/ с файлами:
+//   index.jsx  — компонент страницы (default export, импорт './imports')
+//   page.js    — метаданные (id, name, generatedAt)
+//   imports.js — единая точка импортов (рантайм + стили)
+//   page.css   — CSS-классы страницы
+// Реестр страниц — src/baked/pagesRegistry.js (webpack require.context).
+
+// Путь импорта модуля импортов страницы: './imports' — файл лежит рядом
+// с компонентом страницы (src/baked/{n}/imports.js), поэтому путь короткий
+// и не зависит от номера каталога.
+function buildRuntimeImport() {
+  return './imports';
+}
+
+// Замена строки импорта './bakedRuntime' (в т.ч. внутри многострочной формы)
+// на путь модуля импортов страницы
+function patchRuntimeImport(code, runtimeImport) {
+  return code.replace(
+    /import\s*\{([^}]*)\}\s*from\s*'\.\/bakedRuntime';/g,
+    (m, names) => `import {${names.replace(/\s+/g, ' ')}} from '${runtimeImport}';`
+  );
+}
+
+// Метаданные страницы для списка сгенерированных страниц (вкладка «Мои формы»)
+function buildPageMetaFile(form, name) {
+  const meta = {
+    id: (form && form.id) || '',
+    name: (form && form.name) || name,
+    generatedAt: new Date().toISOString()
+  };
+  return `const pageMeta = ${JSON.stringify(meta, null, 2)};\n\nexport default pageMeta;\n`;
+}
+
+// ----------------------------------------------------------------------------
+// Шаблоны примитивов для генерации
+// ----------------------------------------------------------------------------
+// Шаблон берётся в таком порядке:
+//   1) options.primitives — шаблоны из редактора (useEditor().state.primitives);
+//   2) form.primitives      — шаблоны, вшитые в JSON при сохранении страницы;
+//   3) primitive.template   — шаблон, вшитый в сам примитив.
+// Последние два варианта дают самодостаточную страницу (её исходник зависит
+// только от собственных данных формы).
+function getTemplatesForBake(form, options) {
+  const provided = (options && options.primitives) || [];
+  const registry = new Map();
+  const add = (t) => {
+    if (t && t.type && !registry.has(t.type)) registry.set(t.type, t);
+  };
+  for (const t of provided) add(t);
+  for (const t of (form && form.primitives) || []) add(t);
+
+  // Все используемые типы + шаблоны, уже вшитые в примитивы
+  const embedded = new Map();
+  const types = new Set();
+  const walk = (list) => {
+    for (const p of list || []) {
+      if (p && p.type) {
+        types.add(p.type);
+        if (p.template && p.template.type && !embedded.has(p.type)) {
+          embedded.set(p.type, p.template);
+        }
+      }
+      walk(p && p.children);
+    }
+  };
+  walk(form && form.children);
+  if (form && form.type === 'agtable') types.add('agtable');
+
+  for (const t of embedded.values()) add(t);
+  for (const type of types) {
+    // Резерв: неизвестный тип рендерится контейнером с детьми
+    if (!registry.has(type)) add({ type, render: { tag: 'div', attributes: {} } });
+  }
+
+  const embed = (p) => {
+    if (!p) return p;
+    const copy = { ...p };
+    if (copy.template === undefined) {
+      const t = registry.get(copy.type);
+      if (t) copy.template = t;
+    }
+    if (Array.isArray(copy.children)) copy.children = copy.children.map(embed);
+    return copy;
+  };
+
+  return {
+    templates: registry,
+    children: (form && form.children ? form.children : []).map(embed)
   };
 }

@@ -15,19 +15,34 @@ export async function loadFormList() {
   }
 }
 
-// Нормализация ID формы (убираем .json и декодируем URL)
+// Нормализация ID формы: убираем .json, декодируем URL (устойчиво к «двойному»
+// кодированию кириллицы: сначала убираем .json, затем декодируем)
 export function normalizeFormId(id) {
   if (!id) return '';
-  let result = String(id);
-  if (result.endsWith('.json')) {
-    result = result.slice(0, -5);
-  }
-  try {
-    result = decodeURIComponent(result);
-  } catch (e) {
-    // ignore
+  let result = String(id).trim();
+  for (let i = 0; i < 3; i++) {
+    if (result.endsWith('.json')) {
+      result = result.slice(0, -5);
+    }
+    try {
+      const decoded = decodeURIComponent(result);
+      if (decoded === result) break;
+      result = decoded;
+    } catch (e) {
+      break;
+    }
   }
   return result;
+}
+
+// Безопасное имя файла формы (имя формы → имя JSON-файла в public/forms/)
+export function safeFormFileName(name, fallback = 'form') {
+  const base = String(name || '')
+    .replace(/[\\/:*?"<>|]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80);
+  return base || fallback;
 }
 
 // Загрузка формы по ID (file name без .json)

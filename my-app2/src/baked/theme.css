@@ -1,0 +1,62 @@
+/* ==========================================================================
+   src/baked/theme.css — общая тема для сгенерированных страниц.
+   Подключается каждым модулем импортов страницы (./page.css + ../theme.css).
+   Классы страниц сгенерированных форм регистрируются здесь один раз.
+   ========================================================================== */
+
+/* Класс сгенерированной страницы */
+.baked-page {
+  padding: 16px;
+  font-family: inherit;
+  color: #1a1a2e;
+}
+
+/* Контейнер формы (как .form-preview в редакторе) */
+.form-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.form-preview .preview-error {
+  color: #dc3545;
+  padding: 8px 12px;
+  background: #fff5f5;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+
+.form-preview .preview-loading {
+  color: #666;
+  padding: 8px 12px;
+}
+
+/* Форма, собранная из примитивов */
+.preview-form {
+  position: relative;
+  overflow: visible;
+}
+
+.preview-form button {
+  font-family: inherit;
+}
+
+.preview-form input,
+.preview-form textarea,
+.preview-form select {
+  font-family: inherit;
+  outline: none;
+}
+
+.preview-form input:focus,
+.preview-form textarea:focus,
+.preview-form select:focus {
+  border-color: #007bff;
+}
+
+/* Иконка внутри кнопки */
+.button-icon {
+  vertical-align: middle;
+  margin-right: 6px;
+}

@@ -9,7 +9,8 @@ import FormEditorRoute from './components/FormEditorRoute';
 import FormPreviewRoute from './components/FormPreviewRoute';
 import LoginPage from './components/LoginPage';
 import IconsPage from './components/IconsPage';
-import BakedForm from './newFolder/Itogovyy_primer_c_elementami_dlya_reestra2';
+import GeneratedPagesList from './components/GeneratedPagesList';
+import BakedPageRoute from './components/BakedPageRoute';
 
 // Общий макет с постоянным навигационным меню
 function AppLayout() {
@@ -39,6 +40,10 @@ function App() {
             {/* Готовые спроектированные веб-формы */}
             <Route path="/forms/:formId" element={<FormPreviewRoute />} />
 
+            {/* Сгенерированные страницы: список + просмотр */}
+            <Route path="/pages" element={<GeneratedPagesList />} />
+            <Route path="/pages/:pageFolder" element={<BakedPageRoute />} />
+
             {/* Страница авторизации — сохранение логина/пароля для API */}
             <Route path="/login" element={<LoginPage />} />
 
@@ -47,9 +52,6 @@ function App() {
 
             {/* Все остальные маршруты → главная */}
             <Route path="*" element={<Navigate to="/" replace />} />
-
-            
-            <Route path="/backedform" element={<BakedForm />} />
 
           </Route>
         </Routes>

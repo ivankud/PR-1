@@ -13,6 +13,7 @@
 | `flattenTree(node)` | Плоский список всех примитивов |
 | `loadJson(url)` | Загрузка JSON через fetch |
 | `downloadJson(data, filename)` | Скачивание JSON как файла |
+| `downloadBlob(content, filename)` | Скачивание Blob / бинарного содержимого (zip-архивы) |
 | `getValueByPath(obj, path)` | Получение значения по пути (`user.name`) |
 | `setValueByPath(obj, path, value)` | Установка значения по пути |
 | `cssObjectToString(cssObj)` | CSS объект → CSS строка (camelCase → kebab-case) |
@@ -144,4 +145,34 @@ Basic Auth.
   и устанавливаются пакеты `ag-grid`/`json5`.
 - **Якоря** `{{path}}`: статика → литерал; одиночный контекст-якорь → `context.a.b` (живой);
   многопроходные/в примитиве → `resolveTemplate(...)`. `{{.}}` → `JSON.stringify(context)`.
-- Точка вызова — кнопка «🥖 Запечь» в `ActionBar.js` (скачивает оба файла через `downloadTextFile`).
+- Точка вызова — кнопка «⚙️ Сгенерировать страницу» в `ActionBar.js` (генерирует каталог `src/baked/{n}/` и скачивает его zip-архивом).
+
+## pageGenerator.js
+
+Кодогенерация страниц из форм (вход: JSON формы + шаблоны примитивов).
+
+| Функция | Назначение |
+|---------|-----------|
+| `generatePageSource(form, primitives, { index })` | Файлы каталога `src/baked/{index}/`: `index.jsx`, `page.js`, `imports.js`, `page.css`; возвращает `{ dir: './baked', baseDir, code, files }` |
+| `generatePagesSource(forms, primitives)` | Массив страниц по списку форм |
+
+- Компонент страницы зависит только от собственных файлов (шаблоны примитивов вшиваются в `primitive.template`).
+- Импорт страницы: `import { ... } from './imports'` (тот же каталог).
+- Глобальные хелперы функций формы объявляются в файле: `/* global getElementByName, fetchWithAuth */`.
+- Проверка каталога: `npm run verify:pages` (`scripts/verify-pages.js`).
+
+## zipUtils.js
+
+Сборка zip-архива из текстовых файлов без внешних зависимостей (метод store).
+
+| Функция | Назначение |
+|---------|-----------|
+| `crc32(bytes)` | CRC32 (полином 0xEDB88320) |
+| `createZip(files)` | `files = [{ path, content }]` → `Uint8Array` (zip) |
+
+## formLoader.js (дополнение)
+
+| Функция | Назначение |
+|---------|-----------|
+| `normalizeFormId(id)` | Снимает `.json` и многократно декодирует URL (устойчиво к «двойному» кодированию кириллицы) |
+| `safeFormFileName(name, fallback)` | Безопасное имя файла формы |
